@@ -1,0 +1,24 @@
+{
+  "name": "lost-found",
+  "version": "1.0.0",
+  "description": "LostFound is a web-based platform that helps students, staff, and community members report, search for, and recover lost and found items.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AungMinKhant123/lost-found.git"
+  },
+  "keywords": [],
+  "author": "Aung Min Khant, Hein Min Htet, Htet Min Myat, May Phuu San, Mohamed Ashfaqu Ifthicar, Myint Mo Kyaw, Myo Lwin",
+  "license": "MIT",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/AungMinKhant123/lost-found/issues"
+  },
+  "homepage": "https://github.com/AungMinKhant123/lost-found#readme",
+  "dependencies": {
+    "concurrently": "^10.0.5"
+  }
+}
