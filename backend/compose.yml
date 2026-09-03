@@ -1,0 +1,51 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lost-found-api
+    environment:
+      NODE_ENV: production
+      PORT: 5001
+      JWT_SECRET: lost_found_dev_secret
+      DATABASE_URL: postgresql://lost_found_user:lost_found_password@postgresql:5432/lost_found_db
+      DIRECT_URL: postgresql://lost_found_user:lost_found_password@postgresql:5432/lost_found_db
+    ports:
+      - "5001:5001"
+    depends_on:
+      postgresql:
+        condition: service_healthy
+
+  postgresql:
+    image: postgres:16-alpine
+    container_name: lost-found-postgresql
+    environment:
+      POSTGRES_DB: lost_found_db
+      POSTGRES_USER: lost_found_user
+      POSTGRES_PASSWORD: lost_found_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lost_found_user -d lost_found_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    image: minio/minio
+    container_name: lost-found-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minio_admin
+      MINIO_ROOT_PASSWORD: minio_password
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+
+volumes:
+  postgresql_data:
+  minio_data:
