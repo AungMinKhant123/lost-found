@@ -8,29 +8,70 @@ datasource db {
   url      = env("DIRECT_URL")
 }
 
+enum UserProfession {
+  STUDENT
+  TEACHER
+  WORKER
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum ItemType {
+  LOST
+  FOUND
+}
+
+enum ItemStatus {
+  OPEN
+  RESOLVED
+}
+
+enum ClaimStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+enum NotificationType {
+  CLAIM
+  MESSAGE
+}
+
 model User {
   id                String         @id @default(uuid())
-  username          String         @unique
+  firstName         String
+  lastName          String
   email             String         @unique
   passwordHash      String
-  phone             String?
+  phone             String
   profileUrl        String?
   lineUsername      String?
   facebookUsername  String?
   instagramUsername String?
-  class             String?
-  position          UserPosition
-  role              UserRole       @default(USER)
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @updatedAt
-  categoriesCreated Category[]     @relation("CategoryCreatedBy")
-  categoriesUpdated Category[]     @relation("CategoryUpdatedBy")
+
+  className         String?
+  profession        UserProfession   @default(STUDENT)
+  role              UserRole      @default(USER)
+
+  isActive          Boolean       @default(true)
+
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  categoriesCreated Category[]    @relation("CategoryCreatedBy")
+  categoriesUpdated Category[]    @relation("CategoryUpdatedBy")
+
   claims            Claim[]
-  colorsCreated     Color[]        @relation("ColorCreatedBy")
-  colorsUpdated     Color[]        @relation("ColorUpdatedBy")
-  itemsCreated      Item[]         @relation("ItemCreatedBy")
-  itemsUpdated      Item[]         @relation("ItemUpdatedBy")
+  colorsCreated     Color[]       @relation("ColorCreatedBy")
+  colorsUpdated     Color[]       @relation("ColorUpdatedBy")
+
+  itemsCreated      Item[]        @relation("ItemCreatedBy")
+  itemsUpdated      Item[]        @relation("ItemUpdatedBy")
   items             Item[]
+
   notifications     Notification[]
   refreshTokens     RefreshToken[]
 }
@@ -138,7 +179,7 @@ model Notification {
   claimId   String?
   isRead    Boolean          @default(false)
   createdAt DateTime         @default(now())
-  claim     Claim?           @relation(fields: [claimId], references: [id], onDelete: Cascade)
+  claim     Claim?           @relation(fields: [claimId], references: [id], onDelete: SetNull)
   user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
@@ -146,34 +187,3 @@ model Notification {
   @@index([isRead])
 }
 
-enum UserPosition {
-  STUDENT
-  TEACHER
-  WORKER
-}
-
-enum UserRole {
-  USER
-  ADMIN
-}
-
-enum ItemType {
-  LOST
-  FOUND
-}
-
-enum ItemStatus {
-  OPEN
-  RESOLVED
-}
-
-enum ClaimStatus {
-  PENDING
-  ACCEPTED
-  DECLINED
-}
-
-enum NotificationType {
-  CLAIM
-  MESSAGE
-}

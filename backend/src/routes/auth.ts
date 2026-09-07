@@ -1,29 +1,9 @@
-import { FastifyInstance } from "fastify";
-import { loginUser, registerUser } from "../handlers/auth.handler.js";
-import { loginSchema, registerSchema } from "../schemas/auth.schema.js";
-
-export default async function authRoutes(app: FastifyInstance) {
-  app.post(
-    "/auth/register",
-    {
-      schema: {
-        tags: ["Auth"],
-        summary: "Register a new user",
-        ...registerSchema,
-      },
-    },
-    registerUser,
-  );
-
-  app.post(
-    "/auth/login",
-    {
-      schema: {
-        tags: ["Auth"],
-        summary: "Login user",
-        ...loginSchema,
-      },
-    },
-    loginUser,
-  );
+import type { FastifyInstance } from "fastify";
+import { signupHandler } from "../handlers/auth/signup/handler.js";
+import { SignupSchema } from "../handlers/auth/signup/schema.js";
+import { LoginSchema } from "../handlers/auth/login/schema.js";
+import { loginHandler } from "../handlers/auth/login/handler.js";
+export async function authRoutes(app: FastifyInstance) {
+  app.post("/auth/signup", { schema: SignupSchema }, signupHandler);
+  app.post("/auth/login", { schema: LoginSchema }, loginHandler);
 }

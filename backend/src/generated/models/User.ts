@@ -26,7 +26,8 @@ export type AggregateUser = {
 
 export type UserMinAggregateOutputType = {
   id: string | null
-  username: string | null
+  firstName: string | null
+  lastName: string | null
   email: string | null
   passwordHash: string | null
   phone: string | null
@@ -34,16 +35,18 @@ export type UserMinAggregateOutputType = {
   lineUsername: string | null
   facebookUsername: string | null
   instagramUsername: string | null
-  class: string | null
-  position: $Enums.UserPosition | null
+  className: string | null
+  profession: $Enums.UserProfession | null
   role: $Enums.UserRole | null
+  isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
 
 export type UserMaxAggregateOutputType = {
   id: string | null
-  username: string | null
+  firstName: string | null
+  lastName: string | null
   email: string | null
   passwordHash: string | null
   phone: string | null
@@ -51,16 +54,18 @@ export type UserMaxAggregateOutputType = {
   lineUsername: string | null
   facebookUsername: string | null
   instagramUsername: string | null
-  class: string | null
-  position: $Enums.UserPosition | null
+  className: string | null
+  profession: $Enums.UserProfession | null
   role: $Enums.UserRole | null
+  isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
 
 export type UserCountAggregateOutputType = {
   id: number
-  username: number
+  firstName: number
+  lastName: number
   email: number
   passwordHash: number
   phone: number
@@ -68,9 +73,10 @@ export type UserCountAggregateOutputType = {
   lineUsername: number
   facebookUsername: number
   instagramUsername: number
-  class: number
-  position: number
+  className: number
+  profession: number
   role: number
+  isActive: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -79,7 +85,8 @@ export type UserCountAggregateOutputType = {
 
 export type UserMinAggregateInputType = {
   id?: true
-  username?: true
+  firstName?: true
+  lastName?: true
   email?: true
   passwordHash?: true
   phone?: true
@@ -87,16 +94,18 @@ export type UserMinAggregateInputType = {
   lineUsername?: true
   facebookUsername?: true
   instagramUsername?: true
-  class?: true
-  position?: true
+  className?: true
+  profession?: true
   role?: true
+  isActive?: true
   createdAt?: true
   updatedAt?: true
 }
 
 export type UserMaxAggregateInputType = {
   id?: true
-  username?: true
+  firstName?: true
+  lastName?: true
   email?: true
   passwordHash?: true
   phone?: true
@@ -104,16 +113,18 @@ export type UserMaxAggregateInputType = {
   lineUsername?: true
   facebookUsername?: true
   instagramUsername?: true
-  class?: true
-  position?: true
+  className?: true
+  profession?: true
   role?: true
+  isActive?: true
   createdAt?: true
   updatedAt?: true
 }
 
 export type UserCountAggregateInputType = {
   id?: true
-  username?: true
+  firstName?: true
+  lastName?: true
   email?: true
   passwordHash?: true
   phone?: true
@@ -121,9 +132,10 @@ export type UserCountAggregateInputType = {
   lineUsername?: true
   facebookUsername?: true
   instagramUsername?: true
-  class?: true
-  position?: true
+  className?: true
+  profession?: true
   role?: true
+  isActive?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -203,17 +215,19 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 
 export type UserGroupByOutputType = {
   id: string
-  username: string
+  firstName: string
+  lastName: string
   email: string
   passwordHash: string
-  phone: string | null
+  phone: string
   profileUrl: string | null
   lineUsername: string | null
   facebookUsername: string | null
   instagramUsername: string | null
-  class: string | null
-  position: $Enums.UserPosition
+  className: string | null
+  profession: $Enums.UserProfession
   role: $Enums.UserRole
+  isActive: boolean
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -241,17 +255,19 @@ export type UserWhereInput = {
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   id?: Prisma.StringFilter<"User"> | string
-  username?: Prisma.StringFilter<"User"> | string
+  firstName?: Prisma.StringFilter<"User"> | string
+  lastName?: Prisma.StringFilter<"User"> | string
   email?: Prisma.StringFilter<"User"> | string
   passwordHash?: Prisma.StringFilter<"User"> | string
-  phone?: Prisma.StringNullableFilter<"User"> | string | null
+  phone?: Prisma.StringFilter<"User"> | string
   profileUrl?: Prisma.StringNullableFilter<"User"> | string | null
   lineUsername?: Prisma.StringNullableFilter<"User"> | string | null
   facebookUsername?: Prisma.StringNullableFilter<"User"> | string | null
   instagramUsername?: Prisma.StringNullableFilter<"User"> | string | null
-  class?: Prisma.StringNullableFilter<"User"> | string | null
-  position?: Prisma.EnumUserPositionFilter<"User"> | $Enums.UserPosition
+  className?: Prisma.StringNullableFilter<"User"> | string | null
+  profession?: Prisma.EnumUserProfessionFilter<"User"> | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
+  isActive?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   categoriesCreated?: Prisma.CategoryListRelationFilter
@@ -268,17 +284,19 @@ export type UserWhereInput = {
 
 export type UserOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  username?: Prisma.SortOrder
+  firstName?: Prisma.SortOrder
+  lastName?: Prisma.SortOrder
   email?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
-  phone?: Prisma.SortOrderInput | Prisma.SortOrder
+  phone?: Prisma.SortOrder
   profileUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   lineUsername?: Prisma.SortOrderInput | Prisma.SortOrder
   facebookUsername?: Prisma.SortOrderInput | Prisma.SortOrder
   instagramUsername?: Prisma.SortOrderInput | Prisma.SortOrder
-  class?: Prisma.SortOrderInput | Prisma.SortOrder
-  position?: Prisma.SortOrder
+  className?: Prisma.SortOrderInput | Prisma.SortOrder
+  profession?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   categoriesCreated?: Prisma.CategoryOrderByRelationAggregateInput
@@ -295,20 +313,22 @@ export type UserOrderByWithRelationInput = {
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  username?: string
   email?: string
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
+  firstName?: Prisma.StringFilter<"User"> | string
+  lastName?: Prisma.StringFilter<"User"> | string
   passwordHash?: Prisma.StringFilter<"User"> | string
-  phone?: Prisma.StringNullableFilter<"User"> | string | null
+  phone?: Prisma.StringFilter<"User"> | string
   profileUrl?: Prisma.StringNullableFilter<"User"> | string | null
   lineUsername?: Prisma.StringNullableFilter<"User"> | string | null
   facebookUsername?: Prisma.StringNullableFilter<"User"> | string | null
   instagramUsername?: Prisma.StringNullableFilter<"User"> | string | null
-  class?: Prisma.StringNullableFilter<"User"> | string | null
-  position?: Prisma.EnumUserPositionFilter<"User"> | $Enums.UserPosition
+  className?: Prisma.StringNullableFilter<"User"> | string | null
+  profession?: Prisma.EnumUserProfessionFilter<"User"> | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
+  isActive?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   categoriesCreated?: Prisma.CategoryListRelationFilter
@@ -321,21 +341,23 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   items?: Prisma.ItemListRelationFilter
   notifications?: Prisma.NotificationListRelationFilter
   refreshTokens?: Prisma.RefreshTokenListRelationFilter
-}, "id" | "username" | "email">
+}, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  username?: Prisma.SortOrder
+  firstName?: Prisma.SortOrder
+  lastName?: Prisma.SortOrder
   email?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
-  phone?: Prisma.SortOrderInput | Prisma.SortOrder
+  phone?: Prisma.SortOrder
   profileUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   lineUsername?: Prisma.SortOrderInput | Prisma.SortOrder
   facebookUsername?: Prisma.SortOrderInput | Prisma.SortOrder
   instagramUsername?: Prisma.SortOrderInput | Prisma.SortOrder
-  class?: Prisma.SortOrderInput | Prisma.SortOrder
-  position?: Prisma.SortOrder
+  className?: Prisma.SortOrderInput | Prisma.SortOrder
+  profession?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -348,34 +370,38 @@ export type UserScalarWhereWithAggregatesInput = {
   OR?: Prisma.UserScalarWhereWithAggregatesInput[]
   NOT?: Prisma.UserScalarWhereWithAggregatesInput | Prisma.UserScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"User"> | string
-  username?: Prisma.StringWithAggregatesFilter<"User"> | string
+  firstName?: Prisma.StringWithAggregatesFilter<"User"> | string
+  lastName?: Prisma.StringWithAggregatesFilter<"User"> | string
   email?: Prisma.StringWithAggregatesFilter<"User"> | string
   passwordHash?: Prisma.StringWithAggregatesFilter<"User"> | string
-  phone?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  phone?: Prisma.StringWithAggregatesFilter<"User"> | string
   profileUrl?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   lineUsername?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   facebookUsername?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   instagramUsername?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
-  class?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
-  position?: Prisma.EnumUserPositionWithAggregatesFilter<"User"> | $Enums.UserPosition
+  className?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  profession?: Prisma.EnumUserProfessionWithAggregatesFilter<"User"> | $Enums.UserProfession
   role?: Prisma.EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
+  isActive?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
 
 export type UserCreateInput = {
   id?: string
-  username: string
+  firstName: string
+  lastName: string
   email: string
   passwordHash: string
-  phone?: string | null
+  phone: string
   profileUrl?: string | null
   lineUsername?: string | null
   facebookUsername?: string | null
   instagramUsername?: string | null
-  class?: string | null
-  position: $Enums.UserPosition
+  className?: string | null
+  profession?: $Enums.UserProfession
   role?: $Enums.UserRole
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   categoriesCreated?: Prisma.CategoryCreateNestedManyWithoutCreatedByInput
@@ -392,17 +418,19 @@ export type UserCreateInput = {
 
 export type UserUncheckedCreateInput = {
   id?: string
-  username: string
+  firstName: string
+  lastName: string
   email: string
   passwordHash: string
-  phone?: string | null
+  phone: string
   profileUrl?: string | null
   lineUsername?: string | null
   facebookUsername?: string | null
   instagramUsername?: string | null
-  class?: string | null
-  position: $Enums.UserPosition
+  className?: string | null
+  profession?: $Enums.UserProfession
   role?: $Enums.UserRole
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   categoriesCreated?: Prisma.CategoryUncheckedCreateNestedManyWithoutCreatedByInput
@@ -419,17 +447,19 @@ export type UserUncheckedCreateInput = {
 
 export type UserUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   profileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lineUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   facebookUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   instagramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  class?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.EnumUserPositionFieldUpdateOperationsInput | $Enums.UserPosition
+  className?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.EnumUserProfessionFieldUpdateOperationsInput | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoriesCreated?: Prisma.CategoryUpdateManyWithoutCreatedByNestedInput
@@ -446,17 +476,19 @@ export type UserUpdateInput = {
 
 export type UserUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   profileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lineUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   facebookUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   instagramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  class?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.EnumUserPositionFieldUpdateOperationsInput | $Enums.UserPosition
+  className?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.EnumUserProfessionFieldUpdateOperationsInput | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoriesCreated?: Prisma.CategoryUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -473,58 +505,65 @@ export type UserUncheckedUpdateInput = {
 
 export type UserCreateManyInput = {
   id?: string
-  username: string
+  firstName: string
+  lastName: string
   email: string
   passwordHash: string
-  phone?: string | null
+  phone: string
   profileUrl?: string | null
   lineUsername?: string | null
   facebookUsername?: string | null
   instagramUsername?: string | null
-  class?: string | null
-  position: $Enums.UserPosition
+  className?: string | null
+  profession?: $Enums.UserProfession
   role?: $Enums.UserRole
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type UserUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   profileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lineUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   facebookUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   instagramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  class?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.EnumUserPositionFieldUpdateOperationsInput | $Enums.UserPosition
+  className?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.EnumUserProfessionFieldUpdateOperationsInput | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type UserUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   profileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lineUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   facebookUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   instagramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  class?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.EnumUserPositionFieldUpdateOperationsInput | $Enums.UserPosition
+  className?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.EnumUserProfessionFieldUpdateOperationsInput | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type UserCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  username?: Prisma.SortOrder
+  firstName?: Prisma.SortOrder
+  lastName?: Prisma.SortOrder
   email?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
   phone?: Prisma.SortOrder
@@ -532,16 +571,18 @@ export type UserCountOrderByAggregateInput = {
   lineUsername?: Prisma.SortOrder
   facebookUsername?: Prisma.SortOrder
   instagramUsername?: Prisma.SortOrder
-  class?: Prisma.SortOrder
-  position?: Prisma.SortOrder
+  className?: Prisma.SortOrder
+  profession?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  username?: Prisma.SortOrder
+  firstName?: Prisma.SortOrder
+  lastName?: Prisma.SortOrder
   email?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
   phone?: Prisma.SortOrder
@@ -549,16 +590,18 @@ export type UserMaxOrderByAggregateInput = {
   lineUsername?: Prisma.SortOrder
   facebookUsername?: Prisma.SortOrder
   instagramUsername?: Prisma.SortOrder
-  class?: Prisma.SortOrder
-  position?: Prisma.SortOrder
+  className?: Prisma.SortOrder
+  profession?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  username?: Prisma.SortOrder
+  firstName?: Prisma.SortOrder
+  lastName?: Prisma.SortOrder
   email?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
   phone?: Prisma.SortOrder
@@ -566,9 +609,10 @@ export type UserMinOrderByAggregateInput = {
   lineUsername?: Prisma.SortOrder
   facebookUsername?: Prisma.SortOrder
   instagramUsername?: Prisma.SortOrder
-  class?: Prisma.SortOrder
-  position?: Prisma.SortOrder
+  className?: Prisma.SortOrder
+  profession?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -586,12 +630,16 @@ export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
 }
 
-export type EnumUserPositionFieldUpdateOperationsInput = {
-  set?: $Enums.UserPosition
+export type EnumUserProfessionFieldUpdateOperationsInput = {
+  set?: $Enums.UserProfession
 }
 
 export type EnumUserRoleFieldUpdateOperationsInput = {
   set?: $Enums.UserRole
+}
+
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -740,17 +788,19 @@ export type UserUpdateOneRequiredWithoutNotificationsNestedInput = {
 
 export type UserCreateWithoutRefreshTokensInput = {
   id?: string
-  username: string
+  firstName: string
+  lastName: string
   email: string
   passwordHash: string
-  phone?: string | null
+  phone: string
   profileUrl?: string | null
   lineUsername?: string | null
   facebookUsername?: string | null
   instagramUsername?: string | null
-  class?: string | null
-  position: $Enums.UserPosition
+  className?: string | null
+  profession?: $Enums.UserProfession
   role?: $Enums.UserRole
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   categoriesCreated?: Prisma.CategoryCreateNestedManyWithoutCreatedByInput
@@ -766,17 +816,19 @@ export type UserCreateWithoutRefreshTokensInput = {
 
 export type UserUncheckedCreateWithoutRefreshTokensInput = {
   id?: string
-  username: string
+  firstName: string
+  lastName: string
   email: string
   passwordHash: string
-  phone?: string | null
+  phone: string
   profileUrl?: string | null
   lineUsername?: string | null
   facebookUsername?: string | null
   instagramUsername?: string | null
-  class?: string | null
-  position: $Enums.UserPosition
+  className?: string | null
+  profession?: $Enums.UserProfession
   role?: $Enums.UserRole
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   categoriesCreated?: Prisma.CategoryUncheckedCreateNestedManyWithoutCreatedByInput
@@ -808,17 +860,19 @@ export type UserUpdateToOneWithWhereWithoutRefreshTokensInput = {
 
 export type UserUpdateWithoutRefreshTokensInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   profileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lineUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   facebookUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   instagramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  class?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.EnumUserPositionFieldUpdateOperationsInput | $Enums.UserPosition
+  className?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.EnumUserProfessionFieldUpdateOperationsInput | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoriesCreated?: Prisma.CategoryUpdateManyWithoutCreatedByNestedInput
@@ -834,17 +888,19 @@ export type UserUpdateWithoutRefreshTokensInput = {
 
 export type UserUncheckedUpdateWithoutRefreshTokensInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   profileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lineUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   facebookUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   instagramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  class?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.EnumUserPositionFieldUpdateOperationsInput | $Enums.UserPosition
+  className?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.EnumUserProfessionFieldUpdateOperationsInput | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoriesCreated?: Prisma.CategoryUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -860,17 +916,19 @@ export type UserUncheckedUpdateWithoutRefreshTokensInput = {
 
 export type UserCreateWithoutCategoriesCreatedInput = {
   id?: string
-  username: string
+  firstName: string
+  lastName: string
   email: string
   passwordHash: string
-  phone?: string | null
+  phone: string
   profileUrl?: string | null
   lineUsername?: string | null
   facebookUsername?: string | null
   instagramUsername?: string | null
-  class?: string | null
-  position: $Enums.UserPosition
+  className?: string | null
+  profession?: $Enums.UserProfession
   role?: $Enums.UserRole
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   categoriesUpdated?: Prisma.CategoryCreateNestedManyWithoutUpdatedByInput
@@ -886,17 +944,19 @@ export type UserCreateWithoutCategoriesCreatedInput = {
 
 export type UserUncheckedCreateWithoutCategoriesCreatedInput = {
   id?: string
-  username: string
+  firstName: string
+  lastName: string
   email: string
   passwordHash: string
-  phone?: string | null
+  phone: string
   profileUrl?: string | null
   lineUsername?: string | null
   facebookUsername?: string | null
   instagramUsername?: string | null
-  class?: string | null
-  position: $Enums.UserPosition
+  className?: string | null
+  profession?: $Enums.UserProfession
   role?: $Enums.UserRole
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   categoriesUpdated?: Prisma.CategoryUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -917,17 +977,19 @@ export type UserCreateOrConnectWithoutCategoriesCreatedInput = {
 
 export type UserCreateWithoutCategoriesUpdatedInput = {
   id?: string
-  username: string
+  firstName: string
+  lastName: string
   email: string
   passwordHash: string
-  phone?: string | null
+  phone: string
   profileUrl?: string | null
   lineUsername?: string | null
   facebookUsername?: string | null
   instagramUsername?: string | null
-  class?: string | null
-  position: $Enums.UserPosition
+  className?: string | null
+  profession?: $Enums.UserProfession
   role?: $Enums.UserRole
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   categoriesCreated?: Prisma.CategoryCreateNestedManyWithoutCreatedByInput
@@ -943,17 +1005,19 @@ export type UserCreateWithoutCategoriesUpdatedInput = {
 
 export type UserUncheckedCreateWithoutCategoriesUpdatedInput = {
   id?: string
-  username: string
+  firstName: string
+  lastName: string
   email: string
   passwordHash: string
-  phone?: string | null
+  phone: string
   profileUrl?: string | null
   lineUsername?: string | null
   facebookUsername?: string | null
   instagramUsername?: string | null
-  class?: string | null
-  position: $Enums.UserPosition
+  className?: string | null
+  profession?: $Enums.UserProfession
   role?: $Enums.UserRole
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   categoriesCreated?: Prisma.CategoryUncheckedCreateNestedManyWithoutCreatedByInput
@@ -985,17 +1049,19 @@ export type UserUpdateToOneWithWhereWithoutCategoriesCreatedInput = {
 
 export type UserUpdateWithoutCategoriesCreatedInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   profileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lineUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   facebookUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   instagramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  class?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.EnumUserPositionFieldUpdateOperationsInput | $Enums.UserPosition
+  className?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.EnumUserProfessionFieldUpdateOperationsInput | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoriesUpdated?: Prisma.CategoryUpdateManyWithoutUpdatedByNestedInput
@@ -1011,17 +1077,19 @@ export type UserUpdateWithoutCategoriesCreatedInput = {
 
 export type UserUncheckedUpdateWithoutCategoriesCreatedInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   profileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lineUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   facebookUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   instagramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  class?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.EnumUserPositionFieldUpdateOperationsInput | $Enums.UserPosition
+  className?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.EnumUserProfessionFieldUpdateOperationsInput | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoriesUpdated?: Prisma.CategoryUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -1048,17 +1116,19 @@ export type UserUpdateToOneWithWhereWithoutCategoriesUpdatedInput = {
 
 export type UserUpdateWithoutCategoriesUpdatedInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   profileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lineUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   facebookUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   instagramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  class?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.EnumUserPositionFieldUpdateOperationsInput | $Enums.UserPosition
+  className?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.EnumUserProfessionFieldUpdateOperationsInput | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoriesCreated?: Prisma.CategoryUpdateManyWithoutCreatedByNestedInput
@@ -1074,17 +1144,19 @@ export type UserUpdateWithoutCategoriesUpdatedInput = {
 
 export type UserUncheckedUpdateWithoutCategoriesUpdatedInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   profileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lineUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   facebookUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   instagramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  class?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.EnumUserPositionFieldUpdateOperationsInput | $Enums.UserPosition
+  className?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.EnumUserProfessionFieldUpdateOperationsInput | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoriesCreated?: Prisma.CategoryUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -1100,17 +1172,19 @@ export type UserUncheckedUpdateWithoutCategoriesUpdatedInput = {
 
 export type UserCreateWithoutColorsCreatedInput = {
   id?: string
-  username: string
+  firstName: string
+  lastName: string
   email: string
   passwordHash: string
-  phone?: string | null
+  phone: string
   profileUrl?: string | null
   lineUsername?: string | null
   facebookUsername?: string | null
   instagramUsername?: string | null
-  class?: string | null
-  position: $Enums.UserPosition
+  className?: string | null
+  profession?: $Enums.UserProfession
   role?: $Enums.UserRole
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   categoriesCreated?: Prisma.CategoryCreateNestedManyWithoutCreatedByInput
@@ -1126,17 +1200,19 @@ export type UserCreateWithoutColorsCreatedInput = {
 
 export type UserUncheckedCreateWithoutColorsCreatedInput = {
   id?: string
-  username: string
+  firstName: string
+  lastName: string
   email: string
   passwordHash: string
-  phone?: string | null
+  phone: string
   profileUrl?: string | null
   lineUsername?: string | null
   facebookUsername?: string | null
   instagramUsername?: string | null
-  class?: string | null
-  position: $Enums.UserPosition
+  className?: string | null
+  profession?: $Enums.UserProfession
   role?: $Enums.UserRole
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   categoriesCreated?: Prisma.CategoryUncheckedCreateNestedManyWithoutCreatedByInput
@@ -1157,17 +1233,19 @@ export type UserCreateOrConnectWithoutColorsCreatedInput = {
 
 export type UserCreateWithoutColorsUpdatedInput = {
   id?: string
-  username: string
+  firstName: string
+  lastName: string
   email: string
   passwordHash: string
-  phone?: string | null
+  phone: string
   profileUrl?: string | null
   lineUsername?: string | null
   facebookUsername?: string | null
   instagramUsername?: string | null
-  class?: string | null
-  position: $Enums.UserPosition
+  className?: string | null
+  profession?: $Enums.UserProfession
   role?: $Enums.UserRole
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   categoriesCreated?: Prisma.CategoryCreateNestedManyWithoutCreatedByInput
@@ -1183,17 +1261,19 @@ export type UserCreateWithoutColorsUpdatedInput = {
 
 export type UserUncheckedCreateWithoutColorsUpdatedInput = {
   id?: string
-  username: string
+  firstName: string
+  lastName: string
   email: string
   passwordHash: string
-  phone?: string | null
+  phone: string
   profileUrl?: string | null
   lineUsername?: string | null
   facebookUsername?: string | null
   instagramUsername?: string | null
-  class?: string | null
-  position: $Enums.UserPosition
+  className?: string | null
+  profession?: $Enums.UserProfession
   role?: $Enums.UserRole
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   categoriesCreated?: Prisma.CategoryUncheckedCreateNestedManyWithoutCreatedByInput
@@ -1225,17 +1305,19 @@ export type UserUpdateToOneWithWhereWithoutColorsCreatedInput = {
 
 export type UserUpdateWithoutColorsCreatedInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   profileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lineUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   facebookUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   instagramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  class?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.EnumUserPositionFieldUpdateOperationsInput | $Enums.UserPosition
+  className?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.EnumUserProfessionFieldUpdateOperationsInput | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoriesCreated?: Prisma.CategoryUpdateManyWithoutCreatedByNestedInput
@@ -1251,17 +1333,19 @@ export type UserUpdateWithoutColorsCreatedInput = {
 
 export type UserUncheckedUpdateWithoutColorsCreatedInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   profileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lineUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   facebookUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   instagramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  class?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.EnumUserPositionFieldUpdateOperationsInput | $Enums.UserPosition
+  className?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.EnumUserProfessionFieldUpdateOperationsInput | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoriesCreated?: Prisma.CategoryUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -1288,17 +1372,19 @@ export type UserUpdateToOneWithWhereWithoutColorsUpdatedInput = {
 
 export type UserUpdateWithoutColorsUpdatedInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   profileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lineUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   facebookUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   instagramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  class?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.EnumUserPositionFieldUpdateOperationsInput | $Enums.UserPosition
+  className?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.EnumUserProfessionFieldUpdateOperationsInput | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoriesCreated?: Prisma.CategoryUpdateManyWithoutCreatedByNestedInput
@@ -1314,17 +1400,19 @@ export type UserUpdateWithoutColorsUpdatedInput = {
 
 export type UserUncheckedUpdateWithoutColorsUpdatedInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   profileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lineUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   facebookUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   instagramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  class?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.EnumUserPositionFieldUpdateOperationsInput | $Enums.UserPosition
+  className?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.EnumUserProfessionFieldUpdateOperationsInput | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoriesCreated?: Prisma.CategoryUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -1340,17 +1428,19 @@ export type UserUncheckedUpdateWithoutColorsUpdatedInput = {
 
 export type UserCreateWithoutItemsCreatedInput = {
   id?: string
-  username: string
+  firstName: string
+  lastName: string
   email: string
   passwordHash: string
-  phone?: string | null
+  phone: string
   profileUrl?: string | null
   lineUsername?: string | null
   facebookUsername?: string | null
   instagramUsername?: string | null
-  class?: string | null
-  position: $Enums.UserPosition
+  className?: string | null
+  profession?: $Enums.UserProfession
   role?: $Enums.UserRole
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   categoriesCreated?: Prisma.CategoryCreateNestedManyWithoutCreatedByInput
@@ -1366,17 +1456,19 @@ export type UserCreateWithoutItemsCreatedInput = {
 
 export type UserUncheckedCreateWithoutItemsCreatedInput = {
   id?: string
-  username: string
+  firstName: string
+  lastName: string
   email: string
   passwordHash: string
-  phone?: string | null
+  phone: string
   profileUrl?: string | null
   lineUsername?: string | null
   facebookUsername?: string | null
   instagramUsername?: string | null
-  class?: string | null
-  position: $Enums.UserPosition
+  className?: string | null
+  profession?: $Enums.UserProfession
   role?: $Enums.UserRole
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   categoriesCreated?: Prisma.CategoryUncheckedCreateNestedManyWithoutCreatedByInput
@@ -1397,17 +1489,19 @@ export type UserCreateOrConnectWithoutItemsCreatedInput = {
 
 export type UserCreateWithoutItemsUpdatedInput = {
   id?: string
-  username: string
+  firstName: string
+  lastName: string
   email: string
   passwordHash: string
-  phone?: string | null
+  phone: string
   profileUrl?: string | null
   lineUsername?: string | null
   facebookUsername?: string | null
   instagramUsername?: string | null
-  class?: string | null
-  position: $Enums.UserPosition
+  className?: string | null
+  profession?: $Enums.UserProfession
   role?: $Enums.UserRole
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   categoriesCreated?: Prisma.CategoryCreateNestedManyWithoutCreatedByInput
@@ -1423,17 +1517,19 @@ export type UserCreateWithoutItemsUpdatedInput = {
 
 export type UserUncheckedCreateWithoutItemsUpdatedInput = {
   id?: string
-  username: string
+  firstName: string
+  lastName: string
   email: string
   passwordHash: string
-  phone?: string | null
+  phone: string
   profileUrl?: string | null
   lineUsername?: string | null
   facebookUsername?: string | null
   instagramUsername?: string | null
-  class?: string | null
-  position: $Enums.UserPosition
+  className?: string | null
+  profession?: $Enums.UserProfession
   role?: $Enums.UserRole
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   categoriesCreated?: Prisma.CategoryUncheckedCreateNestedManyWithoutCreatedByInput
@@ -1454,17 +1550,19 @@ export type UserCreateOrConnectWithoutItemsUpdatedInput = {
 
 export type UserCreateWithoutItemsInput = {
   id?: string
-  username: string
+  firstName: string
+  lastName: string
   email: string
   passwordHash: string
-  phone?: string | null
+  phone: string
   profileUrl?: string | null
   lineUsername?: string | null
   facebookUsername?: string | null
   instagramUsername?: string | null
-  class?: string | null
-  position: $Enums.UserPosition
+  className?: string | null
+  profession?: $Enums.UserProfession
   role?: $Enums.UserRole
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   categoriesCreated?: Prisma.CategoryCreateNestedManyWithoutCreatedByInput
@@ -1480,17 +1578,19 @@ export type UserCreateWithoutItemsInput = {
 
 export type UserUncheckedCreateWithoutItemsInput = {
   id?: string
-  username: string
+  firstName: string
+  lastName: string
   email: string
   passwordHash: string
-  phone?: string | null
+  phone: string
   profileUrl?: string | null
   lineUsername?: string | null
   facebookUsername?: string | null
   instagramUsername?: string | null
-  class?: string | null
-  position: $Enums.UserPosition
+  className?: string | null
+  profession?: $Enums.UserProfession
   role?: $Enums.UserRole
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   categoriesCreated?: Prisma.CategoryUncheckedCreateNestedManyWithoutCreatedByInput
@@ -1522,17 +1622,19 @@ export type UserUpdateToOneWithWhereWithoutItemsCreatedInput = {
 
 export type UserUpdateWithoutItemsCreatedInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   profileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lineUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   facebookUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   instagramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  class?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.EnumUserPositionFieldUpdateOperationsInput | $Enums.UserPosition
+  className?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.EnumUserProfessionFieldUpdateOperationsInput | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoriesCreated?: Prisma.CategoryUpdateManyWithoutCreatedByNestedInput
@@ -1548,17 +1650,19 @@ export type UserUpdateWithoutItemsCreatedInput = {
 
 export type UserUncheckedUpdateWithoutItemsCreatedInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   profileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lineUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   facebookUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   instagramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  class?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.EnumUserPositionFieldUpdateOperationsInput | $Enums.UserPosition
+  className?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.EnumUserProfessionFieldUpdateOperationsInput | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoriesCreated?: Prisma.CategoryUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -1585,17 +1689,19 @@ export type UserUpdateToOneWithWhereWithoutItemsUpdatedInput = {
 
 export type UserUpdateWithoutItemsUpdatedInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   profileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lineUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   facebookUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   instagramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  class?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.EnumUserPositionFieldUpdateOperationsInput | $Enums.UserPosition
+  className?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.EnumUserProfessionFieldUpdateOperationsInput | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoriesCreated?: Prisma.CategoryUpdateManyWithoutCreatedByNestedInput
@@ -1611,17 +1717,19 @@ export type UserUpdateWithoutItemsUpdatedInput = {
 
 export type UserUncheckedUpdateWithoutItemsUpdatedInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   profileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lineUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   facebookUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   instagramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  class?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.EnumUserPositionFieldUpdateOperationsInput | $Enums.UserPosition
+  className?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.EnumUserProfessionFieldUpdateOperationsInput | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoriesCreated?: Prisma.CategoryUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -1648,17 +1756,19 @@ export type UserUpdateToOneWithWhereWithoutItemsInput = {
 
 export type UserUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   profileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lineUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   facebookUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   instagramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  class?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.EnumUserPositionFieldUpdateOperationsInput | $Enums.UserPosition
+  className?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.EnumUserProfessionFieldUpdateOperationsInput | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoriesCreated?: Prisma.CategoryUpdateManyWithoutCreatedByNestedInput
@@ -1674,17 +1784,19 @@ export type UserUpdateWithoutItemsInput = {
 
 export type UserUncheckedUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   profileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lineUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   facebookUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   instagramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  class?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.EnumUserPositionFieldUpdateOperationsInput | $Enums.UserPosition
+  className?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.EnumUserProfessionFieldUpdateOperationsInput | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoriesCreated?: Prisma.CategoryUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -1700,17 +1812,19 @@ export type UserUncheckedUpdateWithoutItemsInput = {
 
 export type UserCreateWithoutClaimsInput = {
   id?: string
-  username: string
+  firstName: string
+  lastName: string
   email: string
   passwordHash: string
-  phone?: string | null
+  phone: string
   profileUrl?: string | null
   lineUsername?: string | null
   facebookUsername?: string | null
   instagramUsername?: string | null
-  class?: string | null
-  position: $Enums.UserPosition
+  className?: string | null
+  profession?: $Enums.UserProfession
   role?: $Enums.UserRole
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   categoriesCreated?: Prisma.CategoryCreateNestedManyWithoutCreatedByInput
@@ -1726,17 +1840,19 @@ export type UserCreateWithoutClaimsInput = {
 
 export type UserUncheckedCreateWithoutClaimsInput = {
   id?: string
-  username: string
+  firstName: string
+  lastName: string
   email: string
   passwordHash: string
-  phone?: string | null
+  phone: string
   profileUrl?: string | null
   lineUsername?: string | null
   facebookUsername?: string | null
   instagramUsername?: string | null
-  class?: string | null
-  position: $Enums.UserPosition
+  className?: string | null
+  profession?: $Enums.UserProfession
   role?: $Enums.UserRole
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   categoriesCreated?: Prisma.CategoryUncheckedCreateNestedManyWithoutCreatedByInput
@@ -1768,17 +1884,19 @@ export type UserUpdateToOneWithWhereWithoutClaimsInput = {
 
 export type UserUpdateWithoutClaimsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   profileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lineUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   facebookUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   instagramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  class?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.EnumUserPositionFieldUpdateOperationsInput | $Enums.UserPosition
+  className?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.EnumUserProfessionFieldUpdateOperationsInput | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoriesCreated?: Prisma.CategoryUpdateManyWithoutCreatedByNestedInput
@@ -1794,17 +1912,19 @@ export type UserUpdateWithoutClaimsInput = {
 
 export type UserUncheckedUpdateWithoutClaimsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   profileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lineUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   facebookUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   instagramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  class?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.EnumUserPositionFieldUpdateOperationsInput | $Enums.UserPosition
+  className?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.EnumUserProfessionFieldUpdateOperationsInput | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoriesCreated?: Prisma.CategoryUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -1820,17 +1940,19 @@ export type UserUncheckedUpdateWithoutClaimsInput = {
 
 export type UserCreateWithoutNotificationsInput = {
   id?: string
-  username: string
+  firstName: string
+  lastName: string
   email: string
   passwordHash: string
-  phone?: string | null
+  phone: string
   profileUrl?: string | null
   lineUsername?: string | null
   facebookUsername?: string | null
   instagramUsername?: string | null
-  class?: string | null
-  position: $Enums.UserPosition
+  className?: string | null
+  profession?: $Enums.UserProfession
   role?: $Enums.UserRole
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   categoriesCreated?: Prisma.CategoryCreateNestedManyWithoutCreatedByInput
@@ -1846,17 +1968,19 @@ export type UserCreateWithoutNotificationsInput = {
 
 export type UserUncheckedCreateWithoutNotificationsInput = {
   id?: string
-  username: string
+  firstName: string
+  lastName: string
   email: string
   passwordHash: string
-  phone?: string | null
+  phone: string
   profileUrl?: string | null
   lineUsername?: string | null
   facebookUsername?: string | null
   instagramUsername?: string | null
-  class?: string | null
-  position: $Enums.UserPosition
+  className?: string | null
+  profession?: $Enums.UserProfession
   role?: $Enums.UserRole
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   categoriesCreated?: Prisma.CategoryUncheckedCreateNestedManyWithoutCreatedByInput
@@ -1888,17 +2012,19 @@ export type UserUpdateToOneWithWhereWithoutNotificationsInput = {
 
 export type UserUpdateWithoutNotificationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   profileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lineUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   facebookUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   instagramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  class?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.EnumUserPositionFieldUpdateOperationsInput | $Enums.UserPosition
+  className?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.EnumUserProfessionFieldUpdateOperationsInput | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoriesCreated?: Prisma.CategoryUpdateManyWithoutCreatedByNestedInput
@@ -1914,17 +2040,19 @@ export type UserUpdateWithoutNotificationsInput = {
 
 export type UserUncheckedUpdateWithoutNotificationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
   profileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lineUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   facebookUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   instagramUsername?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  class?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  position?: Prisma.EnumUserPositionFieldUpdateOperationsInput | $Enums.UserPosition
+  className?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.EnumUserProfessionFieldUpdateOperationsInput | $Enums.UserProfession
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categoriesCreated?: Prisma.CategoryUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -2052,7 +2180,8 @@ export type UserCountOutputTypeCountRefreshTokensArgs<ExtArgs extends runtime.Ty
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  username?: boolean
+  firstName?: boolean
+  lastName?: boolean
   email?: boolean
   passwordHash?: boolean
   phone?: boolean
@@ -2060,9 +2189,10 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   lineUsername?: boolean
   facebookUsername?: boolean
   instagramUsername?: boolean
-  class?: boolean
-  position?: boolean
+  className?: boolean
+  profession?: boolean
   role?: boolean
+  isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   categoriesCreated?: boolean | Prisma.User$categoriesCreatedArgs<ExtArgs>
@@ -2080,7 +2210,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 
 export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  username?: boolean
+  firstName?: boolean
+  lastName?: boolean
   email?: boolean
   passwordHash?: boolean
   phone?: boolean
@@ -2088,16 +2219,18 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   lineUsername?: boolean
   facebookUsername?: boolean
   instagramUsername?: boolean
-  class?: boolean
-  position?: boolean
+  className?: boolean
+  profession?: boolean
   role?: boolean
+  isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  username?: boolean
+  firstName?: boolean
+  lastName?: boolean
   email?: boolean
   passwordHash?: boolean
   phone?: boolean
@@ -2105,16 +2238,18 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   lineUsername?: boolean
   facebookUsername?: boolean
   instagramUsername?: boolean
-  class?: boolean
-  position?: boolean
+  className?: boolean
+  profession?: boolean
   role?: boolean
+  isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectScalar = {
   id?: boolean
-  username?: boolean
+  firstName?: boolean
+  lastName?: boolean
   email?: boolean
   passwordHash?: boolean
   phone?: boolean
@@ -2122,14 +2257,15 @@ export type UserSelectScalar = {
   lineUsername?: boolean
   facebookUsername?: boolean
   instagramUsername?: boolean
-  class?: boolean
-  position?: boolean
+  className?: boolean
+  profession?: boolean
   role?: boolean
+  isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "email" | "passwordHash" | "phone" | "profileUrl" | "lineUsername" | "facebookUsername" | "instagramUsername" | "class" | "position" | "role" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "passwordHash" | "phone" | "profileUrl" | "lineUsername" | "facebookUsername" | "instagramUsername" | "className" | "profession" | "role" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   categoriesCreated?: boolean | Prisma.User$categoriesCreatedArgs<ExtArgs>
   categoriesUpdated?: boolean | Prisma.User$categoriesUpdatedArgs<ExtArgs>
@@ -2162,17 +2298,19 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    username: string
+    firstName: string
+    lastName: string
     email: string
     passwordHash: string
-    phone: string | null
+    phone: string
     profileUrl: string | null
     lineUsername: string | null
     facebookUsername: string | null
     instagramUsername: string | null
-    class: string | null
-    position: $Enums.UserPosition
+    className: string | null
+    profession: $Enums.UserProfession
     role: $Enums.UserRole
+    isActive: boolean
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -2609,7 +2747,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
  */
 export interface UserFieldRefs {
   readonly id: Prisma.FieldRef<"User", 'String'>
-  readonly username: Prisma.FieldRef<"User", 'String'>
+  readonly firstName: Prisma.FieldRef<"User", 'String'>
+  readonly lastName: Prisma.FieldRef<"User", 'String'>
   readonly email: Prisma.FieldRef<"User", 'String'>
   readonly passwordHash: Prisma.FieldRef<"User", 'String'>
   readonly phone: Prisma.FieldRef<"User", 'String'>
@@ -2617,9 +2756,10 @@ export interface UserFieldRefs {
   readonly lineUsername: Prisma.FieldRef<"User", 'String'>
   readonly facebookUsername: Prisma.FieldRef<"User", 'String'>
   readonly instagramUsername: Prisma.FieldRef<"User", 'String'>
-  readonly class: Prisma.FieldRef<"User", 'String'>
-  readonly position: Prisma.FieldRef<"User", 'UserPosition'>
+  readonly className: Prisma.FieldRef<"User", 'String'>
+  readonly profession: Prisma.FieldRef<"User", 'UserProfession'>
   readonly role: Prisma.FieldRef<"User", 'UserRole'>
+  readonly isActive: Prisma.FieldRef<"User", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }

@@ -1050,7 +1050,8 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 
 export const UserScalarFieldEnum = {
   id: 'id',
-  username: 'username',
+  firstName: 'firstName',
+  lastName: 'lastName',
   email: 'email',
   passwordHash: 'passwordHash',
   phone: 'phone',
@@ -1058,9 +1059,10 @@ export const UserScalarFieldEnum = {
   lineUsername: 'lineUsername',
   facebookUsername: 'facebookUsername',
   instagramUsername: 'instagramUsername',
-  class: 'class',
-  position: 'position',
+  className: 'className',
+  profession: 'profession',
   role: 'role',
+  isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1205,16 +1207,16 @@ export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMod
 
 
 /**
- * Reference to a field of type 'UserPosition'
+ * Reference to a field of type 'UserProfession'
  */
-export type EnumUserPositionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserPosition'>
+export type EnumUserProfessionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserProfession'>
     
 
 
 /**
- * Reference to a field of type 'UserPosition[]'
+ * Reference to a field of type 'UserProfession[]'
  */
-export type ListEnumUserPositionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserPosition[]'>
+export type ListEnumUserProfessionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserProfession[]'>
     
 
 
@@ -1229,6 +1231,13 @@ export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
  * Reference to a field of type 'UserRole[]'
  */
 export type ListEnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -1299,13 +1308,6 @@ export type EnumNotificationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
  * Reference to a field of type 'NotificationType[]'
  */
 export type ListEnumNotificationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationType[]'>
-    
-
-
-/**
- * Reference to a field of type 'Boolean'
- */
-export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 

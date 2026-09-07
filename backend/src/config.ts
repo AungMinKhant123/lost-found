@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 type NodeEnv = "development" | "production" | "test";
 
 function getEnv(name: string): string {

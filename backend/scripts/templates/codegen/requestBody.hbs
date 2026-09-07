@@ -1,0 +1,8 @@
+import { Type, type Static } from '@sinclair/typebox'
+
+export const {{module_PascalCase}}RequestBodySchema = Type.Object({
+    // TODO: define request body fields
+})
+
+export type {{module_PascalCase}}RequestBody =
+    Static<typeof {{module_PascalCase}}RequestBodySchema>

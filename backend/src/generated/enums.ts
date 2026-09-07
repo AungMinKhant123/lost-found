@@ -9,13 +9,13 @@
 * 🟢 You can import this file directly.
 */
 
-export const UserPosition = {
+export const UserProfession = {
   STUDENT: 'STUDENT',
   TEACHER: 'TEACHER',
   WORKER: 'WORKER'
 } as const
 
-export type UserPosition = (typeof UserPosition)[keyof typeof UserPosition]
+export type UserProfession = (typeof UserProfession)[keyof typeof UserProfession]
 
 
 export const UserRole = {

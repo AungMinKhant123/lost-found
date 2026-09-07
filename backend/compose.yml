@@ -1,21 +1,4 @@
 services:
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: lost-found-api
-    environment:
-      NODE_ENV: production
-      PORT: 5001
-      JWT_SECRET: lost_found_dev_secret
-      DATABASE_URL: postgresql://lost_found_user:lost_found_password@postgresql:5432/lost_found_db
-      DIRECT_URL: postgresql://lost_found_user:lost_found_password@postgresql:5432/lost_found_db
-    ports:
-      - "5001:5001"
-    depends_on:
-      postgresql:
-        condition: service_healthy
-
   postgresql:
     image: postgres:16-alpine
     container_name: lost-found-postgresql

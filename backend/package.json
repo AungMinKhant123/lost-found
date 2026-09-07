@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "rm -rf dist && tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "codegen": "tsx ./scripts/codegen.ts"
   },
   "keywords": [],
   "type": "module",
@@ -15,12 +16,17 @@
     "@fastify/swagger": "^9.8.1",
     "@fastify/swagger-ui": "^5.2.6",
     "@prisma/client": "^6.19.3",
-    "argon2": "^0.45.1",
+    "@sinclair/typebox": "^0.34.52",
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.4.2",
     "fastify": "^5.12.1",
     "fastify-plugin": "^6.0.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/node": "^26.3.0",
+    "handlebars": "^4.7.9",
+    "inquirer": "^14.2.1",
     "prisma": "^6.19.3",
     "tsx": "^4.23.12",
     "typescript": "^7.0.2"
