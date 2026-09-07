@@ -1,0 +1,17 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "title": "Black Wallet",
+      "status": "lost",
+      "location": "Library"
+    },
+    {
+      "id": 2,
+      "title": "Blue Umbrella",
+      "status": "found",
+      "location": "Cafeteria"
+    }
+  ],
+  "users": [{ "id": 1, "name": "Test User", "email": "test@example.com" }]
+}
