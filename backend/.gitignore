@@ -3,4 +3,4 @@ dist
 .env
 .env.docker
 
-/src/generated/prisma
+/src/generated

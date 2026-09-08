@@ -1,13 +1,11 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import bcrypt from "bcrypt";
 
 import type { SignupRequestBody } from "./requestBody.js";
 import type { SignupResponseBody } from "./responseBody.js";
 
-import { PrismaClient } from "../../../generated/client.js";
 import { AppError } from "../../../errors/AppError.js";
-
-const prisma = new PrismaClient();
+import { prisma } from "../../../lib/prisma.js";
+import { hashPassword } from "../../../utils/password.js";
 
 export async function signupHandler(
   request: FastifyRequest,
@@ -25,7 +23,7 @@ export async function signupHandler(
     throw new AppError("User already exists!", 409);
   }
 
-  const passwordHash = await bcrypt.hash(password, 10);
+  const passwordHash = await hashPassword(password);
 
   await prisma.user.create({
     data: {

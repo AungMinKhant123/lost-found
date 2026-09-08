@@ -35,15 +35,13 @@ docker compose -f compose.yml ps
 
 You should see:
 
-- `lost-found-api`
 - `lost-found-postgresql`
 - `lost-found-minio`
 
-4. Check API logs.
-
-```bash
-docker compose -f compose.yml logs -f api
-```
+to run server
+- npm run dev
+- npx prisma migrate
+- npx prisma generate
 
 The API is ready when you see Fastify listening on port `5001`.
 

@@ -3,12 +3,12 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import type { LoginRequestBody } from "./requestBody.js";
 
 import type { LoginResponseBody } from "./responseBody.js";
-import { PrismaClient } from "../../../generated/client.js";
 import { AppError } from "../../../errors/AppError.js";
-import { compareSync } from "bcrypt";
-import { randomBytes } from "node:crypto";
 
-const prisma = new PrismaClient();
+import { randomBytes } from "node:crypto";
+import { prisma } from "../../../lib/prisma.js";
+import { verifyPassword } from "../../../utils/password.js";
+import { hashRefreshToken } from "../../../utils/refreshToken.js";
 
 export async function loginHandler(
   request: FastifyRequest,
@@ -21,17 +21,19 @@ export async function loginHandler(
   const user = await prisma.user.findUnique({ where: { email } });
 
   if (!user) {
-    throw new AppError("User not found!", 404);
+    throw new AppError("Invalid email or password", 401);
   }
 
-  if (!compareSync(password, user.passwordHash)) {
-    throw new AppError("Incorrect password!", 401);
+  const isPasswordCorrect = await verifyPassword(password, user.passwordHash);
+
+  if (!isPasswordCorrect) {
+    throw new AppError("Invalid email or password", 401);
   }
 
   const accessToken = await reply.jwtSign(
     {
       userId: user.id,
-      email: user.email
+      email: user.email,
     },
     {
       expiresIn: "15m",
@@ -39,22 +41,30 @@ export async function loginHandler(
   );
 
   const refreshToken = randomBytes(64).toString("hex");
-
   const refreshTokenExpiresAt = new Date();
-
   refreshTokenExpiresAt.setDate(refreshTokenExpiresAt.getDate() + 7);
 
+  const refreshTokenHash = await hashRefreshToken(refreshToken);
   await prisma.refreshToken.create({
     data: {
-      token: refreshToken,
+      token: refreshTokenHash,
       userId: user.id,
       expiresAt: refreshTokenExpiresAt,
     },
   });
 
   return reply.send({
-    message: "Success",
-    accessToken,
-    refreshToken
+    message: "Login successful",
+    data: {
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+      },
+      accessToken,
+      refreshToken,
+    },
   });
 }
