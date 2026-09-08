@@ -4,8 +4,10 @@ import bcrypt from "bcrypt";
 import type { SignupRequestBody } from "./requestBody.js";
 import type { SignupResponseBody } from "./responseBody.js";
 
-import { prisma } from "../../../lib/prisma.js";
+import { PrismaClient } from "../../../generated/client.js";
 import { AppError } from "../../../errors/AppError.js";
+
+const prisma = new PrismaClient();
 
 export async function signupHandler(
   request: FastifyRequest,
@@ -13,30 +15,30 @@ export async function signupHandler(
 ): Promise<SignupResponseBody> {
   const body = request.body as SignupRequestBody;
 
-  const existingUser = await prisma.user.findUnique({
-    where: {
-      email: body.email,
-    },
+  const { firstName, lastName, email, password, phone, profession } = body;
+
+  const user = await prisma.user.findUnique({
+    where: { email },
   });
 
-  if (existingUser) {
-    throw new AppError("Email is already registered", 401);
+  if (user) {
+    throw new AppError("User already exists!", 409);
   }
 
-  const passwordHash = await bcrypt.hash(body.password, 12);
+  const passwordHash = await bcrypt.hash(password, 10);
 
   await prisma.user.create({
     data: {
-      firstName: body.firstName,
-      lastName: body.lastName,
-      email: body.email,
-      phone: body.phone,
+      firstName,
+      lastName,
+      email,
       passwordHash,
-      profession: body.profession,
+      phone,
+      profession,
     },
   });
 
-  return reply.code(201).send({
-    message: "Account created successfully",
+  return reply.send({
+    message: "Success",
   });
 }

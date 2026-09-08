@@ -1,17 +1,13 @@
 import { SignupRequestBodySchema } from "./requestBody.js";
+
 import { SignupResponseBodySchema } from "./responseBody.js";
 
 export const SignupSchema = {
   tags: ["Auth"],
-
-  summary: "Create a new user account",
-
-  description:
-    "Creates a new user account using a username, email, and password.",
+  summary: "Sign Up",
+  description: "This API is for SignUp.",
 
   body: SignupRequestBodySchema,
 
-  response: {
-    201: SignupResponseBodySchema,
-  },
+  response: { 200: SignupResponseBodySchema },
 };

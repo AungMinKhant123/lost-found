@@ -1,12 +1,13 @@
 import { LoginRequestBodySchema } from "./requestBody.js";
+
 import { LoginResponseBodySchema } from "./responseBody.js";
 
 export const LoginSchema = {
   tags: ["Auth"],
-  summary: "User login",
-  description: "Authenticate a user with their email and password.",
+  summary: "Login",
+  description: "This API is for Login.",
+
   body: LoginRequestBodySchema,
-  response: {
-    200: LoginResponseBodySchema,
-  },
+
+  response: { 200: LoginResponseBodySchema },
 };
