@@ -21,9 +21,6 @@ const Home = () => {
       <h1 className="text-display-lg font-bold text-text-primary">
         Lost & Found Items
       </h1>
-      <button className="bg-primary hover:bg-primary-dark text-text-inverse px-6 py-3 rounded-lg mt-4">
-        Report an Item
-      </button>
       <ul className="mt-6 space-y-2">
         {items.map((item) => (
           <li key={item.id} className="text-body-md text-text-secondary">
