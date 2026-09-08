@@ -1,17 +1,35 @@
 {
   "items": [
     {
-      "id": 1,
+      "id": "1",
       "title": "Black Wallet",
       "status": "lost",
       "location": "Library"
     },
     {
-      "id": 2,
+      "id": "2",
       "title": "Blue Umbrella",
       "status": "found",
       "location": "Cafeteria"
     }
   ],
-  "users": [{ "id": 1, "name": "Test User", "email": "test@example.com" }]
+  "users": [
+    {
+      "id": "1",
+      "name": "Test User",
+      "email": "test@example.com"
+    },
+    {
+      "firstName": "Ashfaq",
+      "lastName": "Ifthicar",
+      "email": "ash@gmail.com",
+      "phone": "123456789",
+      "password": "qwertyuiop",
+      "confirmPassword": "qwertyuiop",
+      "profession": "Student",
+      "agreeTerms": true,
+      "id": "OJHJKPT-Bd8"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }

@@ -31,3 +31,12 @@ export function createItem(data) {
 export function getUsers() {
   return request("/users");
 }
+
+// Mock sign-up: posts the new user to json-server's /users endpoint.
+// This is a stand-in until the real backend has an actual auth/register endpoint.
+export function signUp(data) {
+  return request("/users", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
