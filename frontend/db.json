@@ -28,7 +28,62 @@
       "confirmPassword": "qwertyuiop",
       "profession": "Student",
       "agreeTerms": true,
-      "id": "OJHJKPT-Bd8"
+      "id": "2"
+    },
+    {
+      "firstName": "Ash",
+      "lastName": "Ifthicar",
+      "email": "fairplayerr@gmail.com",
+      "phone": "9876543210",
+      "password": "12345678",
+      "confirmPassword": "12345678",
+      "profession": "Student",
+      "agreeTerms": true,
+      "id": "3"
+    },
+    {
+      "firstName": "Arshad",
+      "lastName": "Riyas",
+      "email": "dwda@gmail.com",
+      "phone": "1231231230",
+      "password": "12345678",
+      "confirmPassword": "12345678",
+      "profession": "Worker",
+      "agreeTerms": true,
+      "id": "4"
+    },
+    {
+      "firstName": "asher",
+      "lastName": "ifthi",
+      "email": "ifthi@gmail.com",
+      "phone": "1111111111",
+      "password": "98765432",
+      "confirmPassword": "98765432",
+      "profession": "Worker",
+      "agreeTerms": true,
+      "id": "5"
+    },
+    {
+      "firstName": "ash",
+      "lastName": "Ifthicar",
+      "email": "ash@gmail.com",
+      "phone": "02503281159",
+      "password": "12345678",
+      "confirmPassword": "12345678",
+      "profession": "Worker",
+      "agreeTerms": true,
+      "id": "6"
+    },
+    {
+      "firstName": "Ash",
+      "lastName": "Riyas",
+      "email": "dadwd@email.com",
+      "phone": "2654897515",
+      "password": "12345678",
+      "confirmPassword": "12345678",
+      "profession": "Teacher",
+      "agreeTerms": true,
+      "id": "4ahwvUiJHwE"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
