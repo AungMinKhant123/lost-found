@@ -11,6 +11,9 @@ import {
 } from "lucide-react";
 
 import Button from "../components/Button";
+import UserHeader from "../components/user/UserHeader";
+import UserFooter from "../components/user/UserFooter";
+import { Link } from "react-router";
 
 const Login = () => {
   // ================= FORM STATE =================
@@ -85,13 +88,15 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] px-4 py-8 sm:px-8 lg:px-14 lg:py-[172px]">
-      {/* =====================================================
+    <>
+      <UserHeader />
+      <div className="min-h-screen bg-[#F8FAFC] mx-auto px-10 py-12">
+        {/* =====================================================
           MAIN CONTAINER
       ===================================================== */}
 
-      <div
-        className="
+        <div
+          className="
           mx-auto
           flex
           w-full
@@ -101,13 +106,13 @@ const Login = () => {
           gap-10
           lg:flex-row
         "
-      >
-        {/* =====================================================
+        >
+          {/* =====================================================
             LEFT SIDE CONTENT
         ===================================================== */}
 
-        <section
-          className="
+          <section
+            className="
             flex
             w-full
             min-h-[900px]
@@ -124,32 +129,32 @@ const Login = () => {
             lg:h-[1129px]
             lg:w-[571px]
           "
-        >
-          {/* ================= WELCOME CONTENT ================= */}
+          >
+            {/* ================= WELCOME CONTENT ================= */}
 
-          <div className="flex w-[447px] max-w-[85%] flex-col items-start gap-4">
-            <div
-              className="
+            <div className="flex w-[447px] max-w-[85%] flex-col items-start gap-4">
+              <div
+                className="
                 flex
                 w-full
                 flex-col
                 items-end
                 gap-3
               "
-            >
-              <div
-                className="
+              >
+                <div
+                  className="
                   flex
                   w-full
                   flex-col
                   items-start
                   gap-[14px]
                 "
-              >
-                {/* WELCOME BACK */}
+                >
+                  {/* WELCOME BACK */}
 
-                <p
-                  className="
+                  <p
+                    className="
                     w-full
                     font-['Inter']
                     text-[16px]
@@ -157,14 +162,14 @@ const Login = () => {
                     leading-6
                     text-[#4B32A8]
                   "
-                >
-                  WELCOME BACK
-                </p>
+                  >
+                    WELCOME BACK
+                  </p>
 
-                {/* HEADING */}
+                  {/* HEADING */}
 
-                <h1
-                  className="
+                  <h1
+                    className="
                     w-[408px]
                     max-w-full
                     font-['Inter']
@@ -173,16 +178,16 @@ const Login = () => {
                     leading-10
                     text-black
                   "
-                >
-                  Find what matters.
-                  <br />
-                  Together.
-                </h1>
+                  >
+                    Find what matters.
+                    <br />
+                    Together.
+                  </h1>
 
-                {/* DESCRIPTION */}
+                  {/* DESCRIPTION */}
 
-                <p
-                  className="
+                  <p
+                    className="
                     w-[290.95px]
                     max-w-full
                     font-['Inter']
@@ -191,33 +196,32 @@ const Login = () => {
                     leading-5
                     text-black
                   "
-                >
-                  Log in to your LostFound account to report
-                  lost items, make claims, and help our community
-                  reunite what matters.
-                </p>
+                  >
+                    Log in to your LostFound account to report lost items, make
+                    claims, and help our community reunite what matters.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* ================= FEATURES ================= */}
+            {/* ================= FEATURES ================= */}
 
-          <div
-            className="
+            <div
+              className="
               flex
               w-[351px]
               max-w-[85%]
               flex-col
               gap-9
             "
-          >
-            {/* ================= SECURE & PRIVATE ================= */}
+            >
+              {/* ================= SECURE & PRIVATE ================= */}
 
-            <div className="flex w-[314px] items-center gap-[17px]">
-              {/* ICON */}
+              <div className="flex w-[314px] items-center gap-[17px]">
+                {/* ICON */}
 
-              <div
-                className="
+                <div
+                  className="
                   flex
                   h-20
                   w-20
@@ -226,18 +230,18 @@ const Login = () => {
                   justify-center
                   rounded-lg
                 "
-              >
-                <LockKeyhole
-                  size={60}
-                  strokeWidth={1.5}
-                  className="text-[#6D4AFF]"
-                />
-              </div>
+                >
+                  <LockKeyhole
+                    size={60}
+                    strokeWidth={1.5}
+                    className="text-[#6D4AFF]"
+                  />
+                </div>
 
-              {/* TEXT */}
+                {/* TEXT */}
 
-              <div
-                className="
+                <div
+                  className="
                   flex
                   h-20
                   w-[217px]
@@ -245,21 +249,21 @@ const Login = () => {
                   justify-center
                   gap-5
                 "
-              >
-                <h2
-                  className="
+                >
+                  <h2
+                    className="
                     font-['Inter']
                     text-[24px]
                     font-semibold
                     leading-8
                     text-white
                   "
-                >
-                  Secure & Private
-                </h2>
+                  >
+                    Secure & Private
+                  </h2>
 
-                <p
-                  className="
+                  <p
+                    className="
                     w-[190px]
                     font-['Inter']
                     text-[14px]
@@ -267,19 +271,19 @@ const Login = () => {
                     leading-5
                     text-black
                   "
-                >
-                  Your data is encrypted and never shared.
-                </p>
+                  >
+                    Your data is encrypted and never shared.
+                  </p>
+                </div>
               </div>
-            </div>
 
-            {/* ================= FIND OR REPORT ================= */}
+              {/* ================= FIND OR REPORT ================= */}
 
-            <div className="flex w-[336px] items-start gap-[17px]">
-              {/* ICON */}
+              <div className="flex w-[336px] items-start gap-[17px]">
+                {/* ICON */}
 
-              <div
-                className="
+                <div
+                  className="
                   flex
                   h-20
                   w-20
@@ -288,18 +292,18 @@ const Login = () => {
                   justify-center
                   rounded-xl
                 "
-              >
-                <Search
-                  size={60}
-                  strokeWidth={1.5}
-                  className="text-[#4B32A8]"
-                />
-              </div>
+                >
+                  <Search
+                    size={60}
+                    strokeWidth={1.5}
+                    className="text-[#4B32A8]"
+                  />
+                </div>
 
-              {/* TEXT */}
+                {/* TEXT */}
 
-              <div
-                className="
+                <div
+                  className="
                   flex
                   h-[85px]
                   w-[239px]
@@ -307,9 +311,9 @@ const Login = () => {
                   items-start
                   gap-[13px]
                 "
-              >
-                <h2
-                  className="
+                >
+                  <h2
+                    className="
                     w-full
                     font-['Inter']
                     text-[24px]
@@ -317,12 +321,12 @@ const Login = () => {
                     leading-8
                     text-white
                   "
-                >
-                  Find or Report Easily
-                </h2>
+                  >
+                    Find or Report Easily
+                  </h2>
 
-                <p
-                  className="
+                  <p
+                    className="
                     w-[230px]
                     font-['Inter']
                     text-[14px]
@@ -330,20 +334,19 @@ const Login = () => {
                     leading-5
                     text-black
                   "
-                >
-                  Search, report, and claim items in just a few
-                  steps.
-                </p>
+                  >
+                    Search, report, and claim items in just a few steps.
+                  </p>
+                </div>
               </div>
-            </div>
 
-            {/* ================= HELP YOUR COMMUNITY ================= */}
+              {/* ================= HELP YOUR COMMUNITY ================= */}
 
-            <div className="flex w-[351px] items-start gap-[17px]">
-              {/* ICON */}
+              <div className="flex w-[351px] items-start gap-[17px]">
+                {/* ICON */}
 
-              <div
-                className="
+                <div
+                  className="
                   flex
                   h-20
                   w-20
@@ -352,18 +355,18 @@ const Login = () => {
                   justify-center
                   rounded-xl
                 "
-              >
-                <Users
-                  size={60}
-                  strokeWidth={1.5}
-                  className="text-[#4B32A8]"
-                />
-              </div>
+                >
+                  <Users
+                    size={60}
+                    strokeWidth={1.5}
+                    className="text-[#4B32A8]"
+                  />
+                </div>
 
-              {/* TEXT */}
+                {/* TEXT */}
 
-              <div
-                className="
+                <div
+                  className="
                   flex
                   h-[89px]
                   w-[254px]
@@ -371,9 +374,9 @@ const Login = () => {
                   items-end
                   gap-[17px]
                 "
-              >
-                <h2
-                  className="
+                >
+                  <h2
+                    className="
                     w-full
                     text-center
                     font-['Inter']
@@ -382,12 +385,12 @@ const Login = () => {
                     leading-8
                     text-white
                   "
-                >
-                  Help Your Community
-                </h2>
+                  >
+                    Help Your Community
+                  </h2>
 
-                <p
-                  className="
+                  <p
+                    className="
                     w-[254px]
                     font-['Inter']
                     text-[14px]
@@ -395,55 +398,55 @@ const Login = () => {
                     leading-5
                     text-black
                   "
-                >
-                  Small actions can help someone get their
-                  valuable items back.
-                </p>
+                  >
+                    Small actions can help someone get their valuable items
+                    back.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* ================= LOSTFOUND IMAGE ================= */}
+            {/* ================= LOSTFOUND IMAGE ================= */}
 
-          <div
-            className="
+            <div
+              className="
               flex
               w-full
               items-end
               justify-center
               overflow-hidden
             "
-          >
-            <img
-              src="/assets/lostfound-box.png"
-              alt="LostFound items"
-              className="
-                h-[380px]
-                w-[571px]
-                max-w-full
-                object-contain
+            >
+              <div
+                src="/assets/lostfound-box.png"
+                alt="LostFound items"
+                className="
+                h-[320px]
+                w-[90%]
+                max-w-full 
+                rounded-lg bg-neutral-300
               "
-            />
-          </div>
-        </section>
+              />
+            </div>
+          </section>
 
-        {/* =====================================================
+          {/* =====================================================
             RIGHT LOGIN AREA
         ===================================================== */}
 
-        <section
-          className="
+          <section
+            className="
             flex
             w-full
             flex-shrink-0
             justify-center
             lg:w-[541px]
           "
-        >
-          {/* ================= LOGIN FORM CONTAINER ================= */}
+          >
+            {/* ================= LOGIN FORM CONTAINER ================= */}
 
-          <div
-            className="
+            <div
+              className="
               flex
               w-full
               flex-col
@@ -453,11 +456,11 @@ const Login = () => {
               bg-white
               lg:h-[905px]
             "
-          >
-            {/* ================= LOGIN CARD ================= */}
+            >
+              {/* ================= LOGIN CARD ================= */}
 
-            <div
-              className="
+              <div
+                className="
                 box-border
                 flex
                 w-full
@@ -474,20 +477,20 @@ const Login = () => {
                 lg:h-[833px]
                 lg:w-[541px]
               "
-            >
-              {/* ================= LOGIN HEADER ================= */}
+              >
+                {/* ================= LOGIN HEADER ================= */}
 
-              <div
-                className="
+                <div
+                  className="
                   flex
                   w-full
                   flex-col
                   items-center
                   justify-center
                 "
-              >
-                <div
-                  className="
+                >
+                  <div
+                    className="
                     flex
                     w-full
                     flex-col
@@ -495,9 +498,9 @@ const Login = () => {
                     justify-center
                     gap-[22px]
                   "
-                >
-                  <h2
-                    className="
+                  >
+                    <h2
+                      className="
                       w-full
                       text-center
                       font-['Inter']
@@ -506,12 +509,12 @@ const Login = () => {
                       leading-10
                       text-black
                     "
-                  >
-                    Log In
-                  </h2>
+                    >
+                      Log In
+                    </h2>
 
-                  <p
-                    className="
+                    <p
+                      className="
                       w-[241px]
                       text-center
                       font-['Inter']
@@ -520,84 +523,82 @@ const Login = () => {
                       leading-6
                       text-black
                     "
-                  >
-                    Welcome back! Please enter your details to
-                    continue.
-                  </p>
+                    >
+                      Welcome back! Please enter your details to continue.
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              {/* ================= FORM CONTENT ================= */}
+                {/* ================= FORM CONTENT ================= */}
 
-              <form
-                className="
+                <form
+                  className="
                   flex
                   w-full
                   flex-col
                   items-center
                   lg:w-[349px]
                 "
-                onSubmit={handleSubmit}
-                noValidate
-              >
-                {/* =================================================
+                  onSubmit={handleSubmit}
+                  noValidate
+                >
+                  {/* =================================================
                     EMAIL
                 ================================================= */}
 
-                <div className="w-full">
-                  <div className="flex w-full flex-col gap-2.5">
-                    <label
-                      htmlFor="email"
-                      className="
+                  <div className="w-full">
+                    <div className="flex w-full flex-col gap-2.5">
+                      <label
+                        htmlFor="email"
+                        className="
                         font-['Inter']
                         text-[16px]
                         font-medium
                         leading-6
                         text-black
                       "
-                    >
-                      Email Address{" "}
-                      <span className="text-[#DC2626]">*</span>
-                    </label>
+                      >
+                        Email Address <span className="text-[#DC2626]">*</span>
+                      </label>
 
-                    <div className="relative w-full">
-                      <Mail
-                        size={18}
-                        strokeWidth={1.8}
-                        className="
+                      <div className="relative w-full">
+                        <Mail
+                          size={18}
+                          strokeWidth={1.8}
+                          className="
                           absolute
                           left-4
                           top-1/2
                           -translate-y-1/2
                           text-[#4B32A8]
                         "
-                      />
+                        />
 
-                      <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        value={email}
-                        maxLength={254}
-                        autoComplete="email"
-                        onChange={(e) => {
-                          const value = e.target.value;
+                        <input
+                          id="email"
+                          name="email"
+                          type="email"
+                          value={email}
+                          maxLength={254}
+                          autoComplete="email"
+                          onChange={(e) => {
+                            const value = e.target.value;
 
-                          setEmail(value);
+                            setEmail(value);
 
-                          // Remove error immediately
-                          // when user starts correcting
-                          if (emailError) {
-                            setEmailError("");
+                            // Remove error immediately
+                            // when user starts correcting
+                            if (emailError) {
+                              setEmailError("");
+                            }
+                          }}
+                          onBlur={() => validateEmail(email)}
+                          placeholder="Enter Your Email Address"
+                          aria-invalid={!!emailError}
+                          aria-describedby={
+                            emailError ? "email-error" : undefined
                           }
-                        }}
-                        onBlur={() => validateEmail(email)}
-                        placeholder="Enter Your Email Address"
-                        aria-invalid={!!emailError}
-                        aria-describedby={
-                          emailError ? "email-error" : undefined
-                        }
-                        className={`
+                          className={`
                           box-border
                           h-10
                           w-full
@@ -620,88 +621,85 @@ const Login = () => {
                               : "border-[#A9B3BD] focus:border-[#4B32A8]"
                           }
                         `}
-                      />
-                    </div>
+                        />
+                      </div>
 
-                    {/* EMAIL ERROR */}
+                      {/* EMAIL ERROR */}
 
-                    {emailError && (
-                      <p
-                        id="email-error"
-                        className="
+                      {emailError && (
+                        <p
+                          id="email-error"
+                          className="
                           font-['Inter']
                           text-[12px]
                           font-medium
                           leading-4
                           text-[#DC2626]
                         "
-                      >
-                        {emailError}
-                      </p>
-                    )}
+                        >
+                          {emailError}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
 
-                {/* =================================================
+                  {/* =================================================
                     PASSWORD
                 ================================================= */}
 
-                <div className="mt-6 w-full">
-                  <div className="flex w-full flex-col gap-2.5">
-                    <label
-                      htmlFor="password"
-                      className="
+                  <div className="mt-6 w-full">
+                    <div className="flex w-full flex-col gap-2.5">
+                      <label
+                        htmlFor="password"
+                        className="
                         font-['Inter']
                         text-[16px]
                         font-medium
                         leading-6
                         text-black
                       "
-                    >
-                      Password{" "}
-                      <span className="text-[#DC2626]">*</span>
-                    </label>
+                      >
+                        Password <span className="text-[#DC2626]">*</span>
+                      </label>
 
-                    <div className="relative w-full">
-                      <KeyRound
-                        size={18}
-                        strokeWidth={1.8}
-                        className="
+                      <div className="relative w-full">
+                        <KeyRound
+                          size={18}
+                          strokeWidth={1.8}
+                          className="
                           absolute
                           left-4
                           top-1/2
                           -translate-y-1/2
                           text-[#4B32A8]
                         "
-                      />
+                        />
 
-                      <input
-                        id="password"
-                        name="password"
-                        type={showPassword ? "text" : "password"}
-                        value={password}
-                        maxLength={128}
-                        autoComplete="current-password"
-                        onChange={(e) => {
-                          const value = e.target.value;
+                        <input
+                          id="password"
+                          name="password"
+                          type={showPassword ? "text" : "password"}
+                          value={password}
+                          maxLength={128}
+                          autoComplete="current-password"
+                          onChange={(e) => {
+                            const value = e.target.value;
 
-                          setPassword(value);
+                            setPassword(value);
 
-                          // Remove error immediately
-                          // when user starts correcting
-                          if (passwordError) {
-                            setPasswordError("");
+                            // Remove error immediately
+                            // when user starts correcting
+                            if (passwordError) {
+                              setPasswordError("");
+                            }
+                          }}
+                          onBlur={() => validatePassword(password)}
+                          placeholder="Enter Your Password"
+                          aria-invalid={!!passwordError}
+                          aria-describedby={
+                            passwordError ? "password-error" : undefined
                           }
-                        }}
-                        onBlur={() => validatePassword(password)}
-                        placeholder="Enter Your Password"
-                        aria-invalid={!!passwordError}
-                        aria-describedby={
-                          passwordError
-                            ? "password-error"
-                            : undefined
-                        }
-                        className={`
+                          className={`
                           box-border
                           h-10
                           w-full
@@ -724,16 +722,14 @@ const Login = () => {
                               : "border-[#A9B3BD] focus:border-[#4B32A8]"
                           }
                         `}
-                      />
+                        />
 
-                      {/* SHOW / HIDE PASSWORD */}
+                        {/* SHOW / HIDE PASSWORD */}
 
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setShowPassword(!showPassword)
-                        }
-                        className="
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="
                           absolute
                           right-4
                           top-1/2
@@ -742,94 +738,86 @@ const Login = () => {
                           transition
                           hover:text-[#6D4AFF]
                         "
-                        aria-label={
-                          showPassword
-                            ? "Hide password"
-                            : "Show password"
-                        }
-                      >
-                        {showPassword ? (
-                          <EyeOff
-                            size={18}
-                            strokeWidth={1.7}
-                          />
-                        ) : (
-                          <Eye
-                            size={18}
-                            strokeWidth={1.7}
-                          />
-                        )}
-                      </button>
-                    </div>
+                          aria-label={
+                            showPassword ? "Hide password" : "Show password"
+                          }
+                        >
+                          {showPassword ? (
+                            <EyeOff size={18} strokeWidth={1.7} />
+                          ) : (
+                            <Eye size={18} strokeWidth={1.7} />
+                          )}
+                        </button>
+                      </div>
 
-                    {/* PASSWORD ERROR */}
+                      {/* PASSWORD ERROR */}
 
-                    {passwordError && (
-                      <p
-                        id="password-error"
-                        className="
+                      {passwordError && (
+                        <p
+                          id="password-error"
+                          className="
                           font-['Inter']
                           text-[12px]
                           font-medium
                           leading-4
                           text-[#DC2626]
                         "
-                      >
-                        {passwordError}
-                      </p>
-                    )}
+                        >
+                          {passwordError}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
 
-                {/* =================================================
+                  {/* =================================================
                     REMEMBER ME / FORGOT PASSWORD
                 ================================================= */}
 
-                <div
-                  className="
+                  <div
+                    className="
                     mt-4
                     flex
                     w-full
                     items-center
                     justify-between
                   "
-                >
-                  <label
-                    htmlFor="remember"
-                    className="
+                  >
+                    <label
+                      htmlFor="remember"
+                      className="
                       flex
                       cursor-pointer
                       items-center
                       gap-2
                     "
-                  >
-                    <input
-                      id="remember"
-                      name="remember"
-                      type="checkbox"
-                      className="
+                    >
+                      <input
+                        id="remember"
+                        name="remember"
+                        type="checkbox"
+                        className="
                         h-[15px]
                         w-[15px]
                         accent-[#6D4AFF]
                       "
-                    />
+                      />
 
-                    <span
-                      className="
+                      <span
+                        className="
                         font-['Inter']
                         text-[12px]
                         font-medium
                         leading-4
                         text-black
                       "
-                    >
-                      Remember Me
-                    </span>
-                  </label>
+                      >
+                        Remember Me
+                      </span>
+                    </label>
 
-                  <button
-                    type="button"
-                    className="
+                    <button
+                      type="button"
+                      className="
                       font-['Inter']
                       text-[12px]
                       font-medium
@@ -838,19 +826,19 @@ const Login = () => {
                       transition
                       hover:text-[#4B32A8]
                     "
-                  >
-                    Forgot Password?
-                  </button>
-                </div>
+                    >
+                      Forgot Password?
+                    </button>
+                  </div>
 
-                {/* =================================================
+                  {/* =================================================
                     LOGIN BUTTON
                 ================================================= */}
 
-                <Button
-                  type="submit"
-                  variant="primary"
-                  className="
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    className="
                     mt-6
                     h-[50px]
                     w-full
@@ -862,16 +850,16 @@ const Login = () => {
                     font-medium
                     leading-6
                   "
-                >
-                  Log In
-                </Button>
+                  >
+                    Log In
+                  </Button>
 
-                {/* =================================================
+                  {/* =================================================
                     OR LOGIN WITH
                 ================================================= */}
 
-                <div
-                  className="
+                  <div
+                    className="
                     flex
                     h-9
                     w-full
@@ -879,27 +867,27 @@ const Login = () => {
                     justify-center
                     py-2.5
                   "
-                >
-                  <span
-                    className="
+                  >
+                    <span
+                      className="
                       font-['Inter']
                       text-[12px]
                       font-medium
                       leading-4
                       text-black
                     "
-                  >
-                    or log in with
-                  </span>
-                </div>
+                    >
+                      or log in with
+                    </span>
+                  </div>
 
-                {/* =================================================
+                  {/* =================================================
                     GOOGLE
                 ================================================= */}
 
-                <button
-                  type="button"
-                  className="
+                  <button
+                    type="button"
+                    className="
                     flex
                     h-[50px]
                     w-full
@@ -915,29 +903,29 @@ const Login = () => {
                     transition
                     hover:bg-gray-50
                   "
-                >
-                  {/* Google Icon */}
+                  >
+                    {/* Google Icon */}
 
-                  <span
-                    className="
+                    <span
+                      className="
                       text-[20px]
                       font-bold
                       text-[#4285F4]
                     "
-                  >
-                    G
-                  </span>
+                    >
+                      G
+                    </span>
 
-                  <span>Continue with Google.</span>
-                </button>
+                    <span>Continue with Google.</span>
+                  </button>
 
-                {/* =================================================
+                  {/* =================================================
                     APPLE
                 ================================================= */}
 
-                <button
-                  type="button"
-                  className="
+                  <button
+                    type="button"
+                    className="
                     flex
                     h-[50px]
                     w-full
@@ -953,20 +941,18 @@ const Login = () => {
                     transition
                     hover:bg-gray-50
                   "
-                >
-                  <span className="text-[22px] leading-none">
-                    
-                  </span>
+                  >
+                    <span className="text-[22px] leading-none"></span>
 
-                  <span>Continue with Apple.</span>
-                </button>
+                    <span>Continue with Apple.</span>
+                  </button>
 
-                {/* =================================================
+                  {/* =================================================
                     SIGN UP
                 ================================================= */}
 
-                <div
-                  className="
+                  <div
+                    className="
                     flex
                     h-[50px]
                     w-full
@@ -974,22 +960,22 @@ const Login = () => {
                     justify-center
                     gap-1
                   "
-                >
-                  <span
-                    className="
+                  >
+                    <span
+                      className="
                       font-['Inter']
                       text-[12px]
                       font-medium
                       leading-4
                       text-black
                     "
-                  >
-                    Don&apos;t have an account?
-                  </span>
+                    >
+                      Don&apos;t have an account?
+                    </span>
 
-                  <button
-                    type="button"
-                    className="
+                    <Link
+                      to="/signup"
+                      className="
                       font-['Inter']
                       text-[12px]
                       font-medium
@@ -997,16 +983,18 @@ const Login = () => {
                       text-[#4B32A8]
                       hover:underline
                     "
-                  >
-                    Sign Up
-                  </button>
-                </div>
-              </form>
+                    >
+                      Sign Up
+                    </Link>
+                  </div>
+                </form>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </div>
       </div>
-    </div>
+      <UserFooter />
+    </>
   );
 };
 
