@@ -1,0 +1,58 @@
+import type {
+    FastifyReply,
+    FastifyRequest,
+} from 'fastify'
+
+{{#if params_flag}}
+import type {
+    {{module_PascalCase}}RequestParams,
+} from './requestParams.js'
+{{/if}}
+
+{{#if query_flag}}
+import type {
+    {{module_PascalCase}}RequestQuery,
+} from './requestQuery.js'
+{{/if}}
+
+{{#if body_flag}}
+import type {
+    {{module_PascalCase}}RequestBody,
+} from './requestBody.js'
+{{/if}}
+
+import type {
+    {{module_PascalCase}}ResponseBody,
+} from './responseBody.js'
+
+export async function {{module}}Handler(
+    request: FastifyRequest,
+    reply: FastifyReply,
+): Promise<{{module_PascalCase}}ResponseBody> {
+
+    {{#if params_flag}}
+    const params =
+        request.params as {{module_PascalCase}}RequestParams
+    {{/if}}
+
+    {{#if query_flag}}
+    const query =
+        request.query as {{module_PascalCase}}RequestQuery
+    {{/if}}
+
+    {{#if body_flag}}
+    const body =
+        request.body as {{module_PascalCase}}RequestBody
+    {{/if}}
+
+    {{#if guard_flag}}
+    // Authentication is required.
+    // TODO: access authenticated user
+    {{/if}}
+
+    // TODO: implement business logic
+
+    return reply.send({
+        message: 'Success',
+    })
+}

@@ -1,0 +1,181 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String         @id @default(uuid())
+  firstName         String
+  lastName          String
+  email             String         @unique
+  passwordHash      String
+  phone             String
+  profileUrl        String?
+  lineUsername      String?
+  facebookUsername  String?
+  instagramUsername String?
+  className         String?
+  profession        UserProfession @default(STUDENT)
+  role              UserRole       @default(USER)
+  isActive          Boolean        @default(true)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  categoriesCreated Category[]     @relation("CategoryCreatedBy")
+  categoriesUpdated Category[]     @relation("CategoryUpdatedBy")
+  claims            Claim[]
+  colorsCreated     Color[]        @relation("ColorCreatedBy")
+  colorsUpdated     Color[]        @relation("ColorUpdatedBy")
+  itemsCreated      Item[]         @relation("ItemCreatedBy")
+  itemsUpdated      Item[]         @relation("ItemUpdatedBy")
+  items             Item[]
+  notifications     Notification[]
+  refreshTokens     RefreshToken[]
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdById String
+  updatedById String
+  createdBy   User     @relation("CategoryCreatedBy", fields: [createdById], references: [id])
+  updatedBy   User     @relation("CategoryUpdatedBy", fields: [updatedById], references: [id])
+  items       Item[]
+}
+
+model Color {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdById String
+  updatedById String
+  createdBy   User     @relation("ColorCreatedBy", fields: [createdById], references: [id])
+  updatedBy   User     @relation("ColorUpdatedBy", fields: [updatedById], references: [id])
+  items       Item[]
+}
+
+model Item {
+  id              String      @id @default(uuid())
+  userId          String
+  type            ItemType
+  title           String
+  description     String?
+  categoryId      String
+  location        String
+  colorId         String
+  dateLostOrFound DateTime
+  status          ItemStatus  @default(OPEN)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  createdById     String
+  updatedById     String
+  claims          Claim[]
+  category        Category    @relation(fields: [categoryId], references: [id])
+  color           Color       @relation(fields: [colorId], references: [id])
+  createdBy       User        @relation("ItemCreatedBy", fields: [createdById], references: [id])
+  updatedBy       User        @relation("ItemUpdatedBy", fields: [updatedById], references: [id])
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  images          ItemImage[]
+
+  @@index([userId])
+  @@index([categoryId])
+  @@index([colorId])
+  @@index([type])
+  @@index([status])
+  @@index([dateLostOrFound])
+}
+
+model ItemImage {
+  id        String   @id @default(uuid())
+  itemId    String
+  imageUrl  String
+  createdAt DateTime @default(now())
+  item      Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@index([itemId])
+}
+
+model Claim {
+  id            String         @id @default(uuid())
+  itemId        String
+  claimantId    String
+  message       String?
+  status        ClaimStatus    @default(PENDING)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  claimant      User           @relation(fields: [claimantId], references: [id], onDelete: Cascade)
+  item          Item           @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  notifications Notification[]
+
+  @@unique([itemId, claimantId])
+  @@index([itemId])
+  @@index([claimantId])
+  @@index([status])
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  type      NotificationType @default(CLAIM)
+  title     String
+  message   String
+  claimId   String?
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  claim     Claim?           @relation(fields: [claimId], references: [id])
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([claimId])
+  @@index([isRead])
+}
+
+enum UserProfession {
+  STUDENT
+  TEACHER
+  WORKER
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum ItemType {
+  LOST
+  FOUND
+}
+
+enum ItemStatus {
+  OPEN
+  RESOLVED
+}
+
+enum ClaimStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+enum NotificationType {
+  CLAIM
+  MESSAGE
+}

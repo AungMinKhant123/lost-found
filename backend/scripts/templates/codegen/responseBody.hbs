@@ -1,0 +1,8 @@
+import { Type, type Static } from '@sinclair/typebox'
+
+export const {{module_PascalCase}}ResponseBodySchema = Type.Object({
+    message: Type.String(),
+})
+
+export type {{module_PascalCase}}ResponseBody =
+    Static<typeof {{module_PascalCase}}ResponseBodySchema>

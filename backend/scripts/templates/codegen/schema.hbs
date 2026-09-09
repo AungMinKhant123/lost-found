@@ -1,0 +1,39 @@
+{{#if params_flag}}
+  import {
+  {{module_PascalCase}}RequestParamsSchema } from './requestParams.js'
+{{/if}}
+
+{{#if query_flag}}
+  import {
+  {{module_PascalCase}}RequestQuerySchema } from './requestQuery.js'
+{{/if}}
+
+{{#if body_flag}}
+  import {
+  {{module_PascalCase}}RequestBodySchema } from './requestBody.js'
+{{/if}}
+
+import {
+{{module_PascalCase}}ResponseBodySchema } from './responseBody.js' 
+
+export const
+{{module_PascalCase}}Schema = { tags: ['{{tag}}'], summary: '{{summary}}',
+description: '{{description}}',
+
+{{#if params_flag}}
+  params:
+  {{module_PascalCase}}RequestParamsSchema,
+{{/if}}
+
+{{#if query_flag}}
+  querystring:
+  {{module_PascalCase}}RequestQuerySchema,
+{{/if}}
+
+{{#if body_flag}}
+  body:
+  {{module_PascalCase}}RequestBodySchema,
+{{/if}}
+
+response: { 200:
+{{module_PascalCase}}ResponseBodySchema, }, }
