@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router";
 import {
   User,
@@ -17,7 +17,7 @@ import { FaApple } from "react-icons/fa6";
 import Button from "../components/Button";
 import { signUp } from "../services/api";
 
-// Options for the Profession dropdown.
+// Options for the Profession dropdown, provided by the team.
 const PROFESSION_OPTIONS = [
   "Teacher",
   "Student",
@@ -50,8 +50,24 @@ const SignUp = () => {
   const [submitError, setSubmitError] = useState(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
+  // Custom Profession dropdown open/closed state, since we're not using
+  // a native <select> (native selects can't be styled cross-browser on hover).
+  const [isProfessionOpen, setIsProfessionOpen] = useState(false);
+  const professionRef = useRef(null);
+
+  // Closes the Profession dropdown if the user clicks anywhere outside of it.
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (professionRef.current && !professionRef.current.contains(e.target)) {
+        setIsProfessionOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   /**
-   * Generic change handler for all text/select inputs.
+   * Generic change handler for all text inputs.
    * Uses the input's `name` attribute to know which field in
    * formData to update, so we don't need a separate handler per field.
    */
@@ -66,6 +82,14 @@ const SignUp = () => {
    */
   const handleCheckboxChange = (e) => {
     setFormData((prev) => ({ ...prev, agreeTerms: e.target.checked }));
+  };
+
+  /**
+   * Handles picking an option from the custom Profession dropdown.
+   */
+  const handleProfessionSelect = (option) => {
+    setFormData((prev) => ({ ...prev, profession: option }));
+    setIsProfessionOpen(false);
   };
 
   /**
@@ -103,7 +127,7 @@ const SignUp = () => {
         "You must agree to the Terms of Use and Privacy Policy.";
     }
 
-    // Phone and Profession are optional.
+    // Phone and Profession are optional per the wireframe, so no checks here.
 
     return newErrors;
   };
@@ -141,14 +165,14 @@ const SignUp = () => {
     <div className="max-w-[1280px] mx-auto px-10 py-12">
       <div className="grid grid-cols-2 gap-10 items-stretch">
         {/* LEFT: decorative info panel */}
-        <div className="rounded-2xl bg-gradient-to-b from-primary via-primary-dark to-[#1a1030] text-white p-10 flex flex-col">
-          <div className="flex items-center gap-2">
-            {/* Logo placeholder — swap for real logo image later */}
-            <div className="w-40 h-10 rounded-lg bg-white/20" />
+        <div className="rounded-2xl text-white p-10 flex flex-col bg-[linear-gradient(180deg,rgba(95,63,210,0.396)_0%,rgba(61,45,125,0.8217)_39.9%,rgba(26,12,42,0.99)_100%)]">
+          <div className="w-full h-55 rounded-xl bg-white/10 mt-8 flex items-center justify-center text-white/50 text-body-sm">
+            {/* Logo placeholder — bigger to match the wireframe scale. Swap for real logo image later. */}
+            <div className="w-72 h-20 rounded-lg bg-white/20" />
           </div>
 
           <h2 className="text-heading-1 font-bold mt-8">Create account.</h2>
-          <h2 className="text-heading-1 font-bold text-primary-dark bg-clip-text">
+          <h2 className="text-heading-1 font-bold">
             <span className="text-white">Make a </span>
             <span className="text-[#C4B5FD]">difference.</span>
           </h2>
@@ -163,37 +187,37 @@ const SignUp = () => {
             Image Placeholder
           </div>
 
-          {/* Feature list */}
-          <div className="mt-8 space-y-6">
-            <div className="flex gap-4">
-              <Lock size={28} className="shrink-0" />
+          {/* Feature list — icon left, heading + description right, per the wireframe */}
+          <div className="mt-8 space-y-8">
+            <div className="flex items-start gap-4">
+              <Lock size={40} strokeWidth={1.5} className="shrink-0" />
               <div>
-                <h4 className="text-heading-3 font-semibold">
+                <h4 className="text-heading-3 font-bold">
                   Secure &amp; Private
                 </h4>
-                <p className="text-body-sm text-white/70">
+                <p className="text-body-sm text-white/70 mt-1">
                   Your data is encrypted and never shared.
                 </p>
               </div>
             </div>
-            <div className="flex gap-4">
-              <Search size={28} className="shrink-0" />
+            <div className="flex items-start gap-4">
+              <Search size={40} strokeWidth={1.5} className="shrink-0" />
               <div>
-                <h4 className="text-heading-3 font-semibold">
+                <h4 className="text-heading-3 font-bold">
                   Find or Report Easily
                 </h4>
-                <p className="text-body-sm text-white/70">
+                <p className="text-body-sm text-white/70 mt-1">
                   Search, report, and claim items in just a few steps.
                 </p>
               </div>
             </div>
-            <div className="flex gap-4">
-              <Users size={28} className="shrink-0" />
+            <div className="flex items-start gap-4">
+              <Users size={40} strokeWidth={1.5} className="shrink-0" />
               <div>
-                <h4 className="text-heading-3 font-semibold">
+                <h4 className="text-heading-3 font-bold">
                   Help Your Community
                 </h4>
-                <p className="text-body-sm text-white/70">
+                <p className="text-body-sm text-white/70 mt-1">
                   Small actions can help someone get their valuable items back.
                 </p>
               </div>
@@ -395,29 +419,50 @@ const SignUp = () => {
                 )}
               </div>
 
-              {/* Profession (optional) */}
+              {/* Profession (optional) — custom dropdown, not a native <select>,
+                  so we can control the hover/selected color to match the brand purple. */}
               <div>
                 <label className="text-label-md font-medium text-text-primary">
                   Profession
                 </label>
-                <div className="relative mt-1">
-                  <select
-                    name="profession"
-                    value={formData.profession}
-                    onChange={handleChange}
-                    className="w-full appearance-none border border-border rounded-lg px-3 py-2.5 text-body-md text-text-secondary focus:outline-none focus:ring-2 focus:ring-primary"
+                <div className="relative mt-1" ref={professionRef}>
+                  <button
+                    type="button"
+                    onClick={() => setIsProfessionOpen((v) => !v)}
+                    className="w-full flex items-center justify-between border border-border rounded-lg px-3 py-2.5 text-body-md text-left focus:outline-none focus:ring-2 focus:ring-primary"
                   >
-                    <option value="">Select Your Profession</option>
-                    {PROFESSION_OPTIONS.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown
-                    size={18}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none"
-                  />
+                    <span
+                      className={
+                        formData.profession
+                          ? "text-text-primary"
+                          : "text-text-secondary"
+                      }
+                    >
+                      {formData.profession || "Select Your Profession"}
+                    </span>
+                    <ChevronDown
+                      size={18}
+                      className={`text-text-secondary transition-transform ${
+                        isProfessionOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+
+                  {isProfessionOpen && (
+                    <ul className="absolute z-10 w-full mt-1 border border-border rounded-lg bg-surface shadow-lg overflow-hidden">
+                      {PROFESSION_OPTIONS.map((option) => (
+                        <li key={option}>
+                          <button
+                            type="button"
+                            onClick={() => handleProfessionSelect(option)}
+                            className="w-full text-left px-3 py-2.5 text-body-md text-text-primary hover:bg-primary hover:text-text-inverse"
+                          >
+                            {option}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </div>
 
