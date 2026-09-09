@@ -64,3 +64,16 @@ export async function signUp(data) {
 export function getCurrentUser() {
   return request("/users/1");
 }
+
+// Fetches only the items belonging to a specific user — used for "My Posts".
+//
+// NOTE: originally this used json-server's query filtering
+// (/items?userId=X), but that wasn't reliably matching in testing —
+// a quirk in json-server's query behavior, not our data. Fetching
+// everything and filtering here is simpler and avoids depending on
+// that behavior. Fine at this data scale; a real backend would do
+// this filtering server-side instead.
+export async function getItemsByUser(userId) {
+  const allItems = await getItems();
+  return allItems.filter((item) => item.userId === userId);
+}

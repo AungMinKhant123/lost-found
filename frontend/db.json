@@ -4,13 +4,82 @@
       "id": "1",
       "title": "Black Wallet",
       "status": "lost",
-      "location": "Library"
+      "location": "Library",
+      "date": "2026-09-06",
+      "resolved": false,
+      "userId": "1"
     },
     {
       "id": "2",
       "title": "Blue Umbrella",
       "status": "found",
-      "location": "Cafeteria"
+      "location": "Cafeteria",
+      "date": "2026-09-06",
+      "resolved": false,
+      "userId": "1"
+    },
+    {
+      "id": "3",
+      "title": "Black Backpack",
+      "status": "lost",
+      "location": "Central Phuket",
+      "date": "2026-09-06",
+      "resolved": false,
+      "userId": "1"
+    },
+    {
+      "id": "4",
+      "title": "Black Ear Pods",
+      "status": "lost",
+      "location": "Central Phuket",
+      "date": "2026-09-06",
+      "resolved": false,
+      "userId": "1"
+    },
+    {
+      "id": "5",
+      "title": "Leather Wallet",
+      "status": "found",
+      "location": "Central Phuket",
+      "date": "2026-09-06",
+      "resolved": false,
+      "userId": "1"
+    },
+    {
+      "id": "6",
+      "title": "Black Ear Pods",
+      "status": "lost",
+      "location": "Central Phuket",
+      "date": "2026-09-06",
+      "resolved": false,
+      "userId": "1"
+    },
+    {
+      "id": "7",
+      "title": "Black Backpack",
+      "status": "found",
+      "location": "Central Phuket",
+      "date": "2026-09-06",
+      "resolved": false,
+      "userId": "1"
+    },
+    {
+      "id": "8",
+      "title": "Leather Wallet",
+      "status": "found",
+      "location": "Central Phuket",
+      "date": "2026-09-06",
+      "resolved": false,
+      "userId": "1"
+    },
+    {
+      "id": "9",
+      "title": "Silver Watch",
+      "status": "found",
+      "location": "Gym",
+      "date": "2026-08-20",
+      "resolved": true,
+      "userId": "1"
     }
   ],
   "users": [
@@ -99,6 +168,17 @@
       "profession": "Preferred not to say",
       "agreeTerms": true,
       "id": "tkkozt2vebI"
+    },
+    {
+      "firstName": "Momo",
+      "lastName": "Momo",
+      "email": "momo@gmail.com",
+      "phone": "12345678",
+      "password": "12345678",
+      "confirmPassword": "12345678",
+      "profession": "Student",
+      "agreeTerms": true,
+      "id": "QBiCfFiEIkE"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

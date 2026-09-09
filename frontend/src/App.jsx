@@ -12,6 +12,7 @@ import EditProfile from "./pages/user/EditProfile";
 import MyPosts from "./pages/user/MyPosts";
 import MyClaims from "./pages/user/MyClaims";
 import AccountSettings from "./pages/user/AccountSettings";
+import ItemDetails from "./pages/ItemDetails";
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
         <Route element={<UserLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="signup" element={<SignUp />} />
+          <Route path="items/:id" element={<ItemDetails />} />
 
           {/* Account section: sidebar + nested pages */}
           <Route path="account" element={<AccountLayout />}>
