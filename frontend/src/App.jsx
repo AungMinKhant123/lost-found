@@ -1,13 +1,17 @@
 import { Routes, Route } from "react-router";
 import UserLayout from "./layouts/user/UserLayout";
 import Home from "./pages/user/Home";
-import Profile from "./pages/user/Profile";
-import EditProfile from "./pages/user/EditProfile";
 import AdminLayout from "./layouts/admin/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
 import NotFound from "./pages/NotFound";
 import LogIn from "./pages/LogIn";
 import SignUp from "./pages/SignUp";
+import AccountLayout from "./layouts/user/AccountLayout";
+import AccountProfile from "./pages/user/AccountProfile";
+import EditProfile from "./pages/user/EditProfile";
+import MyPosts from "./pages/user/MyPosts";
+import MyClaims from "./pages/user/MyClaims";
+import AccountSettings from "./pages/user/AccountSettings";
 
 const App = () => {
   return (
@@ -15,9 +19,16 @@ const App = () => {
       <Routes>
         <Route element={<UserLayout />}>
           <Route path="/" element={<Home />} />
-          <Route path="profile/:id" element={<Profile />} />
-          <Route path="edit-profile" element={<EditProfile />} />
           <Route path="signup" element={<SignUp />} />
+
+          {/* Account section: sidebar + nested pages */}
+          <Route path="account" element={<AccountLayout />}>
+            <Route index element={<AccountProfile />} />
+            <Route path="edit-profile" element={<EditProfile />} />
+            <Route path="posts" element={<MyPosts />} />
+            <Route path="claims" element={<MyClaims />} />
+            <Route path="settings" element={<AccountSettings />} />
+          </Route>
         </Route>
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />

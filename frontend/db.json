@@ -16,8 +16,12 @@
   "users": [
     {
       "id": "1",
-      "name": "Test User",
-      "email": "test@example.com"
+      "firstName": "David",
+      "lastName": "Lin",
+      "email": "myolwin400400@gmail.com",
+      "phone": "0945609416",
+      "profession": "Student",
+      "agreeTerms": true
     },
     {
       "firstName": "Ashfaq",
@@ -83,7 +87,18 @@
       "confirmPassword": "12345678",
       "profession": "Teacher",
       "agreeTerms": true,
-      "id": "4ahwvUiJHwE"
+      "id": "7"
+    },
+    {
+      "firstName": "Ifthicar",
+      "lastName": "Hameed",
+      "email": "aqueel@gmail.com",
+      "phone": "02503281159",
+      "password": "12345678",
+      "confirmPassword": "12345678",
+      "profession": "Preferred not to say",
+      "agreeTerms": true,
+      "id": "tkkozt2vebI"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
