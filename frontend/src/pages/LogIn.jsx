@@ -12,13 +12,18 @@ import {
   LockKeyhole,
   Search,
   Users,
+  Loader2,
 } from "lucide-react";
+import { FcGoogle } from "react-icons/fc";
+import { FaApple } from "react-icons/fa6";
 
 import Button from "../components/Button";
 import UserHeader from "../components/user/UserHeader";
 import UserFooter from "../components/user/UserFooter";
 
 const Login = () => {
+  const navigate = useNavigate();
+
   // ================= FORM STATE =================
 
   const [email, setEmail] = useState("");
@@ -27,10 +32,12 @@ const Login = () => {
   const loginMutation = useLogin();
   const login = useAuthStore((state) => state.login);
 
-  // ================= ERROR STATE =================
+  // ================= ERROR & LOADING STATE =================
 
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [authError, setAuthError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   // ================= PASSWORD VISIBILITY =================
 
@@ -76,6 +83,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setAuthError("");
 
     const isEmailValid = validateEmail(email);
     const isPasswordValid = validatePassword(password);
@@ -443,7 +451,7 @@ const Login = () => {
               overflow-hidden
             "
             >
-              <div
+              <img
                 src="/assets/lostfound-box.png"
                 alt="LostFound items"
                 className="
@@ -500,7 +508,7 @@ const Login = () => {
                 bg-white
                 px-5
                 py-8
-                lg:h-[833px]
+                lg:min-h-[833px]
                 lg:w-[541px]
               "
               >
@@ -568,6 +576,13 @@ const Login = () => {
                   onSubmit={handleSubmit}
                   noValidate
                 >
+                  {/* API ERROR MESSAGE BANNER */}
+                  {authError && (
+                    <div className="mb-4 w-full rounded-lg bg-red-50 p-3 text-center text-[14px] font-medium text-[#DC2626] border border-red-200">
+                      {authError}
+                    </div>
+                  )}
+
                   {/* =================================================
                     EMAIL
                 ================================================= */}
@@ -609,13 +624,13 @@ const Login = () => {
                           autoComplete="email"
                           onChange={(e) => {
                             const value = e.target.value;
-
                             setEmail(value);
 
-                            // Remove error immediately
-                            // when user starts correcting
                             if (emailError) {
                               setEmailError("");
+                            }
+                            if (authError) {
+                              setAuthError("");
                             }
                           }}
                           onBlur={() => validateEmail(email)}
@@ -710,13 +725,13 @@ const Login = () => {
                           autoComplete="current-password"
                           onChange={(e) => {
                             const value = e.target.value;
-
                             setPassword(value);
 
-                            // Remove error immediately
-                            // when user starts correcting
                             if (passwordError) {
                               setPasswordError("");
+                            }
+                            if (authError) {
+                              setAuthError("");
                             }
                           }}
                           onBlur={() => validatePassword(password)}
@@ -908,70 +923,19 @@ const Login = () => {
                     </span>
                   </div>
 
-                  {/* =================================================
-                    GOOGLE
-                ================================================= */}
-
                   <button
                     type="button"
-                    className="
-                    flex
-                    h-[50px]
-                    w-full
-                    items-center
-                    justify-center
-                    gap-2
-                    rounded-md
-                    font-['Inter']
-                    text-[16px]
-                    font-medium
-                    leading-6
-                    text-black
-                    transition
-                    hover:bg-gray-50
-                  "
+                    className="w-full flex items-center justify-center gap-2 border border-border rounded-lg py-2.5 mb-3 text-body-md hover:bg-background-subtle"
                   >
-                    {/* Google Icon */}
-
-                    <span
-                      className="
-                      text-[20px]
-                      font-bold
-                      text-[#4285F4]
-                    "
-                    >
-                      G
-                    </span>
-
-                    <span>Continue with Google.</span>
+                    <FcGoogle size={20} />
+                    Continue with Google
                   </button>
-
-                  {/* =================================================
-                    APPLE
-                ================================================= */}
-
                   <button
                     type="button"
-                    className="
-                    flex
-                    h-[50px]
-                    w-full
-                    items-center
-                    justify-center
-                    gap-2
-                    rounded-md
-                    font-['Inter']
-                    text-[16px]
-                    font-medium
-                    leading-6
-                    text-black
-                    transition
-                    hover:bg-gray-50
-                  "
+                    className="w-full flex items-center justify-center gap-2 border border-border rounded-lg py-2.5 text-body-md hover:bg-background-subtle"
                   >
-                    <span className="text-[22px] leading-none"></span>
-
-                    <span>Continue with Apple.</span>
+                    <FaApple size={20} />
+                    Continue with Apple
                   </button>
 
                   {/* =================================================
