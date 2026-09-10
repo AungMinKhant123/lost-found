@@ -1,16 +1,88 @@
+import { useEffect, useState } from "react";
 import {
   Flag,
-  Search,
   UserRound,
+  SearchAlert,
   Mail,
   Phone,
   KeyRound,
   ShieldCheck,
   Info,
+  SearchCheck,
+  CornerDownLeft,
+  Loader2,
 } from "lucide-react";
 import { Link } from "react-router";
+import { getCurrentUser, getItemsByUser } from "../../services/api";
 
 const AccountProfile = () => {
+  const [user, setUser] = useState(null);
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        setLoading(true);
+
+        // Retrieve local auth state if present, or fall back to getCurrentUser()
+       const currentUser = await getCurrentUser();
+
+       console.log("Latest user from json-server:", currentUser);
+
+       setUser(currentUser);
+
+        // Fetch user items to compute stats
+        if (currentUser?.id) {
+          const userItems = await getItemsByUser(currentUser.id);
+          setItems(userItems);
+        }
+      } catch (err) {
+        setError("Failed to load profile data.");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfileData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[400px] w-full items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary-dark" />
+      </div>
+    );
+  }
+
+  if (error || !user) {
+    return (
+      <div className="flex min-h-[400px] w-full items-center justify-center">
+        <p className="text-body-md text-red-500">
+          {error || "User data not available."}
+        </p>
+      </div>
+    );
+  }
+
+  // Calculate dynamic stats from JSON Server items data
+  const itemReportsCount = items.filter(
+    (item) => item.status === "lost",
+  ).length;
+  const itemsFoundCount = items.filter(
+    (item) => item.status === "found",
+  ).length;
+  const itemsReturnedCount = items.filter((item) => item.resolved).length;
+  // Claims calculation fallback (derived or mocked metric)
+  const claimsSubmittedCount = items.length;
+
+  const fullName =
+    user.firstName || user.lastName
+      ? `${user.firstName} ${user.lastName}`
+      : user.firstName || "User";
+
   return (
     <div className="flex justify-center">
       <div className="box-border flex flex-col items-center gap-8 w-full border border-border rounded-lg">
@@ -31,16 +103,16 @@ const AccountProfile = () => {
             <div className="flex flex-col xl:flex-row justify-center items-center gap-6 w-full">
               {/* Profile Image + User Information */}
               <div className="flex flex-row justify-center items-center gap-[19px] w-full xl:w-[395px] h-[184px]">
-                {/* Profile Image placeholder — swap for real photo once user data/auth exists */}
-                <div className="w-[182px] h-[184px] bg-neutral-300 rounded-full flex-shrink-0" />
+                {/* Profile Avatar */}
+                <div className="w-[182px] h-[184px] bg-neutral-300 rounded-full flex-shrink-0 flex items-center justify-center text-4xl font-bold text-white uppercase" />
 
                 {/* User Details */}
                 <div className="flex flex-col justify-center items-center gap-1 w-[194px] h-[184px]">
-                  <h2 className="w-full text-heading-1 font-bold text-text-primary">
-                    David
+                  <h2 className="w-full text-heading-1 font-bold text-text-primary truncate">
+                    {fullName}
                   </h2>
-                  <p className="w-full text-body-sm font-medium text-text-primary">
-                    myolwin400400@gmail.com
+                  <p className="w-full text-body-sm font-medium text-text-primary truncate">
+                    {user.email}
                   </p>
                   <p className="w-full text-body-sm font-medium text-text-primary">
                     Member <span className="text-primary-dark">since 2026</span>
@@ -77,7 +149,7 @@ const AccountProfile = () => {
                 />
                 <div className="flex flex-col items-center gap-2">
                   <span className="text-heading-3 font-semibold text-text-primary">
-                    6
+                    {itemReportsCount}
                   </span>
                   <span className="text-body-sm text-text-primary whitespace-nowrap">
                     Item Reports
@@ -87,14 +159,14 @@ const AccountProfile = () => {
 
               {/* Items Found */}
               <div className="box-border flex flex-row justify-center items-center gap-6 w-full h-[62px] border border-border rounded">
-                <Search
+                <SearchAlert
                   size={24}
                   strokeWidth={2}
                   className="text-text-primary flex-shrink-0"
                 />
                 <div className="flex flex-col items-center gap-2">
                   <span className="text-heading-3 font-semibold text-text-primary">
-                    8
+                    {itemsFoundCount}
                   </span>
                   <span className="text-body-sm text-text-primary whitespace-nowrap">
                     Items Found
@@ -104,14 +176,14 @@ const AccountProfile = () => {
 
               {/* Claims Submitted */}
               <div className="box-border flex flex-row justify-center items-center gap-4 w-full h-[62px] border border-border rounded">
-                <Search
+                <SearchCheck
                   size={24}
                   strokeWidth={2}
                   className="text-text-primary flex-shrink-0"
                 />
                 <div className="flex flex-col justify-center items-center gap-2">
                   <span className="text-heading-3 font-semibold text-text-primary">
-                    7
+                    {claimsSubmittedCount}
                   </span>
                   <span className="text-body-sm text-text-primary whitespace-nowrap">
                     Claims Submitted
@@ -121,14 +193,14 @@ const AccountProfile = () => {
 
               {/* Items Returned */}
               <div className="box-border flex flex-row justify-center items-center gap-4 w-full h-[62px] border border-border rounded">
-                <Flag
+                <CornerDownLeft
                   size={24}
                   strokeWidth={2}
                   className="text-text-primary rotate-180 flex-shrink-0"
                 />
                 <div className="flex flex-col items-center gap-2">
                   <span className="text-heading-3 font-semibold text-text-primary">
-                    6
+                    {itemsReturnedCount}
                   </span>
                   <span className="text-body-sm text-text-primary whitespace-nowrap">
                     Items Returned
@@ -146,12 +218,12 @@ const AccountProfile = () => {
                 About Me
               </h3>
               <p className="w-full max-w-[475px] text-body-sm text-text-primary">
-                Hi! I am David. I am from Myanmar.
+                {user.about || `Hi! I am ${fullName}.`}
               </p>
             </div>
 
             {/* ================= PERSONAL INFORMATION ================= */}
-            <div className="box-border flex flex-col justify-center items-center gap-6 w-full max-w-[660px] min-h-[212px] px-6 border border-border rounded-lg">
+            <div className="box-border flex flex-col justify-center items-center gap-6 w-full max-w-[660px] min-h-[212px] px-6 border border-border rounded-lg py-4">
               <h3 className="w-full max-w-[459px] text-heading-3 font-semibold text-text-primary">
                 Personal Information
               </h3>
@@ -169,7 +241,9 @@ const AccountProfile = () => {
                       Full Name
                     </span>
                   </div>
-                  <span className="text-body-lg text-text-primary">David</span>
+                  <span className="text-body-lg text-text-primary">
+                    {fullName}
+                  </span>
                 </div>
 
                 {/* Email */}
@@ -185,7 +259,7 @@ const AccountProfile = () => {
                     </span>
                   </div>
                   <span className="text-body-lg text-text-primary break-all">
-                    myolwin400400@gmail.com
+                    {user.email}
                   </span>
                 </div>
 
@@ -202,14 +276,14 @@ const AccountProfile = () => {
                     </span>
                   </div>
                   <span className="text-body-lg text-text-primary">
-                    0945609416
+                    {user.phone || "N/A"}
                   </span>
                 </div>
               </div>
             </div>
 
             {/* ================= SECURITY ================= */}
-            <div className="box-border flex flex-col justify-center items-center gap-6 w-full max-w-[660px] min-h-[220px] px-6 border border-border rounded-lg">
+            <div className="box-border flex flex-col justify-center items-center gap-6 w-full max-w-[660px] min-h-[220px] px-6 border border-border rounded-lg py-4">
               <h3 className="w-full max-w-[461px] text-heading-3 font-semibold text-text-primary">
                 Security
               </h3>

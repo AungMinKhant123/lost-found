@@ -1,35 +1,133 @@
-import { useState } from "react";
-import { Link } from "react-router";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router";
+import { getCurrentUser, updateUser } from "../../services/api";
 
 export default function EditProfile() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
-    fullName: "David",
-    email: "myolwin400400@gmail.com",
-    phone: "0945609416",
-    about: "I am David. I am from Myanmar.",
+    fullName: "",
+    email: "",
+    phone: "",
+    about: "",
   });
 
-  // null means "no photo uploaded yet" — show the placeholder circle.
-  // Once the user picks a file, this becomes an object URL for the real <img>.
   const [profileImage, setProfileImage] = useState(null);
 
+  const [userId, setUserId] = useState(null);
+
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  const [error, setError] = useState("");
+
+  // ================= LOAD CURRENT USER =================
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const user = await getCurrentUser();
+
+        setUserId(user.id);
+
+        setFormData({
+          fullName: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
+          email: user.email || "",
+          phone: user.phone || "",
+          about: user.aboutMe || "",
+        });
+      } catch (err) {
+        console.error("Failed to load user:", err);
+        setError("Unable to load your profile.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUser();
+  }, []);
+
+  // ================= INPUT CHANGE =================
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // Remove error when user starts correcting
+    if (error) {
+      setError("");
+    }
   };
 
+  // ================= PHOTO CHANGE =================
   const handlePhotoChange = (e) => {
     const file = e.target.files?.[0];
+
     if (!file) return;
+
     const imageUrl = URL.createObjectURL(file);
+
     setProfileImage(imageUrl);
   };
 
-  const handleSubmit = (e) => {
+  // ================= SAVE PROFILE =================
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: wire this up to a real update-profile API call once the backend exists.
-    console.log("Profile updated:", formData);
+
+    if (!userId) {
+      setError("User information could not be found.");
+      return;
+    }
+
+    try {
+      setSaving(true);
+      setError("");
+
+      // Split Full Name into first and last name
+      const nameParts = formData.fullName.trim().split(/\s+/);
+
+      const firstName = nameParts[0] || "";
+      const lastName = nameParts.slice(1).join(" ") || "";
+
+      const updatedUser = {
+        firstName,
+        lastName,
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        aboutMe: formData.about.trim(),
+      };
+
+      await updateUser(userId, updatedUser);
+
+      console.log("Profile updated:", updatedUser);
+
+      // Return to account/profile page
+      navigate("/account");
+    } catch (err) {
+      console.error("Failed to update profile:", err);
+      setError("Unable to save your profile. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   };
+
+  // ================= LOADING =================
+  if (loading) {
+    return (
+      <div className="flex justify-center">
+        <div className="box-border flex flex-col justify-center items-center w-full border border-border rounded-lg">
+          <div className="py-10 text-body-md text-text-secondary">
+            Loading profile...
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex justify-center">
@@ -43,6 +141,7 @@ export default function EditProfile() {
             <h1 className="w-full text-heading-1 font-bold text-text-primary">
               My Profile
             </h1>
+
             <p className="w-full text-body-sm text-text-primary">
               Upload your personal information and keep your account secure
             </p>
@@ -66,6 +165,7 @@ export default function EditProfile() {
             >
               Change Photo
             </label>
+
             <input
               id="profile-photo"
               type="file"
@@ -85,6 +185,7 @@ export default function EditProfile() {
               >
                 Full Name <span className="text-error">*</span>
               </label>
+
               <input
                 id="fullName"
                 name="fullName"
@@ -105,6 +206,7 @@ export default function EditProfile() {
               >
                 Email Address <span className="text-error">*</span>
               </label>
+
               <input
                 id="email"
                 name="email"
@@ -125,6 +227,7 @@ export default function EditProfile() {
               >
                 Phone Number <span className="text-error">*</span>
               </label>
+
               <input
                 id="phone"
                 name="phone"
@@ -146,6 +249,7 @@ export default function EditProfile() {
                 >
                   About Me
                 </label>
+
                 <textarea
                   id="about"
                   name="about"
@@ -156,11 +260,19 @@ export default function EditProfile() {
                   className="box-border w-full h-[84px] px-[10px] py-[10px] resize-none border border-border rounded-lg outline-none text-center text-body-md text-text-secondary focus:border-primary-dark focus:ring-1 focus:ring-primary-dark"
                 />
               </div>
+
               <span className="text-body-sm text-text-primary">
                 {formData.about.length}/100
               </span>
             </div>
           </div>
+
+          {/* ================= ERROR MESSAGE ================= */}
+          {error && (
+            <p className="w-full text-center text-body-sm text-error">
+              {error}
+            </p>
+          )}
 
           {/* ================= BUTTONS ================= */}
           <div className="flex flex-row justify-center items-center gap-[34px] w-full h-[46px]">
@@ -170,11 +282,13 @@ export default function EditProfile() {
             >
               Cancel
             </Link>
+
             <button
               type="submit"
-              className="flex justify-center items-center w-[150px] h-[44px] px-[10px] bg-primary rounded-lg text-body-md text-text-inverse hover:bg-primary-dark transition-colors"
+              disabled={saving}
+              className="flex justify-center items-center w-[150px] h-[44px] px-[10px] bg-primary rounded-lg text-body-md text-text-inverse hover:bg-primary-dark transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Save Changes
+              {saving ? "Saving..." : "Save Changes"}
             </button>
           </div>
         </form>
