@@ -7,7 +7,12 @@
       "location": "Library",
       "date": "2026-09-06",
       "resolved": false,
-      "userId": "1"
+      "userId": "1",
+      "postedBy": {
+        "name": "Sarah Chen",
+        "phone": "+66 21 564 5998",
+        "email": "sarah@gmail.com"
+      }
     },
     {
       "id": "2",
@@ -16,7 +21,12 @@
       "location": "Cafeteria",
       "date": "2026-09-06",
       "resolved": false,
-      "userId": "1"
+      "userId": "1",
+      "postedBy": {
+        "name": "Marcus Tan",
+        "phone": "+66 35 456 1287",
+        "email": "marcus@gmail.com"
+      }
     },
     {
       "id": "3",
@@ -25,7 +35,12 @@
       "location": "Central Phuket",
       "date": "2026-09-06",
       "resolved": false,
-      "userId": "1"
+      "userId": "1",
+      "postedBy": {
+        "name": "Lee",
+        "phone": "+66 81 234 5678",
+        "email": "jordan.lee@gamil.com"
+      }
     },
     {
       "id": "4",
@@ -34,7 +49,12 @@
       "location": "Central Phuket",
       "date": "2026-09-06",
       "resolved": false,
-      "userId": "1"
+      "userId": "1",
+      "postedBy": {
+        "name": "Priya Nair",
+        "phone": "+66 78 564 7777",
+        "email": "sarah@gmail.com"
+      }
     },
     {
       "id": "5",
@@ -179,6 +199,40 @@
       "profession": "Student",
       "agreeTerms": true,
       "id": "QBiCfFiEIkE"
+    }
+  ],
+  "claims": [
+    {
+      "id": "1",
+      "itemId": "3",
+      "userId": "1",
+      "status": "pending",
+      "message": "I lost this backpack near the library entrance last week. It has a small keychain on the front zipper.",
+      "claimedAt": "2026-08-08T10:45:00"
+    },
+    {
+      "id": "2",
+      "itemId": "1",
+      "userId": "1",
+      "status": "accepted",
+      "message": "This item belongs to me. I can identify the small scratch on the case and the engraving on the inside.",
+      "claimedAt": "2026-08-08T10:45:00"
+    },
+    {
+      "id": "3",
+      "itemId": "4",
+      "userId": "1",
+      "status": "declined",
+      "message": "These are my earbuds — I can recognize the small scratch on the charging case.",
+      "claimedAt": "2026-08-05T14:20:00"
+    },
+    {
+      "id": "4",
+      "itemId": "2",
+      "userId": "1",
+      "status": "pending",
+      "message": "I lost my blue umbrella here yesterday afternoon.",
+      "claimedAt": "2026-08-09T09:15:00"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
