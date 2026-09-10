@@ -77,3 +77,20 @@ export async function getItemsByUser(userId) {
   const allItems = await getItems();
   return allItems.filter((item) => item.userId === userId);
 }
+
+// Fetches all claims belonging to a specific user — used for "My Claims".
+// Same approach as getItemsByUser: fetch everything, filter client-side,
+// since json-server's query filtering wasn't reliable in testing.
+export async function getClaimsByUser(userId) {
+  const allClaims = await request("/claims");
+  return allClaims.filter((claim) => claim.userId === userId);
+}
+
+// Fetches a single claim by id — used for the Claim Details page.
+// Unlike getClaimsByUser/getItemsByUser, this hits json-server's
+// standard /claims/:id route directly (not a query filter), which
+// works reliably — the filtering issue we hit earlier was specific
+// to query-string filters, not direct id lookups.
+export function getClaimById(id) {
+  return request(`/claims/${id}`);
+}

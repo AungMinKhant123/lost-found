@@ -13,6 +13,7 @@ import MyPosts from "./pages/user/MyPosts";
 import MyClaims from "./pages/user/MyClaims";
 import AccountSettings from "./pages/user/AccountSettings";
 import ItemDetails from "./pages/ItemDetails";
+import ClaimDetails from "./pages/ClaimDetails";
 
 const App = () => {
   return (
@@ -29,6 +30,7 @@ const App = () => {
             <Route path="edit-profile" element={<EditProfile />} />
             <Route path="posts" element={<MyPosts />} />
             <Route path="claims" element={<MyClaims />} />
+            <Route path="claims/:id" element={<ClaimDetails />} />
             <Route path="settings" element={<AccountSettings />} />
           </Route>
         </Route>
