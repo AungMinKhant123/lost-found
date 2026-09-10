@@ -116,7 +116,7 @@ const Login = () => {
           mx-auto
           flex
           w-full
-          max-w-[1168px]
+          max-w-292
           flex-col
           items-start
           gap-10
@@ -131,24 +131,24 @@ const Login = () => {
             className="
             flex
             w-full
-            min-h-[900px]
-            flex-shrink-0
+            min-h-225
+            shrink-0
             flex-col
             items-center
             justify-center
             gap-14
             overflow-hidden
-            bg-gradient-to-b
+            bg-linear-to-b
             from-[rgba(142,120,218,0.396)]
             via-[rgba(72,53,150,0.6336)]
             to-[rgba(214,183,248,0.99)]
-            lg:h-[1129px]
-            lg:w-[571px]
+            lg:h-282.25
+            lg:w-142.75
           "
           >
             {/* ================= WELCOME CONTENT ================= */}
 
-            <div className="flex w-[447px] max-w-[85%] flex-col items-start gap-4">
+            <div className="flex w-111.75 max-w-[85%] flex-col items-start gap-4">
               <div
                 className="
                 flex
@@ -164,7 +164,7 @@ const Login = () => {
                   w-full
                   flex-col
                   items-start
-                  gap-[14px]
+                  gap-3.5
                 "
                 >
                   {/* WELCOME BACK */}
@@ -176,7 +176,7 @@ const Login = () => {
                     text-[16px]
                     font-medium
                     leading-6
-                    text-[#4B32A8]
+                    text-primary-dark
                   "
                   >
                     WELCOME BACK
@@ -186,7 +186,7 @@ const Login = () => {
 
                   <h1
                     className="
-                    w-[408px]
+                    w-102
                     max-w-full
                     font-['Inter']
                     text-[32px]
@@ -225,7 +225,7 @@ const Login = () => {
             <div
               className="
               flex
-              w-[351px]
+              w-87.75
               max-w-[85%]
               flex-col
               gap-9
@@ -233,7 +233,7 @@ const Login = () => {
             >
               {/* ================= SECURE & PRIVATE ================= */}
 
-              <div className="flex w-[314px] items-center gap-[17px]">
+              <div className="flex w-78.5 items-center gap-4.25">
                 {/* ICON */}
 
                 <div
@@ -241,7 +241,7 @@ const Login = () => {
                   flex
                   h-20
                   w-20
-                  flex-shrink-0
+                  shrink-0
                   items-center
                   justify-center
                   rounded-lg
@@ -250,7 +250,7 @@ const Login = () => {
                   <LockKeyhole
                     size={60}
                     strokeWidth={1.5}
-                    className="text-[#6D4AFF]"
+                    className="text-primary"
                   />
                 </div>
 
@@ -260,7 +260,7 @@ const Login = () => {
                   className="
                   flex
                   h-20
-                  w-[217px]
+                  w-54.25
                   flex-col
                   justify-center
                   gap-5
@@ -280,7 +280,7 @@ const Login = () => {
 
                   <p
                     className="
-                    w-[190px]
+                    w-47.5
                     font-['Inter']
                     text-[14px]
                     font-medium
@@ -295,7 +295,7 @@ const Login = () => {
 
               {/* ================= FIND OR REPORT ================= */}
 
-              <div className="flex w-[336px] items-start gap-[17px]">
+              <div className="flex w-84 items-start gap-4.25">
                 {/* ICON */}
 
                 <div
@@ -303,7 +303,7 @@ const Login = () => {
                   flex
                   h-20
                   w-20
-                  flex-shrink-0
+                  shrink-0
                   items-center
                   justify-center
                   rounded-xl
@@ -312,7 +312,7 @@ const Login = () => {
                   <Search
                     size={60}
                     strokeWidth={1.5}
-                    className="text-[#4B32A8]"
+                    className="text-primary-dark"
                   />
                 </div>
 
@@ -321,11 +321,11 @@ const Login = () => {
                 <div
                   className="
                   flex
-                  h-[85px]
-                  w-[239px]
+                  h-21.25
+                  w-59.75
                   flex-col
                   items-start
-                  gap-[13px]
+                  gap-3.25
                 "
                 >
                   <h2
@@ -343,7 +343,7 @@ const Login = () => {
 
                   <p
                     className="
-                    w-[230px]
+                    w-57.5
                     font-['Inter']
                     text-[14px]
                     font-medium
@@ -358,7 +358,7 @@ const Login = () => {
 
               {/* ================= HELP YOUR COMMUNITY ================= */}
 
-              <div className="flex w-[351px] items-start gap-[17px]">
+              <div className="flex w-87.75 items-start gap-4.25">
                 {/* ICON */}
 
                 <div
@@ -366,7 +366,7 @@ const Login = () => {
                   flex
                   h-20
                   w-20
-                  flex-shrink-0
+                  shrink-0
                   items-center
                   justify-center
                   rounded-xl
@@ -375,7 +375,7 @@ const Login = () => {
                   <Users
                     size={60}
                     strokeWidth={1.5}
-                    className="text-[#4B32A8]"
+                    className="text-primary-darkark"
                   />
                 </div>
 
@@ -384,11 +384,11 @@ const Login = () => {
                 <div
                   className="
                   flex
-                  h-[89px]
-                  w-[254px]
+                  h-22.25
+                  w-63.5
                   flex-col
                   items-end
-                  gap-[17px]
+                  gap-4.25
                 "
                 >
                   <h2
@@ -407,7 +407,7 @@ const Login = () => {
 
                   <p
                     className="
-                    w-[254px]
+                    w-63.5
                     font-['Inter']
                     text-[14px]
                     font-medium
@@ -437,7 +437,7 @@ const Login = () => {
                 src="/assets/lostfound-box.png"
                 alt="LostFound items"
                 className="
-                h-[320px]
+                h-80
                 w-[90%]
                 max-w-full 
                 rounded-lg bg-neutral-300
@@ -454,9 +454,9 @@ const Login = () => {
             className="
             flex
             w-full
-            flex-shrink-0
+            shrink-0
             justify-center
-            lg:w-[541px]
+            lg:w-135.25
           "
           >
             {/* ================= LOGIN FORM CONTAINER ================= */}
@@ -470,7 +470,7 @@ const Login = () => {
               justify-center
               gap-2
               bg-white
-              lg:h-[905px]
+              lg:h-226.25
             "
             >
               {/* ================= LOGIN CARD ================= */}
@@ -490,8 +490,8 @@ const Login = () => {
                 bg-white
                 px-5
                 py-8
-                lg:min-h-[833px]
-                lg:w-[541px]
+                lg:min-h-208.25
+                lg:w-135.25
               "
               >
                 {/* ================= LOGIN HEADER ================= */}
@@ -512,7 +512,7 @@ const Login = () => {
                     flex-col
                     items-center
                     justify-center
-                    gap-[22px]
+                    gap-5.5
                   "
                   >
                     <h2
@@ -531,7 +531,7 @@ const Login = () => {
 
                     <p
                       className="
-                      w-[241px]
+                      w-60.25
                       text-center
                       font-['Inter']
                       text-[16px]
@@ -553,14 +553,14 @@ const Login = () => {
                   w-full
                   flex-col
                   items-center
-                  lg:w-[349px]
+                  lg:w-87.25
                 "
                   onSubmit={handleSubmit}
                   noValidate
                 >
                   {/* API ERROR MESSAGE BANNER */}
                   {authError && (
-                    <div className="mb-4 w-full rounded-lg bg-red-50 p-3 text-center text-[14px] font-medium text-[#DC2626] border border-red-200">
+                    <div className="mb-4 w-full rounded-lg bg-red-50 p-3 text-center text-[14px] font-medium text-errorder border-red-200">
                       {authError}
                     </div>
                   )}
@@ -581,7 +581,7 @@ const Login = () => {
                         text-black
                       "
                       >
-                        Email Address <span className="text-[#DC2626]">*</span>
+                        Email Address <span className="text-error">*</span>
                       </label>
 
                       <div className="relative w-full">
@@ -593,7 +593,7 @@ const Login = () => {
                           left-4
                           top-1/2
                           -translate-y-1/2
-                          text-[#4B32A8]
+                          text-primary-dark
                         "
                         />
 
@@ -640,8 +640,8 @@ const Login = () => {
                           focus:ring-[#4B32A8]/20
                           ${
                             emailError
-                              ? "border-[#DC2626] focus:border-[#DC2626]"
-                              : "border-[#A9B3BD] focus:border-[#4B32A8]"
+                              ? "border-error focus:border-error"
+                              : "border-[#A9B3BD] focus:border-primary-darkark"
                           }
                         `}
                         />
@@ -657,7 +657,7 @@ const Login = () => {
                           text-[12px]
                           font-medium
                           leading-4
-                          text-[#DC2626]
+                          text-error
                         "
                         >
                           {emailError}
@@ -682,7 +682,7 @@ const Login = () => {
                         text-black
                       "
                       >
-                        Password <span className="text-[#DC2626]">*</span>
+                        Password <span className="text-error">*</span>
                       </label>
 
                       <div className="relative w-full">
@@ -694,7 +694,7 @@ const Login = () => {
                           left-4
                           top-1/2
                           -translate-y-1/2
-                          text-[#4B32A8]
+                          text-primary-dark
                         "
                         />
 
@@ -741,8 +741,8 @@ const Login = () => {
                           focus:ring-[#4B32A8]/20
                           ${
                             passwordError
-                              ? "border-[#DC2626] focus:border-[#DC2626]"
-                              : "border-[#A9B3BD] focus:border-[#4B32A8]"
+                              ? "border-error focus:border-error"
+                              : "border-[#A9B3BD] focus:border-primary-dark"
                           }
                         `}
                         />
@@ -757,9 +757,9 @@ const Login = () => {
                           right-4
                           top-1/2
                           -translate-y-1/2
-                          text-[#4B32A8]
+                          text-primary-dark
                           transition
-                          hover:text-[#6D4AFF]
+                          hover:text-primary
                         "
                           aria-label={
                             showPassword ? "Hide password" : "Show password"
@@ -783,7 +783,7 @@ const Login = () => {
                           text-[12px]
                           font-medium
                           leading-4
-                          text-[#DC2626]
+                          text-error
                         "
                         >
                           {passwordError}
@@ -819,9 +819,9 @@ const Login = () => {
                         name="remember"
                         type="checkbox"
                         className="
-                        h-[15px]
-                        w-[15px]
-                        accent-[#6D4AFF]
+                        h-3.75
+                        w-3.75
+                        accent-primary
                       "
                       />
 
@@ -847,7 +847,7 @@ const Login = () => {
                       leading-4
                       text-black
                       transition
-                      hover:text-[#4B32A8]
+                      hover:text-primary-dark
                     "
                     >
                       Forgot Password?
@@ -868,7 +868,7 @@ const Login = () => {
                     items-center
                     justify-center
                     gap-2
-                    h-[50px]
+                    h-12.5
                     w-full
                     rounded-xl
                     px-0
@@ -939,7 +939,7 @@ const Login = () => {
                   <div
                     className="
                     flex
-                    h-[50px]
+                    h-12.5
                     w-full
                     items-center
                     justify-center
@@ -965,7 +965,7 @@ const Login = () => {
                       text-[12px]
                       font-medium
                       leading-4
-                      text-[#4B32A8]
+                      text-primary-dark
                       hover:underline
                     "
                     >

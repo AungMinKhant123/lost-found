@@ -234,6 +234,5 @@
       "message": "I lost my blue umbrella here yesterday afternoon.",
       "claimedAt": "2026-08-09T09:15:00"
     }
-  ],
-  "$schema": "./node_modules/json-server/schema.json"
+  ]
 }

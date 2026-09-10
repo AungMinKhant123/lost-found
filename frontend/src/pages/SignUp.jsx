@@ -162,7 +162,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="max-w-[1280px] mx-auto px-10 py-12">
+    <div className="max-w-7xl mx-auto px-10 py-12">
       <div className="grid grid-cols-2 gap-10 items-stretch">
         {/* LEFT: decorative info panel */}
         <div className="rounded-2xl text-white p-10 flex flex-col bg-[linear-gradient(180deg,rgba(95,63,210,0.396)_0%,rgba(61,45,125,0.8217)_39.9%,rgba(26,12,42,0.99)_100%)]">
