@@ -3,7 +3,7 @@ import UserLayout from "./layouts/user/UserLayout";
 import Home from "./pages/user/Home";
 import AdminLayout from "./layouts/admin/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
-import NotFound from "./pages/NotFound";
+import NotFound from "./pages/user/NotFound";
 import LogIn from "./pages/LogIn";
 import SignUp from "./pages/SignUp";
 import AccountLayout from "./layouts/user/AccountLayout";
