@@ -1,5 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
+import toast from "react-hot-toast";
+import { useLogin } from "../hooks/useAuth";
+import { useAuthStore } from "../store/authStore";
+
 import {
   Mail,
   KeyRound,
@@ -16,7 +20,6 @@ import { FaApple } from "react-icons/fa6";
 import Button from "../components/Button";
 import UserHeader from "../components/user/UserHeader";
 import UserFooter from "../components/user/UserFooter";
-import { loginUser } from "../services/api";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -25,6 +28,9 @@ const Login = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const loginMutation = useLogin();
+  const login = useAuthStore((state) => state.login);
 
   // ================= ERROR & LOADING STATE =================
 
@@ -86,20 +92,32 @@ const Login = () => {
       return;
     }
 
-    setIsLoading(true);
+    const loginData = {
+      email: email.trim(),
+      password,
+    };
 
     try {
-      const user = await loginUser(email, password);
+      const response = await loginMutation.mutateAsync(loginData);
 
-      // Store authenticated user details in localStorage
-      localStorage.setItem("user", JSON.stringify(user));
+      console.log("Login successful:", response);
 
-      // Redirect user upon successful login
+      const { user, accessToken, refreshToken } = response.data;
+
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+
+      login(user, accessToken);
+
+      toast.success("Logged in successfully!");
+
       navigate("/");
-    } catch (err) {
-      setAuthError(err.message || "Failed to log in. Please try again.");
-    } finally {
-      setIsLoading(false);
+    } catch (error) {
+      console.log("Login error:", error.response?.data);
+
+      toast.error(
+        error.response?.data?.message || "Invalid email or password.",
+      );
     }
   };
 
@@ -861,33 +879,21 @@ const Login = () => {
                   <Button
                     type="submit"
                     variant="primary"
-                    disabled={isLoading}
+                    disabled={loginMutation.isPending}
                     className="
-                    mt-6
-                    flex
-                    items-center
-                    justify-center
-                    gap-2
-                    h-[50px]
-                    w-full
-                    rounded-xl
-                    px-0
-                    py-0
-                    font-['Inter']
-                    text-[16px]
-                    font-medium
-                    leading-6
-                    disabled:opacity-70
-                  "
+    mt-6
+    h-[50px]
+    w-full
+    rounded-xl
+    px-0
+    py-0
+    font-['Inter']
+    text-[16px]
+    font-medium
+    leading-6
+  "
                   >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                        Logging in...
-                      </>
-                    ) : (
-                      "Log In"
-                    )}
+                    {loginMutation.isPending ? "Logging In..." : "Log In"}
                   </Button>
 
                   {/* =================================================
