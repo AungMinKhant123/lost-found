@@ -17,6 +17,26 @@ export function getItems() {
   return request("/items");
 }
 
+export function getUsers() {
+  return request("/users");
+}
+
+export async function loginUser(email, password) {
+  const users = await getUsers();
+
+  const user = users.find(
+    (user) =>
+      user.email.toLowerCase() === email.trim().toLowerCase() &&
+      user.password === password,
+  );
+
+  if (!user) {
+    throw new Error("Invalid email or password");
+  }
+
+  return user;
+}
+
 export function getItemById(id) {
   return request(`/items/${id}`);
 }
@@ -28,9 +48,9 @@ export function createItem(data) {
   });
 }
 
-export function getUsers() {
-  return request("/users");
-}
+// export function getUsers() {
+//   return request("/users");
+// }
 
 // Mock sign-up: posts the new user to json-server's /users endpoint.
 // This is a stand-in until the real backend has an actual auth/register endpoint.
@@ -63,6 +83,13 @@ export async function signUp(data) {
 // or auth context) rather than a hardcoded "1".
 export function getCurrentUser() {
   return request("/users/1");
+}
+
+export function updateUser(id, data) {
+  return request(`/users/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
 }
 
 // Fetches only the items belonging to a specific user — used for "My Posts".
