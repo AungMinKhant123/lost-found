@@ -1,4 +1,8 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router";
+import toast from "react-hot-toast";
+import { useLogin } from "../hooks/useAuth";
+import { useAuthStore } from "../store/authStore";
 
 import {
   Mail,
@@ -13,13 +17,15 @@ import {
 import Button from "../components/Button";
 import UserHeader from "../components/user/UserHeader";
 import UserFooter from "../components/user/UserFooter";
-import { Link } from "react-router";
 
 const Login = () => {
   // ================= FORM STATE =================
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const loginMutation = useLogin();
+  const login = useAuthStore((state) => state.login);
 
   // ================= ERROR STATE =================
 
@@ -68,7 +74,7 @@ const Login = () => {
 
   // ================= FORM SUBMIT =================
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const isEmailValid = validateEmail(email);
@@ -78,13 +84,33 @@ const Login = () => {
       return;
     }
 
-    // Login API will be added here later
-    console.log("Login form is valid");
-
-    console.log({
+    const loginData = {
       email: email.trim(),
       password,
-    });
+    };
+
+    try {
+      const response = await loginMutation.mutateAsync(loginData);
+
+      console.log("Login successful:", response);
+
+      const { user, accessToken, refreshToken } = response.data;
+
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+
+      login(user, accessToken);
+
+      toast.success("Logged in successfully!");
+
+      navigate("/");
+    } catch (error) {
+      console.log("Login error:", error.response?.data);
+
+      toast.error(
+        error.response?.data?.message || "Invalid email or password.",
+      );
+    }
   };
 
   return (
@@ -838,20 +864,21 @@ const Login = () => {
                   <Button
                     type="submit"
                     variant="primary"
+                    disabled={loginMutation.isPending}
                     className="
-                    mt-6
-                    h-[50px]
-                    w-full
-                    rounded-xl
-                    px-0
-                    py-0
-                    font-['Inter']
-                    text-[16px]
-                    font-medium
-                    leading-6
-                  "
+    mt-6
+    h-[50px]
+    w-full
+    rounded-xl
+    px-0
+    py-0
+    font-['Inter']
+    text-[16px]
+    font-medium
+    leading-6
+  "
                   >
-                    Log In
+                    {loginMutation.isPending ? "Logging In..." : "Log In"}
                   </Button>
 
                   {/* =================================================
