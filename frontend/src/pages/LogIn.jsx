@@ -22,8 +22,6 @@ import UserHeader from "../components/user/UserHeader";
 import UserFooter from "../components/user/UserFooter";
 
 const Login = () => {
-  const navigate = useNavigate();
-
   // ================= FORM STATE =================
 
   const [email, setEmail] = useState("");
@@ -880,18 +878,7 @@ const Login = () => {
                     type="submit"
                     variant="primary"
                     disabled={loginMutation.isPending}
-                    className="
-    mt-6
-    h-[50px]
-    w-full
-    rounded-xl
-    px-0
-    py-0
-    font-['Inter']
-    text-[16px]
-    font-medium
-    leading-6
-  "
+                    className="mt-6 h-12.5 w-full rounded-xl px-0 py-0 font-['Inter']text-[16px]font-mediumleading-6"
                   >
                     {loginMutation.isPending ? "Logging In..." : "Log In"}
                   </Button>
