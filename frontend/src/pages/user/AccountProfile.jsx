@@ -51,7 +51,7 @@ const AccountProfile = () => {
 
   if (loading) {
     return (
-      <div className="flex min-h-[400px] w-full items-center justify-center">
+      <div className="flex min-h-100 w-full items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary-dark" />
       </div>
     );
@@ -59,7 +59,7 @@ const AccountProfile = () => {
 
   if (error || !user) {
     return (
-      <div className="flex min-h-[400px] w-full items-center justify-center">
+      <div className="flex min-h-100 w-full items-center justify-center">
         <p className="text-body-md text-red-500">
           {error || "User data not available."}
         </p>
@@ -86,7 +86,7 @@ const AccountProfile = () => {
   return (
     <div className="flex justify-center">
       <div className="box-border flex flex-col items-center gap-8 w-full border border-border rounded-lg">
-        <div className="flex flex-col items-start gap-[51px] w-full px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex flex-col items-start gap-12.75 w-full px-4 sm:px-6 lg:px-8 py-8">
           {/* ================= HEADER + PROFILE + STATS ================= */}
           <div className="flex flex-col items-start gap-10 w-full">
             {/* Header */}
@@ -102,12 +102,12 @@ const AccountProfile = () => {
             {/* Profile Information + Buttons */}
             <div className="flex flex-col xl:flex-row justify-center items-center gap-6 w-full">
               {/* Profile Image + User Information */}
-              <div className="flex flex-row justify-center items-center gap-[19px] w-full xl:w-[395px] h-[184px]">
+              <div className="flex flex-row justify-center items-center gap-4.75 w-full xl:w-98.75 h-46">
                 {/* Profile Avatar */}
-                <div className="w-[182px] h-[184px] bg-neutral-300 rounded-full flex-shrink-0 flex items-center justify-center text-4xl font-bold text-white uppercase" />
+                <div className="w-45.5 h-46 bg-neutral-300 rounded-full shrink-0 flex items-center justify-center text-4xl font-bold text-white uppercase" />
 
                 {/* User Details */}
-                <div className="flex flex-col justify-center items-center gap-1 w-[194px] h-[184px]">
+                <div className="flex flex-col justify-center items-center gap-1 w-48.5 h-46">
                   <h2 className="w-full text-heading-1 font-bold text-text-primary truncate">
                     {fullName}
                   </h2>
@@ -121,17 +121,17 @@ const AccountProfile = () => {
               </div>
 
               {/* Edit + Setting Buttons */}
-              <div className="flex flex-row items-start gap-8 w-[264px] h-[46px]">
+              <div className="flex flex-row items-start gap-8 w-66 h-11.5">
                 <Link
                   to="/account/edit-profile"
-                  className="flex justify-center items-center w-[116px] h-[44px] px-[10px] rounded-lg bg-primary text-body-md text-text-inverse hover:bg-primary-dark transition-colors"
+                  className="flex justify-center items-center w-29 h-11 px-2.5 rounded-lg bg-primary text-body-md text-text-inverse hover:bg-primary-dark transition-colors"
                 >
                   Edit Profile
                 </Link>
 
                 <Link
                   to="/account/settings"
-                  className="box-border flex justify-center items-center w-[116px] h-[46px] px-[10px] rounded-lg border border-border-strong bg-transparent text-body-md text-primary-dark hover:bg-background-subtle transition-colors"
+                  className="box-border flex justify-center items-center w-296px] px-2.5 rounded-lg border border-border-strong bg-transparent text-body-md text-primary-dark hover:bg-background-subtle transition-colors"
                 >
                   Setting
                 </Link>
@@ -141,11 +141,11 @@ const AccountProfile = () => {
             {/* ================= STATISTICS ================= */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-1 w-full">
               {/* Item Reports */}
-              <div className="box-border flex flex-row justify-center items-center gap-4 w-full h-[62px] border border-border rounded">
+              <div className="box-border flex flex-row justify-center items-center gap-4 w-full h-15.5order border-border rounded">
                 <Flag
                   size={24}
                   strokeWidth={2}
-                  className="text-text-primary flex-shrink-0"
+                  className="text-text-primary shrink-0"
                 />
                 <div className="flex flex-col items-center gap-2">
                   <span className="text-heading-3 font-semibold text-text-primary">
@@ -158,11 +158,11 @@ const AccountProfile = () => {
               </div>
 
               {/* Items Found */}
-              <div className="box-border flex flex-row justify-center items-center gap-6 w-full h-[62px] border border-border rounded">
+              <div className="box-border flex flex-row justify-center items-center gap-6 w-full h-15.5 border border-border rounded">
                 <SearchAlert
                   size={24}
                   strokeWidth={2}
-                  className="text-text-primary flex-shrink-0"
+                  className="text-text-primary shrink-0"
                 />
                 <div className="flex flex-col items-center gap-2">
                   <span className="text-heading-3 font-semibold text-text-primary">
@@ -175,11 +175,11 @@ const AccountProfile = () => {
               </div>
 
               {/* Claims Submitted */}
-              <div className="box-border flex flex-row justify-center items-center gap-4 w-full h-[62px] border border-border rounded">
+              <div className="box-border flex flex-row justify-center items-center gap-4 w-full h-15.5 border border-border rounded">
                 <SearchCheck
                   size={24}
                   strokeWidth={2}
-                  className="text-text-primary flex-shrink-0"
+                  className="text-text-primary shrink-0"
                 />
                 <div className="flex flex-col justify-center items-center gap-2">
                   <span className="text-heading-3 font-semibold text-text-primary">
@@ -192,11 +192,11 @@ const AccountProfile = () => {
               </div>
 
               {/* Items Returned */}
-              <div className="box-border flex flex-row justify-center items-center gap-4 w-full h-[62px] border border-border rounded">
+              <div className="box-border flex flex-row justify-center items-center gap-4 w-full h-15.5 border border-border rounded">
                 <CornerDownLeft
                   size={24}
                   strokeWidth={2}
-                  className="text-text-primary rotate-180 flex-shrink-0"
+                  className="text-text-primary rotate-180 shrink-0"
                 />
                 <div className="flex flex-col items-center gap-2">
                   <span className="text-heading-3 font-semibold text-text-primary">
@@ -211,27 +211,27 @@ const AccountProfile = () => {
           </div>
 
           {/* ================= LOWER CONTENT ================= */}
-          <div className="flex flex-col justify-center items-center gap-[31px] w-full">
+          <div className="flex flex-col justify-center items-center gap-7.75 w-full">
             {/* ================= ABOUT ME ================= */}
-            <div className="box-border flex flex-col justify-center items-center gap-3 w-full max-w-[660px] min-h-[119px] px-6 border border-border rounded-lg">
-              <h3 className="w-full max-w-[475px] text-heading-3 font-semibold text-text-primary">
+            <div className="box-border flex flex-col justify-center items-center gap-3 w-full max-w-165 min-h-29.75 px-6 border border-border rounded-lg">
+              <h3 className="w-full max-w-118.75 text-heading-3 font-semibold text-text-primary">
                 About Me
               </h3>
-              <p className="w-full max-w-[475px] text-body-sm text-text-primary">
+              <p className="w-full max-w-118.75 text-body-sm text-text-primary">
                 {user.about || `Hi! I am ${fullName}.`}
               </p>
             </div>
 
             {/* ================= PERSONAL INFORMATION ================= */}
-            <div className="box-border flex flex-col justify-center items-center gap-6 w-full max-w-[660px] min-h-[212px] px-6 border border-border rounded-lg py-4">
-              <h3 className="w-full max-w-[459px] text-heading-3 font-semibold text-text-primary">
+            <div className="box-border flex flex-col justify-center items-center gap-6 w-full max-w-165 min-h-53 px-6 border border-border rounded-lg py-4">
+              <h3 className="w-full max-w-114.75 text-heading-3 font-semibold text-text-primary">
                 Personal Information
               </h3>
 
-              <div className="flex flex-col justify-center items-start gap-6 w-full max-w-[459px]">
+              <div className="flex flex-col justify-center items-start gap-6 w-full max-w-114.75">
                 {/* Full Name */}
                 <div className="flex flex-row items-center gap-14 w-full">
-                  <div className="flex flex-row items-center gap-3 w-[146px] flex-shrink-0">
+                  <div className="flex flex-row items-center gap-3 w-36.5 shrink-0">
                     <UserRound
                       size={20}
                       strokeWidth={2}
@@ -248,7 +248,7 @@ const AccountProfile = () => {
 
                 {/* Email */}
                 <div className="flex flex-row items-center gap-14 w-full">
-                  <div className="flex flex-row items-center gap-3 w-[146px] flex-shrink-0">
+                  <div className="flex flex-row items-center gap-3 w-36.5 shrink-0">
                     <Mail
                       size={20}
                       strokeWidth={2}
@@ -265,7 +265,7 @@ const AccountProfile = () => {
 
                 {/* Phone */}
                 <div className="flex flex-row items-center gap-14 w-full">
-                  <div className="flex flex-row items-center gap-3 w-[146px] flex-shrink-0">
+                  <div className="flex flex-row items-center gap-3 w-36.5 shrink-0">
                     <Phone
                       size={20}
                       strokeWidth={2}
@@ -283,15 +283,15 @@ const AccountProfile = () => {
             </div>
 
             {/* ================= SECURITY ================= */}
-            <div className="box-border flex flex-col justify-center items-center gap-6 w-full max-w-[660px] min-h-[220px] px-6 border border-border rounded-lg py-4">
-              <h3 className="w-full max-w-[461px] text-heading-3 font-semibold text-text-primary">
+            <div className="box-border flex flex-col justify-center items-center gap-6 w-full max-w-165 min-h-55 px-6 border border-border rounded-lg py-4">
+              <h3 className="w-full max-w-115.25 text-heading-3 font-semibold text-text-primary">
                 Security
               </h3>
 
-              <div className="flex flex-col items-start gap-6 w-full max-w-[500px]">
+              <div className="flex flex-col items-start gap-6 w-full max-w-125">
                 {/* Password */}
                 <div className="flex flex-row items-start gap-14 w-full">
-                  <div className="flex flex-row items-start gap-3 w-[230px] flex-shrink-0">
+                  <div className="flex flex-row items-start gap-3 w-57.5 shrink-0">
                     <KeyRound
                       size={22}
                       strokeWidth={2}
@@ -319,7 +319,7 @@ const AccountProfile = () => {
 
                 {/* Two Factor Authentication */}
                 <div className="flex flex-row items-start gap-14 w-full">
-                  <div className="flex flex-row items-start gap-3 w-[230px] flex-shrink-0">
+                  <div className="flex flex-row items-start gap-3 w-57.5 shrink-0">
                     <ShieldCheck
                       size={20}
                       strokeWidth={2}
@@ -343,11 +343,11 @@ const AccountProfile = () => {
             </div>
 
             {/* ================= PRIVACY NOTICE ================= */}
-            <div className="flex flex-row justify-center items-center gap-4 w-full max-w-[680px] min-h-[72px] px-4 bg-info/20 rounded-lg">
+            <div className="flex flex-row justify-center items-center gap-4 w-full max-w-170 min-h-18 px-4 bg-info/20 rounded-lg">
               <Info
                 size={20}
                 strokeWidth={2}
-                className="text-text-primary flex-shrink-0"
+                className="text-text-primary shrink-0"
               />
               <p className="text-body-sm font-medium text-text-primary">
                 Your contact information is private and is only shared with
