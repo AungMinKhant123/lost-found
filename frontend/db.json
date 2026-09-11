@@ -106,14 +106,15 @@
     {
       "id": "1",
       "firstName": "David",
-      "lastName": "Lin",
+      "lastName": "Linn",
       "email": "myolwin400400@gmail.com",
       "phone": "0945609416",
       "profession": "Student",
       "socialMedia": "https://www.facebook.com/david.lin",
-      "password": "987654321~",
-      "confirmPassword": "987654321~",
-      "agreeTerms": true
+      "password": "12345678`",
+      "confirmPassword": "12345678`",
+      "agreeTerms": true,
+      "aboutMe": "I am a UI/UX designer"
     },
     {
       "firstName": "Ashfaq",
