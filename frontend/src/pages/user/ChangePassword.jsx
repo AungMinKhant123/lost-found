@@ -234,7 +234,9 @@ export default function ChangePassword() {
       });
 
       navigate("/account/password-updated");
-      console.log("Password updated successfully. Navigating to PasswordUpdated page.");
+      console.log(
+        "Password updated successfully. Navigating to PasswordUpdated page.",
+      );
     } catch (error) {
       console.error("Change password error:", error);
 
@@ -347,7 +349,7 @@ export default function ChangePassword() {
             {/* New Password */}
 
             <PasswordField
-              label="Newt password"
+              label="New password"
               name="newPassword"
               value={formData.newPassword}
               onChange={handleChange}
