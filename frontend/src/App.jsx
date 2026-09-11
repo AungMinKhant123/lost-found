@@ -14,6 +14,8 @@ import MyClaims from "./pages/user/MyClaims";
 import AccountSettings from "./pages/user/AccountSettings";
 import ItemDetails from "./pages/ItemDetails";
 import ClaimDetails from "./pages/ClaimDetails";
+import ChangePassword from "./pages/user/ChangePassword";
+import PasswordUpdated from "./pages/user/PasswordUpdated";
 
 const App = () => {
   return (
@@ -28,6 +30,8 @@ const App = () => {
           <Route path="account" element={<AccountLayout />}>
             <Route index element={<AccountProfile />} />
             <Route path="edit-profile" element={<EditProfile />} />
+            <Route path="change-password" element={<ChangePassword />} />
+            <Route path="password-updated" element={<PasswordUpdated />} />
             <Route path="posts" element={<MyPosts />} />
             <Route path="claims" element={<MyClaims />} />
             <Route path="claims/:id" element={<ClaimDetails />} />
