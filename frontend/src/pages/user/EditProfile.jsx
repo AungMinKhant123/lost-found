@@ -35,7 +35,9 @@ export default function EditProfile() {
         setFormData({
           fullName: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
           email: user.email || "",
-          phone: user.phone || "",
+            phone: user.phone || "",
+            socialMedia: user.socialMedia || "",
+            profession: user.profession || "",
           about: user.aboutMe || "",
         });
       } catch (err) {
@@ -100,6 +102,8 @@ export default function EditProfile() {
         email: formData.email.trim(),
         phone: formData.phone.trim(),
         aboutMe: formData.about.trim(),
+        socialMedia: formData.socialMedia.trim(),
+        profession: formData.profession.trim(),
       };
 
       await updateUser(userId, updatedUser);
@@ -156,7 +160,7 @@ export default function EditProfile() {
                 className="w-45.5[184px] rounded-full object-cover shrink-0"
               />
             ) : (
-              <div className="w-45.5[h-46-neutral-300 rounded-full shrink-0" />
+              <div className="w-45.5 h-46 bg-neutral-300 rounded-full shrink-0 " />
             )}
 
             <label
@@ -240,6 +244,48 @@ export default function EditProfile() {
               />
             </div>
 
+            {/* Social Media */}
+            <div className="flex flex-col items-start gap-2.5 w-full">
+              <label
+                htmlFor="socialMedia"
+                className="text-body-md font-medium text-text-primary"
+              >
+                Social Media <span className="text-error">*</span>
+              </label>
+
+              <input
+                id="socialMedia"
+                name="socialMedia"
+                type="text"
+                value={formData.socialMedia}
+                onChange={handleChange}
+                required
+                maxLength={254}
+                className="box-border w-full h-10 px-4 bg-background border border-border rounded-lg outline-none text-center text-body-sm font-medium text-text-secondary focus:border-primary-dark focus:ring-1 focus:ring-primary-dark"
+              />
+            </div>
+
+            {/* Profession */}
+            <div className="flex flex-col items-start gap-2.5 w-full">
+              <label
+                htmlFor="profession"
+                className="text-body-md font-medium text-text-primary"
+              >
+                Profession <span className="text-error">*</span>
+              </label>
+
+              <input
+                id="profession"
+                name="profession"
+                type="text"
+                value={formData.profession}
+                onChange={handleChange}
+                required
+                maxLength={254}
+                className="box-border w-full h-10 px-4 bg-background border border-border rounded-lg outline-none text-center text-body-sm font-medium text-text-secondary focus:border-primary-dark focus:ring-1 focus:ring-primary-dark"
+              />
+            </div>
+
             {/* About Me */}
             <div className="flex flex-col items-end gap-1 w-full">
               <div className="flex flex-col items-start gap-1 w-full">
@@ -278,7 +324,7 @@ export default function EditProfile() {
           <div className="flex flex-row justify-center items-center gap-8.5 w-full h-11.5">
             <Link
               to="/account"
-              className="box-border flex justify-center items-center w-296px] px-2.5 border border-border rounded-lg text-body-md text-text-primary hover:bg-background-subtle transition-colors"
+              className="box-border flex justify-center items-center w-29 h-11 px-2.5 border border-border rounded-lg text-body-md text-text-primary hover:bg-background-subtle transition-colors"
             >
               Cancel
             </Link>

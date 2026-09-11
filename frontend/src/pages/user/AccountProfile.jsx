@@ -131,7 +131,7 @@ const AccountProfile = () => {
 
                 <Link
                   to="/account/settings"
-                  className="box-border flex justify-center items-center w-296px] px-2.5 rounded-lg border border-border-strong bg-transparent text-body-md text-primary-dark hover:bg-background-subtle transition-colors"
+                  className="box-border flex justify-center items-center w-29 h-11 px-2.5 rounded-lg border border-border-strong bg-transparent text-body-md text-primary-dark hover:bg-background-subtle transition-colors"
                 >
                   Setting
                 </Link>
@@ -141,7 +141,8 @@ const AccountProfile = () => {
             {/* ================= STATISTICS ================= */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-1 w-full">
               {/* Item Reports */}
-              <div className="box-border flex flex-row justify-center items-center gap-4 w-full h-15.5order border-border rounded">
+               
+              <div className="box-border flex flex-row justify-center items-center gap-6 w-full h-15.5 border border-border rounded">
                 <Flag
                   size={24}
                   strokeWidth={2}
@@ -309,12 +310,12 @@ const AccountProfile = () => {
                   <span className="text-body-lg text-text-primary">
                     *******
                   </span>
-                  <button
-                    type="button"
+                  <Link
+                    to="/account/change-password"
                     className="text-body-lg text-primary-dark hover:underline"
                   >
                     Change
-                  </button>
+                  </Link>
                 </div>
 
                 {/* Two Factor Authentication */}
