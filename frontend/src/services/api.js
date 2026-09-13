@@ -121,3 +121,11 @@ export async function getClaimsByUser(userId) {
 export function getClaimById(id) {
   return request(`/claims/${id}`);
 }
+
+// Fetches items for the Home page's "Recently Reported Items" section.
+// For now this just takes the first N from the full items list — once
+// items have real createdAt timestamps, this should sort by that instead.
+export async function getRecentItems(limit = 6) {
+  const allItems = await getItems();
+  return allItems.slice(0, limit);
+}
