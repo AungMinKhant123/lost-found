@@ -5,10 +5,12 @@ import type { LoginRequestBody } from "./requestBody.js";
 import type { LoginResponseBody } from "./responseBody.js";
 import { AppError } from "../../../errors/AppError.js";
 
+
 import { randomBytes } from "node:crypto";
 import { prisma } from "../../../lib/prisma.js";
 import { verifyPassword } from "../../../utils/password.js";
 import { hashRefreshToken } from "../../../utils/refreshToken.js";
+import { SYS_CONSTANTS } from "../../../constants/system.js";
 
 export async function loginHandler(
   request: FastifyRequest,
@@ -53,6 +55,22 @@ export async function loginHandler(
     },
   });
 
+  reply.setCookie(SYS_CONSTANTS.ACCESS_TOKEN_COOKIE, accessToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    maxAge: 60 * 15,
+    path: "/",
+  });
+
+  reply.setCookie(SYS_CONSTANTS.REFRESH_TOKEN_COOKIE, refreshToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    maxAge: 60 * 60 * 24 * 7,
+    path: "/",
+  });
+
   return reply.send({
     message: "Login successful",
     data: {
@@ -63,8 +81,6 @@ export async function loginHandler(
         lastName: user.lastName,
         role: user.role,
       },
-      accessToken,
-      refreshToken,
     },
   });
 }

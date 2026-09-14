@@ -10,8 +10,6 @@ export const LoginResponseBodySchema = Type.Object({
       lastName: Type.String(),
       role: Type.String(),
     }),
-    accessToken: Type.String(),
-    refreshToken: Type.String(),
   }),
 });
 
