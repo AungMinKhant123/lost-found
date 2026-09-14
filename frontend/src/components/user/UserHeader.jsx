@@ -4,9 +4,9 @@ import Button from "../Button";
 
 const navLinks = [
   { label: "Home", href: "/" },
-  { label: "Report Items", href: "#" },
+  { label: "Item Lists", href: "#" },
   { label: "How it works", href: "#" },
-  { label: "Lost Items", href: "#" },
+  { label: "About Us", href: "#" },
 ];
 
 const UserHeader = () => {

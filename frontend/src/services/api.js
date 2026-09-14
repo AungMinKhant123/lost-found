@@ -17,6 +17,26 @@ export function getItems() {
   return request("/items");
 }
 
+export function getUsers() {
+  return request("/users");
+}
+
+export async function loginUser(email, password) {
+  const users = await getUsers();
+
+  const user = users.find(
+    (user) =>
+      user.email.toLowerCase() === email.trim().toLowerCase() &&
+      user.password === password,
+  );
+
+  if (!user) {
+    throw new Error("Invalid email or password");
+  }
+
+  return user;
+}
+
 export function getItemById(id) {
   return request(`/items/${id}`);
 }
@@ -28,9 +48,9 @@ export function createItem(data) {
   });
 }
 
-export function getUsers() {
-  return request("/users");
-}
+// export function getUsers() {
+//   return request("/users");
+// }
 
 // Mock sign-up: posts the new user to json-server's /users endpoint.
 // This is a stand-in until the real backend has an actual auth/register endpoint.
@@ -65,6 +85,13 @@ export function getCurrentUser() {
   return request("/users/1");
 }
 
+export function updateUser(id, data) {
+  return request(`/users/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+}
+
 // Fetches only the items belonging to a specific user — used for "My Posts".
 //
 // NOTE: originally this used json-server's query filtering
@@ -93,4 +120,12 @@ export async function getClaimsByUser(userId) {
 // to query-string filters, not direct id lookups.
 export function getClaimById(id) {
   return request(`/claims/${id}`);
+}
+
+// Fetches items for the Home page's "Recently Reported Items" section.
+// For now this just takes the first N from the full items list — once
+// items have real createdAt timestamps, this should sort by that instead.
+export async function getRecentItems(limit = 6) {
+  const allItems = await getItems();
+  return allItems.slice(0, limit);
 }
