@@ -3,6 +3,7 @@ import swaggerPlugin from "./plugins/swagger.js";
 import errorHandlerPlugin from "./plugins/error-handler.js";
 import jwtPlugin from "./plugins/jwt.js";
 import { authRoutes } from "./routes/auth.js";
+import authPlugin from "./plugins/auth.js";
 
 export async function buildApp() {
   const app = Fastify({
@@ -19,6 +20,7 @@ export async function buildApp() {
   await app.register(swaggerPlugin);
   await app.register(errorHandlerPlugin);
   await app.register(jwtPlugin);
+  await app.register(authPlugin);
   await app.register(authRoutes);
 
   return app;
