@@ -16,6 +16,7 @@ import ItemDetails from "./pages/ItemDetails";
 import ClaimDetails from "./pages/ClaimDetails";
 import ChangePassword from "./pages/user/ChangePassword";
 import PasswordUpdated from "./pages/user/PasswordUpdated";
+import HowItWorks from "./pages/user/HowItWorks";
 
 const App = () => {
   return (
@@ -25,6 +26,7 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="signup" element={<SignUp />} />
           <Route path="items/:id" element={<ItemDetails />} />
+          <Route path="how-it-works" element={<HowItWorks />} />
 
           {/* Account section: sidebar + nested pages */}
           <Route path="account" element={<AccountLayout />}>
