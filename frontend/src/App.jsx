@@ -36,8 +36,8 @@ const App = () => {
             <Route path="claims" element={<MyClaims />} />
             <Route path="claims/:id" element={<ClaimDetails />} />
             <Route path="settings" element={<AccountSettings />} />
-            <Route path="*" element={<NotFound />} />
           </Route>
+          <Route path="*" element={<NotFound />} />
         </Route>
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
