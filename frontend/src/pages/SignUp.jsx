@@ -150,9 +150,17 @@ const SignUp = () => {
       <div className="grid grid-cols-2 gap-10 items-stretch">
         {/* LEFT: decorative info panel */}
         <div className="rounded-2xl text-white p-10 flex flex-col bg-[linear-gradient(180deg,rgba(95,63,210,0.396)_0%,rgba(61,45,125,0.8217)_39.9%,rgba(26,12,42,0.99)_100%)]">
-          <div className="w-full h-55 rounded-xl bg-white/10 mt-8 flex items-center justify-center text-white/50 text-body-sm">
-            {/* Logo placeholder — bigger to match the wireframe scale. Swap for real logo image later. */}
-            <div className="w-72 h-20 rounded-lg bg-white/20" />
+          <div className="w-full h-55 rounded-xl  mt-8 flex items-end justify-center text-white/50 text-body-sm">
+            <img
+              src="https://res.cloudinary.com/d5tnusci/image/upload/v1789382451/signup2_bzibei.png"
+              alt=""
+              className="w-45 h-auto"
+            />
+
+            <div className="w-72 h-20 rounded-lg flex gap-3">
+              <h1 className="text-5xl text-black font-bold">Lost</h1>
+              <h1 className="text-5xl text-primary-dark font-bold">Found</h1>
+            </div>
           </div>
 
           <h2 className="text-heading-1 font-bold mt-8">Create account.</h2>
@@ -167,8 +175,12 @@ const SignUp = () => {
           </p>
 
           {/* Illustration placeholder — swap for the real box/backpack image later */}
-          <div className="w-full h-64 rounded-xl bg-white/10 mt-8 flex items-center justify-center text-white/50 text-body-sm">
-            Image Placeholder
+          <div className="w-full h-64 rounded-xl  mt-8 flex items-center justify-center text-white/50 text-body-sm">
+            <img
+              src="https://res.cloudinary.com/d5tnusci/image/upload/v1789382320/signup_i2xqdg.png"
+              alt=""
+              className="w-100 h-auto"
+            />
           </div>
 
           {/* Feature list — icon left, heading + description right, per the wireframe */}

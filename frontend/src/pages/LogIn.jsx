@@ -441,15 +441,9 @@ const Login = () => {
               overflow-hidden
             "
             >
-              <div
-                src="/assets/lostfound-box.png"
-                alt="LostFound items"
-                className="
-                h-[320px]
-                w-[90%]
-                max-w-full 
-                rounded-lg bg-neutral-300
-              "
+              <img
+                src="https://res.cloudinary.com/d5tnusci/image/upload/v1789382550/login_hh77bf.png"
+                alt=""
               />
             </div>
           </section>
