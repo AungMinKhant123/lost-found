@@ -14,13 +14,13 @@ model User {
   lastName          String
   email             String         @unique
   passwordHash      String
-  phone             String
+  phone             String?
   profileUrl        String?
   lineUsername      String?
   facebookUsername  String?
   instagramUsername String?
   className         String?
-  profession        UserProfession @default(STUDENT)
+  profession        UserProfession? @default(STUDENT)
   role              UserRole       @default(USER)
   isActive          Boolean        @default(true)
   createdAt         DateTime       @default(now())
