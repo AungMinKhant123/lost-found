@@ -1,11 +1,9 @@
 import { Link } from "react-router";
-import { User } from "lucide-react";
-import Button from "../Button";
 
 const navLinks = [
   { label: "Home", href: "/" },
-  { label: "Item Lists", href: "#" },
-  { label: "How it works", href: "#" },
+  { label: "Item List", href: "#" },
+  { label: "How it works", href: "/how-it-works" },
   { label: "About Us", href: "#" },
 ];
 
@@ -41,18 +39,21 @@ const UserHeader = () => {
           ))}
         </nav>
 
-        {/* Auth actions */}
+        {/* Auth actions — logged-out state: New Post + Log In */}
         <div className="flex items-center gap-6">
+          {/* No destination yet — Report Item page doesn't exist */}
+          <Link
+            to="#"
+            className="bg-primary hover:bg-primary-dark text-text-inverse rounded-lg px-6 py-3 text-label-lg font-medium transition-colors"
+          >
+            New Post
+          </Link>
           <Link
             to="/login"
             className="text-body-md text-text-primary hover:text-primary"
           >
             Log In
           </Link>
-          <Button variant="primary" className="gap-2">
-            <User size={16} />
-            Profile
-          </Button>
         </div>
       </div>
     </header>
