@@ -35,7 +35,9 @@ export default function EditProfile() {
         setFormData({
           fullName: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
           email: user.email || "",
-          phone: user.phone || "",
+            phone: user.phone || "",
+            socialMedia: user.socialMedia || "",
+            profession: user.profession || "",
           about: user.aboutMe || "",
         });
       } catch (err) {
@@ -100,6 +102,8 @@ export default function EditProfile() {
         email: formData.email.trim(),
         phone: formData.phone.trim(),
         aboutMe: formData.about.trim(),
+        socialMedia: formData.socialMedia.trim(),
+        profession: formData.profession.trim(),
       };
 
       await updateUser(userId, updatedUser);
@@ -134,7 +138,7 @@ export default function EditProfile() {
       <div className="box-border flex flex-col justify-center items-center w-full border border-border rounded-lg">
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col items-start w-full max-w-[679px] gap-8 px-4 sm:px-6 lg:px-8 py-8"
+          className="flex flex-col items-start w-full max-w-169.75 gap-8 px-4 sm:px-6 lg:px-8 py-8"
         >
           {/* ================= HEADER ================= */}
           <div className="flex flex-col items-start gap-4 w-full">
@@ -148,15 +152,15 @@ export default function EditProfile() {
           </div>
 
           {/* ================= PROFILE PHOTO ================= */}
-          <div className="flex flex-row items-center gap-3 w-full h-[184px]">
+          <div className="flex flex-row items-center gap-3 w-full h-46">
             {profileImage ? (
               <img
                 src={profileImage}
                 alt="Profile"
-                className="w-[182px] h-[184px] rounded-full object-cover flex-shrink-0"
+                className="w-45.5[184px] rounded-full object-cover shrink-0"
               />
             ) : (
-              <div className="w-[182px] h-[184px] bg-neutral-300 rounded-full flex-shrink-0" />
+              <div className="w-45.5 h-46 bg-neutral-300 rounded-full shrink-0 " />
             )}
 
             <label
@@ -178,7 +182,7 @@ export default function EditProfile() {
           {/* ================= FORM FIELDS ================= */}
           <div className="flex flex-col justify-center items-start gap-5 w-full">
             {/* Full Name */}
-            <div className="flex flex-col items-start gap-[10px] w-full">
+            <div className="flex flex-col items-start gap-2.5 w-full">
               <label
                 htmlFor="fullName"
                 className="text-body-md font-medium text-text-primary"
@@ -199,7 +203,7 @@ export default function EditProfile() {
             </div>
 
             {/* Email */}
-            <div className="flex flex-col items-start gap-[10px] w-full">
+            <div className="flex flex-col items-start gap-2.5 w-full">
               <label
                 htmlFor="email"
                 className="text-body-md font-medium text-text-primary"
@@ -220,7 +224,7 @@ export default function EditProfile() {
             </div>
 
             {/* Phone Number */}
-            <div className="flex flex-col items-start gap-[10px] w-full">
+            <div className="flex flex-col items-start gap-2.5 w-full">
               <label
                 htmlFor="phone"
                 className="text-body-md font-medium text-text-primary"
@@ -236,6 +240,48 @@ export default function EditProfile() {
                 onChange={handleChange}
                 required
                 maxLength={20}
+                className="box-border w-full h-10 px-4 bg-background border border-border rounded-lg outline-none text-center text-body-sm font-medium text-text-secondary focus:border-primary-dark focus:ring-1 focus:ring-primary-dark"
+              />
+            </div>
+
+            {/* Social Media */}
+            <div className="flex flex-col items-start gap-2.5 w-full">
+              <label
+                htmlFor="socialMedia"
+                className="text-body-md font-medium text-text-primary"
+              >
+                Social Media <span className="text-error">*</span>
+              </label>
+
+              <input
+                id="socialMedia"
+                name="socialMedia"
+                type="text"
+                value={formData.socialMedia}
+                onChange={handleChange}
+                required
+                maxLength={254}
+                className="box-border w-full h-10 px-4 bg-background border border-border rounded-lg outline-none text-center text-body-sm font-medium text-text-secondary focus:border-primary-dark focus:ring-1 focus:ring-primary-dark"
+              />
+            </div>
+
+            {/* Profession */}
+            <div className="flex flex-col items-start gap-2.5 w-full">
+              <label
+                htmlFor="profession"
+                className="text-body-md font-medium text-text-primary"
+              >
+                Profession <span className="text-error">*</span>
+              </label>
+
+              <input
+                id="profession"
+                name="profession"
+                type="text"
+                value={formData.profession}
+                onChange={handleChange}
+                required
+                maxLength={254}
                 className="box-border w-full h-10 px-4 bg-background border border-border rounded-lg outline-none text-center text-body-sm font-medium text-text-secondary focus:border-primary-dark focus:ring-1 focus:ring-primary-dark"
               />
             </div>
@@ -257,7 +303,7 @@ export default function EditProfile() {
                   onChange={handleChange}
                   maxLength={100}
                   rows={3}
-                  className="box-border w-full h-[84px] px-[10px] py-[10px] resize-none border border-border rounded-lg outline-none text-center text-body-md text-text-secondary focus:border-primary-dark focus:ring-1 focus:ring-primary-dark"
+                  className="box-border w-full h-21 px-2.5 py-2.5 resize-none border border-border rounded-lg outline-none text-center text-body-md text-text-secondary focus:border-primary-dark focus:ring-1 focus:ring-primary-dark"
                 />
               </div>
 
@@ -275,10 +321,10 @@ export default function EditProfile() {
           )}
 
           {/* ================= BUTTONS ================= */}
-          <div className="flex flex-row justify-center items-center gap-[34px] w-full h-[46px]">
+          <div className="flex flex-row justify-center items-center gap-8.5 w-full h-11.5">
             <Link
               to="/account"
-              className="box-border flex justify-center items-center w-[116px] h-[46px] px-[10px] border border-border rounded-lg text-body-md text-text-primary hover:bg-background-subtle transition-colors"
+              className="box-border flex justify-center items-center w-29 h-11 px-2.5 border border-border rounded-lg text-body-md text-text-primary hover:bg-background-subtle transition-colors"
             >
               Cancel
             </Link>
@@ -286,7 +332,7 @@ export default function EditProfile() {
             <button
               type="submit"
               disabled={saving}
-              className="flex justify-center items-center w-[150px] h-[44px] px-[10px] bg-primary rounded-lg text-body-md text-text-inverse hover:bg-primary-dark transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              className="flex justify-center items-center w-37.5 h-11 px-2.5 bg-primary rounded-lg text-body-md text-text-inverse hover:bg-primary-dark transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {saving ? "Saving..." : "Save Changes"}
             </button>
