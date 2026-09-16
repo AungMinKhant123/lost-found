@@ -129,3 +129,40 @@ export async function getRecentItems(limit = 6) {
   const allItems = await getItems();
   return allItems.slice(0, limit);
 }
+
+// Fetches a single user by id — used to show a claimant's name/info.
+export function getUserById(id) {
+  return request(`/users/${id}`);
+}
+
+// Fetches all claims made on a specific item — used for "Claims Received".
+// Same client-side-filter approach as getItemsByUser/getClaimsByUser,
+// since json-server's query filtering wasn't reliable in testing.
+export async function getClaimsForItem(itemId) {
+  const allClaims = await request("/claims");
+  return allClaims.filter((claim) => claim.itemId === itemId);
+}
+
+// Updates a claim's status (accepted/declined) — a real write to json-server,
+// using PATCH to update just that one field rather than the whole record.
+export function updateClaimStatus(claimId, status) {
+  return request(`/claims/${claimId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ status }),
+  });
+}
+
+// Updates an item's fields (e.g. marking it resolved) — used when a claim
+// is accepted, since accepting means the item search is over.
+export function updateItemStatus(itemId, updates) {
+  return request(`/items/${itemId}`, {
+    method: "PATCH",
+    body: JSON.stringify(updates),
+  });
+}
+
+// Fetches all claims — shared by getClaimsByUser, getClaimsForItem, and
+// anywhere else that needs to filter the full claims list client-side.
+export function getClaims() {
+  return request("/claims");
+}
