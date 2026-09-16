@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { MapPin } from "lucide-react";
-import { getCurrentUser, getItemsByUser } from "../../services/api";
+import { getCurrentUser, getItemsByUser, getClaims } from "../../services/api";
 
 // The four filter tabs, in display order.
 // "value" matches how we'll filter the items array below.
@@ -10,6 +10,7 @@ const TABS = [
   { label: "Lost Items", value: "lost" },
   { label: "Found Items", value: "found" },
   { label: "Resolved", value: "resolved" },
+  { label: "Pending Claims", value: "pending" },
 ];
 
 // Formats an ISO date string ("2026-09-06") into "Sep 6, 2026",
@@ -28,13 +29,26 @@ const MyPosts = () => {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("all");
 
+  // Maps itemId -> count of pending claims on that item, so each card
+  // can show how many people are waiting on a response.
+  const [pendingCounts, setPendingCounts] = useState({});
+
   useEffect(() => {
-    // Two-step fetch: first find out who's logged in, then fetch only
-    // that user's items. (Same mock-user approach as AccountSidebar —
-    // hardcoded to user id "1" until real auth/login exists.)
     getCurrentUser()
-      .then((user) => getItemsByUser(user.id))
-      .then((data) => setItems(data))
+      .then((user) => Promise.all([getItemsByUser(user.id), getClaims()]))
+      .then(([itemsData, claimsData]) => {
+        setItems(itemsData);
+
+        // Build a map of itemId -> pending claim count, only counting
+        // claims on items that belong to this user.
+        const counts = {};
+        claimsData
+          .filter((claim) => claim.status === "pending")
+          .forEach((claim) => {
+            counts[claim.itemId] = (counts[claim.itemId] || 0) + 1;
+          });
+        setPendingCounts(counts);
+      })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
@@ -43,6 +57,7 @@ const MyPosts = () => {
   const filteredItems = items.filter((item) => {
     if (activeTab === "all") return true;
     if (activeTab === "resolved") return item.resolved;
+    if (activeTab === "pending") return pendingCounts[item.id] > 0;
     return item.status === activeTab && !item.resolved;
   });
 
@@ -87,22 +102,32 @@ const MyPosts = () => {
               className="border border-border rounded-lg overflow-hidden"
             >
               {/* Image placeholder — swap for the real uploaded photo once
-                  the Report Item feature exists and items have a real image URL. */}
+          the Report Item feature exists and items have a real image URL. */}
               <div className="w-full h-40 bg-neutral-100 flex items-center justify-center text-text-secondary text-body-sm">
                 Image Placeholder
               </div>
 
               <div className="p-4">
-                {/* Status badge: red for lost, green for found */}
-                <span
-                  className={`inline-block px-2 py-0.5 rounded text-label-sm font-medium ${
-                    item.status === "lost"
-                      ? "bg-error/10 text-error"
-                      : "bg-success/10 text-success"
-                  }`}
-                >
-                  {item.status === "lost" ? "Lost" : "Found"}
-                </span>
+                {/* Status badges: Lost/Found (red or green), plus a pending-claims
+      badge (orange) when applicable — grouped together in one row. */}
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`inline-block px-2 py-0.5 rounded text-label-sm font-medium ${
+                      item.status === "lost"
+                        ? "bg-error/10 text-error"
+                        : "bg-success/10 text-success"
+                    }`}
+                  >
+                    {item.status === "lost" ? "Lost" : "Found"}
+                  </span>
+
+                  {pendingCounts[item.id] > 0 && (
+                    <span className="inline-block px-2 py-0.5 rounded text-label-sm font-medium bg-warning/10 text-warning">
+                      {pendingCounts[item.id]} pending claim
+                      {pendingCounts[item.id] > 1 ? "s" : ""}
+                    </span>
+                  )}
+                </div>
 
                 <h3 className="text-heading-3 font-bold text-text-primary mt-2">
                   {item.title}
@@ -119,7 +144,7 @@ const MyPosts = () => {
                 </p>
 
                 <Link
-                  to={`/items/${item.id}`}
+                  to={`/account/posts/${item.id}`}
                   className="mt-3 inline-flex items-center justify-center w-full border border-border rounded-lg px-4 py-2 text-body-md text-text-primary hover:bg-background-subtle transition-colors"
                 >
                   View Details
