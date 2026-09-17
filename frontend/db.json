@@ -7,7 +7,9 @@
       "location": "Library",
       "date": "2026-09-06",
       "resolved": false,
-      "userId": "1"
+      "userId": "1",
+      "category": "Accessories",
+      "color": "Black"
     },
     {
       "id": "2",
@@ -16,7 +18,9 @@
       "location": "Cafeteria",
       "date": "2026-09-06",
       "resolved": false,
-      "userId": "1"
+      "userId": "1",
+      "category": "Other",
+      "color": "Blue"
     },
     {
       "id": "3",
@@ -25,7 +29,9 @@
       "location": "Central Phuket",
       "date": "2026-09-06",
       "resolved": false,
-      "userId": "1"
+      "userId": "1",
+      "category": "Bags",
+      "color": "Black"
     },
     {
       "id": "4",
@@ -34,7 +40,9 @@
       "location": "Central Phuket",
       "date": "2026-09-06",
       "resolved": false,
-      "userId": "1"
+      "userId": "1",
+      "category": "Electronics",
+      "color": "Black"
     },
     {
       "id": "5",
@@ -43,7 +51,9 @@
       "location": "Central Phuket",
       "date": "2026-09-06",
       "resolved": true,
-      "userId": "1"
+      "userId": "1",
+      "category": "Accessories",
+      "color": "Brown"
     },
     {
       "id": "6",
@@ -52,7 +62,9 @@
       "location": "Central Phuket",
       "date": "2026-09-06",
       "resolved": false,
-      "userId": "1"
+      "userId": "1",
+      "category": "Electronics",
+      "color": "Grey"
     },
     {
       "id": "7",
@@ -61,7 +73,9 @@
       "location": "Central Phuket",
       "date": "2026-09-06",
       "resolved": false,
-      "userId": "1"
+      "userId": "1",
+      "category": "Bags",
+      "color": "Brown"
     },
     {
       "id": "8",
@@ -70,7 +84,9 @@
       "location": "Central Phuket",
       "date": "2026-09-06",
       "resolved": false,
-      "userId": "1"
+      "userId": "1",
+      "category": "Accessories",
+      "color": "Brown"
     },
     {
       "id": "9",
@@ -79,7 +95,9 @@
       "location": "Gym",
       "date": "2026-08-20",
       "resolved": true,
-      "userId": "1"
+      "userId": "1",
+      "category": "Accessories",
+      "color": "Silver"
     },
     {
       "id": "10",
@@ -89,6 +107,8 @@
       "date": "2026-08-08",
       "resolved": false,
       "userId": "9",
+      "category": "Accessories",
+      "color": "Black",
       "postedBy": {
         "name": "Sarah Chen",
         "phone": "+66 21 564 5998",
@@ -103,6 +123,8 @@
       "date": "2026-08-08",
       "resolved": false,
       "userId": "10",
+      "category": "Bags",
+      "color": "Grey",
       "postedBy": {
         "name": "Marcus Tan",
         "phone": "+66 35 456 1287",
@@ -117,6 +139,8 @@
       "date": "2026-08-05",
       "resolved": false,
       "userId": "11",
+      "category": "Electronics",
+      "color": "Black",
       "postedBy": {
         "name": "Priya Nair",
         "phone": "+66 78 564 7777",
@@ -131,11 +155,24 @@
       "date": "2026-08-09",
       "resolved": false,
       "userId": "12",
+      "category": "Other",
+      "color": "Black",
       "postedBy": {
         "name": "Jordan Lee",
         "phone": "+66 81 234 5678",
         "email": "jordan.lee@gmail.com"
       }
+    },
+    {
+      "id": "14",
+      "title": "Red Notebook",
+      "status": "lost",
+      "location": "Cafeteria",
+      "date": "2026-09-15",
+      "resolved": false,
+      "userId": "1",
+      "category": "Documents",
+      "color": "Red"
     }
   ],
   "users": [
