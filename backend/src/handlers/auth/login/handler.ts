@@ -5,7 +5,6 @@ import type { LoginRequestBody } from "./requestBody.js";
 import type { LoginResponseBody } from "./responseBody.js";
 import { AppError } from "../../../errors/AppError.js";
 
-
 import { randomBytes } from "node:crypto";
 import { prisma } from "../../../lib/prisma.js";
 import { verifyPassword } from "../../../utils/password.js";
@@ -49,7 +48,7 @@ export async function loginHandler(
   const refreshTokenHash = await hashRefreshToken(refreshToken);
   await prisma.refreshToken.create({
     data: {
-      token: refreshTokenHash,
+      tokenHash: refreshTokenHash,
       userId: user.id,
       expiresAt: refreshTokenExpiresAt,
     },
@@ -57,16 +56,16 @@ export async function loginHandler(
 
   reply.setCookie(SYS_CONSTANTS.ACCESS_TOKEN_COOKIE, accessToken, {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: false,
+    sameSite: "lax",
     maxAge: 60 * 15,
     path: "/",
   });
 
   reply.setCookie(SYS_CONSTANTS.REFRESH_TOKEN_COOKIE, refreshToken, {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: false,
+    sameSite: "lax",
     maxAge: 60 * 60 * 24 * 7,
     path: "/",
   });
