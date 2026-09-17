@@ -1,4 +1,4 @@
-import { PrismaClient } from "./../../src/generated/client";
+import { PrismaClient } from "../../src/generated/client";
 
 export async function seedItemImages(prisma: PrismaClient, items: any[]) {
   const images = [];
@@ -7,23 +7,27 @@ export async function seedItemImages(prisma: PrismaClient, items: any[]) {
     const image = await prisma.itemImage.create({
       data: {
         itemId: items[i].id,
-        imageUrl: `items/item-${i + 1}-image-1.jpg`,
+        imageUrl:
+          "https://res.cloudinary.com/d5tnusci/image/upload/v1789664555/earphone_zxmi2w.png",
       },
     });
 
     images.push(image);
 
     if (i % 2 === 0) {
-      await prisma.itemImage.create({
+      const secondImage = await prisma.itemImage.create({
         data: {
           itemId: items[i].id,
-          imageUrl: `items/item-${i + 1}-image-2.jpg`,
+          imageUrl:
+            "https://res.cloudinary.com/d5tnusci/image/upload/v1789664528/phone_siep1d.jpg",
         },
       });
+
+      images.push(secondImage);
     }
   }
 
-  console.log(`✅ Item images seeded: ${images.length}+`);
+  console.log(`✅ Item images seeded: ${images.length}`);
 
   return images;
 }
