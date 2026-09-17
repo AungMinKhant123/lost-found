@@ -19,6 +19,7 @@ import PasswordUpdated from "./pages/user/PasswordUpdated";
 import HowItWorks from "./pages/user/HowItWorks";
 import PostClaims from "./pages/user/PostClaims";
 import AcceptedClaimView from "./pages/user/AcceptedClaimView";
+import ItemList from "./pages/user/ItemList";
 
 const App = () => {
   return (
@@ -29,6 +30,7 @@ const App = () => {
           <Route path="signup" element={<SignUp />} />
           <Route path="items/:id" element={<ItemDetails />} />
           <Route path="how-it-works" element={<HowItWorks />} />
+          <Route path="item-list" element={<ItemList />} />
 
           {/* Account section: sidebar + nested pages */}
           <Route path="account" element={<AccountLayout />}>

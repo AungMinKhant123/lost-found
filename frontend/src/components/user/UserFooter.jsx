@@ -54,8 +54,17 @@ const UserFooter = () => {
     <footer className="w-full border-t border-border px-10 py-8">
       <div className="flex flex-wrap justify-between gap-8">
         <div className="max-w-xs">
-          {/* Logo placeholder — will be replaced with a single <img> combining icon + wordmark */}
-          <div className="w-40 h-10 rounded-lg bg-neutral-300" />
+          <div className="flex items-center gap-2">
+            <img
+              src="https://res.cloudinary.com/d5tnusci/image/upload/v1789382451/signup2_bzibei.png"
+              alt=""
+              className="w-10 h-auto"
+            />
+            <div className="flex gap-1">
+              <h1 className="font-bold text-xl">Lost</h1>
+              <h1 className="text-primary font-bold text-xl">Found</h1>
+            </div>
+          </div>
 
           <p className="text-body-sm text-text-secondary mt-3">
             Helping people find what they've lost and return what they've found.
@@ -75,7 +84,7 @@ const UserFooter = () => {
 
         {footerLinks.map((col) => (
           <div key={col.title}>
-            <h4 className="text-label-sm font-semibold text-primary tracking-wide">
+            <h4 className="text-label-lg font-semibold text-primary tracking-wide">
               {col.title}
             </h4>
             <ul className="mt-3 space-y-2">
