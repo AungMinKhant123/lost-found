@@ -16,6 +16,9 @@ import ItemDetails from "./pages/ItemDetails";
 import ClaimDetails from "./pages/ClaimDetails";
 import ChangePassword from "./pages/user/ChangePassword";
 import PasswordUpdated from "./pages/user/PasswordUpdated";
+import Notification from "./pages/user/Notification";
+import LogOut from "./pages/user/LogOut";
+import DeleteAccount from "./pages/user/DeleteAccount";
 import HowItWorks from "./pages/user/HowItWorks";
 import PostClaims from "./pages/user/PostClaims";
 import AcceptedClaimView from "./pages/user/AcceptedClaimView";
@@ -42,6 +45,10 @@ const App = () => {
             <Route path="claims" element={<MyClaims />} />
             <Route path="claims/:id" element={<ClaimDetails />} />
             <Route path="settings" element={<AccountSettings />} />
+            <Route path="notifications" element={<Notification />} />
+            <Route path="delete-account" element={<DeleteAccount />} />
+            <Route path="logout" element={<LogOut />} />
+            <Route path="*" element={<NotFound />} />
             <Route path="posts/:id" element={<PostClaims />} />
             <Route
               path="posts/:itemId/claims/:claimId"
