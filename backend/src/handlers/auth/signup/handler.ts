@@ -13,7 +13,7 @@ export async function signupHandler(
 ): Promise<SignupResponseBody> {
   const body = request.body as SignupRequestBody;
 
-  const { firstName, lastName, email, password} = body;
+  const { firstName, lastName, email, password } = body;
 
   const user = await prisma.user.findUnique({
     where: { email },
@@ -30,7 +30,7 @@ export async function signupHandler(
       firstName,
       lastName,
       email,
-      passwordHash
+      passwordHash,
     },
   });
 
