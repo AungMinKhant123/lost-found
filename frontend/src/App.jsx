@@ -19,6 +19,10 @@ import PasswordUpdated from "./pages/user/PasswordUpdated";
 import Notification from "./pages/user/Notification";
 import LogOut from "./pages/user/LogOut";
 import DeleteAccount from "./pages/user/DeleteAccount";
+import HowItWorks from "./pages/user/HowItWorks";
+import PostClaims from "./pages/user/PostClaims";
+import AcceptedClaimView from "./pages/user/AcceptedClaimView";
+import ItemList from "./pages/user/ItemList";
 
 const App = () => {
   return (
@@ -28,6 +32,8 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="signup" element={<SignUp />} />
           <Route path="items/:id" element={<ItemDetails />} />
+          <Route path="how-it-works" element={<HowItWorks />} />
+          <Route path="item-list" element={<ItemList />} />
 
           {/* Account section: sidebar + nested pages */}
           <Route path="account" element={<AccountLayout />}>
@@ -43,7 +49,13 @@ const App = () => {
             <Route path="delete-account" element={<DeleteAccount />} />
             <Route path="logout" element={<LogOut />} />
             <Route path="*" element={<NotFound />} />
+            <Route path="posts/:id" element={<PostClaims />} />
+            <Route
+              path="posts/:itemId/claims/:claimId"
+              element={<AcceptedClaimView />}
+            />
           </Route>
+          <Route path="*" element={<NotFound />} />
         </Route>
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />

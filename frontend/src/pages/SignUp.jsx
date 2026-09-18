@@ -1,13 +1,11 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import {
   User,
   Mail,
-  Phone,
   KeyRound,
   Eye,
   EyeOff,
-  ChevronDown,
   Lock,
   Search,
   Users,
@@ -18,22 +16,13 @@ import Button from "../components/Button";
 import { useSignup } from "../hooks/useAuth";
 import toast from "react-hot-toast";
 
-// Options for the Profession dropdown, provided by the team.
-const PROFESSION_OPTIONS = [
-  { label: "Teacher", value: "TEACHER" },
-  { label: "Student", value: "STUDENT" },
-  { label: "Worker", value: "WORKER" },
-];
-
 const SignUp = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
-    phone: "",
     password: "",
     confirmPassword: "",
-    profession: "",
     agreeTerms: false,
   });
 
@@ -44,19 +33,6 @@ const SignUp = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const [isProfessionOpen, setIsProfessionOpen] = useState(false);
-  const professionRef = useRef(null);
-
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (professionRef.current && !professionRef.current.contains(e.target)) {
-        setIsProfessionOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -104,15 +80,6 @@ const SignUp = () => {
     return newErrors;
   };
 
-  const handleProfessionSelect = (option) => {
-    setFormData((prev) => ({
-      ...prev,
-      profession: option.value,
-    }));
-
-    setIsProfessionOpen(false);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -127,9 +94,7 @@ const SignUp = () => {
       firstName: formData.firstName,
       lastName: formData.lastName,
       email: formData.email,
-      phone: formData.phone,
       password: formData.password,
-      profession: formData.profession,
     };
 
     try {
@@ -150,9 +115,17 @@ const SignUp = () => {
       <div className="grid grid-cols-2 gap-10 items-stretch">
         {/* LEFT: decorative info panel */}
         <div className="rounded-2xl text-white p-10 flex flex-col bg-[linear-gradient(180deg,rgba(95,63,210,0.396)_0%,rgba(61,45,125,0.8217)_39.9%,rgba(26,12,42,0.99)_100%)]">
-          <div className="w-full h-55 rounded-xl bg-white/10 mt-8 flex items-center justify-center text-white/50 text-body-sm">
-            {/* Logo placeholder — bigger to match the wireframe scale. Swap for real logo image later. */}
-            <div className="w-72 h-20 rounded-lg bg-white/20" />
+          <div className="w-full h-55 rounded-xl  mt-8 flex items-end justify-center text-white/50 text-body-sm">
+            <img
+              src="https://res.cloudinary.com/d5tnusci/image/upload/v1789382451/signup2_bzibei.png"
+              alt=""
+              className="w-45 h-auto"
+            />
+
+            <div className="w-72 h-20 rounded-lg flex gap-3">
+              <h1 className="text-5xl text-black font-bold">Lost</h1>
+              <h1 className="text-5xl text-primary-dark font-bold">Found</h1>
+            </div>
           </div>
 
           <h2 className="text-heading-1 font-bold mt-8">Create account.</h2>
@@ -167,8 +140,12 @@ const SignUp = () => {
           </p>
 
           {/* Illustration placeholder — swap for the real box/backpack image later */}
-          <div className="w-full h-64 rounded-xl bg-white/10 mt-8 flex items-center justify-center text-white/50 text-body-sm">
-            Image Placeholder
+          <div className="w-full h-64 rounded-xl  mt-8 flex items-center justify-center text-white/50 text-body-sm">
+            <img
+              src="https://res.cloudinary.com/d5tnusci/image/upload/v1789382320/signup_i2xqdg.png"
+              alt=""
+              className="w-100 h-auto"
+            />
           </div>
 
           {/* Feature list — icon left, heading + description right, per the wireframe */}
@@ -222,8 +199,6 @@ const SignUp = () => {
           <p className="text-body-md text-text-secondary text-center mt-2">
             Fill in your details to create your LostFound account.
           </p>
-
-          {/* Success message replaces the form once account creation succeeds */}
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-5" noValidate>
             {/* First Name */}
@@ -302,27 +277,6 @@ const SignUp = () => {
               )}
             </div>
 
-            {/* Phone (optional) */}
-            <div>
-              <label className="text-label-md font-medium text-text-primary">
-                Phone Number
-              </label>
-              <div className="relative mt-1">
-                <Phone
-                  size={18}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary"
-                />
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="Enter Your Phone Number"
-                  className="w-full border border-border rounded-lg pl-10 pr-3 py-2.5 text-body-md focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
-            </div>
-
             {/* Password */}
             <div>
               <label className="text-label-md font-medium text-text-primary">
@@ -391,55 +345,6 @@ const SignUp = () => {
                   {errors.confirmPassword}
                 </p>
               )}
-            </div>
-
-            {/* Profession (optional) — custom dropdown, not a native <select>,
-                  so we can control the hover/selected color to match the brand purple. */}
-            <div>
-              <label className="text-label-md font-medium text-text-primary">
-                Profession
-              </label>
-              <div className="relative mt-1" ref={professionRef}>
-                <button
-                  type="button"
-                  onClick={() => setIsProfessionOpen((v) => !v)}
-                  className="w-full flex items-center justify-between border border-border rounded-lg px-3 py-2.5 text-body-md text-left focus:outline-none focus:ring-2 focus:ring-primary"
-                >
-                  <span
-                    className={
-                      formData.profession
-                        ? "text-text-primary"
-                        : "text-text-secondary"
-                    }
-                  >
-                    {PROFESSION_OPTIONS.find(
-                      (option) => option.value === formData.profession,
-                    )?.label || "Select Your Profession"}
-                  </span>
-                  <ChevronDown
-                    size={18}
-                    className={`text-text-secondary transition-transform ${
-                      isProfessionOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-
-                {isProfessionOpen && (
-                  <ul className="absolute z-10 w-full mt-1 border border-border rounded-lg bg-surface shadow-lg overflow-hidden">
-                    {PROFESSION_OPTIONS.map((option) => (
-                      <li key={option.value}>
-                        <button
-                          type="button"
-                          onClick={() => handleProfessionSelect(option)}
-                          className="w-full text-left px-3 py-2.5 text-body-md text-text-primary hover:bg-primary hover:text-text-inverse"
-                        >
-                          {option.label}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
             </div>
 
             {/* Terms checkbox */}

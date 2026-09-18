@@ -100,14 +100,12 @@ const Login = () => {
 
       console.log("Login successful:", response);
 
-      const { user, accessToken, refreshToken } = response.data;
+      const { user } = response.data;
 
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
-
-      login(user, accessToken);
+      login(user);
 
       toast.success("Logged in successfully!");
+      console.log(response.data);
 
       navigate("/");
     } catch (error) {
@@ -450,7 +448,7 @@ const Login = () => {
             "
             >
               <img
-                src="/assets/lostfound-box.png"
+                src="https://res.cloudinary.com/d5tnusci/image/upload/v1789382550/login_hh77bf.png"                
                 alt="LostFound items"
                 className="
                 h-80

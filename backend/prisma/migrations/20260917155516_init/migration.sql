@@ -23,13 +23,13 @@ CREATE TABLE "User" (
     "lastName" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "passwordHash" TEXT NOT NULL,
-    "phone" TEXT NOT NULL,
+    "phone" TEXT,
     "profileUrl" TEXT,
     "lineUsername" TEXT,
     "facebookUsername" TEXT,
     "instagramUsername" TEXT,
     "className" TEXT,
-    "profession" "UserProfession" NOT NULL DEFAULT 'STUDENT',
+    "profession" "UserProfession" DEFAULT 'STUDENT',
     "role" "UserRole" NOT NULL DEFAULT 'USER',
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -41,7 +41,7 @@ CREATE TABLE "User" (
 -- CreateTable
 CREATE TABLE "RefreshToken" (
     "id" TEXT NOT NULL,
-    "token" TEXT NOT NULL,
+    "tokenHash" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "expiresAt" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -134,7 +134,7 @@ CREATE TABLE "Notification" (
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "RefreshToken_token_key" ON "RefreshToken"("token");
+CREATE UNIQUE INDEX "RefreshToken_tokenHash_key" ON "RefreshToken"("tokenHash");
 
 -- CreateIndex
 CREATE INDEX "RefreshToken_userId_idx" ON "RefreshToken"("userId");

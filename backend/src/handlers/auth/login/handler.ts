@@ -9,6 +9,7 @@ import { randomBytes } from "node:crypto";
 import { prisma } from "../../../lib/prisma.js";
 import { verifyPassword } from "../../../utils/password.js";
 import { hashRefreshToken } from "../../../utils/refreshToken.js";
+import { SYS_CONSTANTS } from "../../../constants/system.js";
 
 export async function loginHandler(
   request: FastifyRequest,
@@ -47,10 +48,26 @@ export async function loginHandler(
   const refreshTokenHash = await hashRefreshToken(refreshToken);
   await prisma.refreshToken.create({
     data: {
-      token: refreshTokenHash,
+      tokenHash: refreshTokenHash,
       userId: user.id,
       expiresAt: refreshTokenExpiresAt,
     },
+  });
+
+  reply.setCookie(SYS_CONSTANTS.ACCESS_TOKEN_COOKIE, accessToken, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+    maxAge: 60 * 15,
+    path: "/",
+  });
+
+  reply.setCookie(SYS_CONSTANTS.REFRESH_TOKEN_COOKIE, refreshToken, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 7,
+    path: "/",
   });
 
   return reply.send({
@@ -63,8 +80,6 @@ export async function loginHandler(
         lastName: user.lastName,
         role: user.role,
       },
-      accessToken,
-      refreshToken,
     },
   });
 }
