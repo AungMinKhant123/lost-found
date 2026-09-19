@@ -319,7 +319,7 @@ export default function AboutUs() {
           {/* HERO IMAGE */}
 
           <img
-            src="p2.png"
+            src="https://res.cloudinary.com/d5tnusci/image/upload/v1789382320/signup_i2xqdg.png"
             alt="LostFound items"
             className="
               absolute
