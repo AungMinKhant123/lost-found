@@ -1,5 +1,5 @@
 import { NavLink } from "react-router";
-import { User, FileText, ShoppingCart, LogOut, Settings } from "lucide-react";
+import { User, FileText, ShoppingCart, Settings } from "lucide-react";
 
 // Each nav item: the label, icon, and the route it links to.
 // "end: true" on the Profile link means it only counts as active on an
@@ -11,10 +11,10 @@ const navItems = [
 ];
 
 const AccountSidebar = ({
-  // These will come from real auth/user data later — hardcoded defaults for now.
+  // Defaults only used briefly during the loading state in AccountLayout —
+  // real values are always passed in once the user data has loaded.
   name = "David",
   email = "myolwin400400@gmail.com",
-  onLogout,
 }) => {
   return (
     <aside className="w-full max-w-xs">
@@ -22,9 +22,19 @@ const AccountSidebar = ({
       <div className="flex items-center gap-3">
         {/* Avatar placeholder — swap for the real profile photo later */}
         <div className="w-14 h-14 rounded-full bg-neutral-300 shrink-0" />
-        <div>
-          <p className="text-heading-3 font-bold text-text-primary">{name}</p>
-          <p className="text-body-sm text-text-secondary">{email}</p>
+
+        {/* min-w-0 lets this text container actually shrink/wrap inside
+            the flex row instead of overflowing past the sidebar's edge —
+            without it, a long name (e.g. "Ashfaq Ifthicar") can visually
+            spill outside its bounds since flex items don't shrink below
+            their content size by default. */}
+        <div className="min-w-0">
+          <p className="text-heading-3 font-bold text-text-primary break-words">
+            {name}
+          </p>
+          <p className="text-body-sm text-text-secondary break-words">
+            {email}
+          </p>
         </div>
       </div>
 
@@ -48,18 +58,8 @@ const AccountSidebar = ({
           </NavLink>
         ))}
 
-        {/* Logout isn't a route — it's an action, so it's a button, not a NavLink.
-            The actual logout logic (clearing auth state/token) will be wired up
-            once real authentication exists; for now it just calls whatever
-            function the parent passes in via onLogout. */}
-        <button
-          type="button"
-          onClick={onLogout}
-          className="w-full flex items-center gap-3 border border-border rounded-lg px-4 py-3 text-body-md text-text-primary hover:bg-background-subtle transition-colors"
-        >
-          <LogOut size={20} />
-          Logout
-        </button>
+        {/* Logout button removed per UI/UX — logging out now happens
+            exclusively from the Navbar's profile dropdown. */}
 
         <NavLink
           to="/account/settings"

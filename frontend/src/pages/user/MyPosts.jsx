@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { MapPin } from "lucide-react";
 import { getCurrentUser, getItemsByUser, getClaims } from "../../services/api";
+import { useAuthStore } from "../../store/authStore";
 
 // The four filter tabs, in display order.
 // "value" matches how we'll filter the items array below.
@@ -32,15 +33,13 @@ const MyPosts = () => {
   // Maps itemId -> count of pending claims on that item, so each card
   // can show how many people are waiting on a response.
   const [pendingCounts, setPendingCounts] = useState({});
+  const authUserId = useAuthStore((state) => state.user?.id);
 
   useEffect(() => {
     getCurrentUser()
       .then((user) => Promise.all([getItemsByUser(user.id), getClaims()]))
       .then(([itemsData, claimsData]) => {
         setItems(itemsData);
-
-        // Build a map of itemId -> pending claim count, only counting
-        // claims on items that belong to this user.
         const counts = {};
         claimsData
           .filter((claim) => claim.status === "pending")
@@ -51,7 +50,7 @@ const MyPosts = () => {
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [authUserId]);
 
   // Filters the fetched items based on which tab is active.
   const filteredItems = items.filter((item) => {

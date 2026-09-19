@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { MapPin } from "lucide-react";
 import { getCurrentUser, getClaimsByUser, getItems } from "../../services/api";
+import { useAuthStore } from "../../store/authStore";
 
 // The four filter tabs, in display order.
 const TAB_FILTERS = ["all", "pending", "accepted", "declined"];
@@ -29,11 +30,9 @@ const MyClaims = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("all");
+  const authUserId = useAuthStore((state) => state.user?.id);
 
   useEffect(() => {
-    // Fetch the current user's claims AND all items in parallel, since each
-    // claim only stores an itemId — we need the actual items to display
-    // their title/location/date alongside the claim's status.
     getCurrentUser()
       .then((user) => Promise.all([getClaimsByUser(user.id), getItems()]))
       .then(([claimsData, itemsData]) => {
@@ -42,7 +41,7 @@ const MyClaims = () => {
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [authUserId]);
 
   // Looks up the full item object for a given claim, so we can show
   // its title/location/date next to the claim's status.
