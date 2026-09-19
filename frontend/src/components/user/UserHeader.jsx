@@ -4,7 +4,7 @@ const navLinks = [
   { label: "Home", href: "/" },
   { label: "Item List", href: "/item-list" },
   { label: "How it works", href: "/how-it-works" },
-  { label: "About Us", href: "#" },
+  { label: "About Us", href: "/about-us" },
 ];
 
 const UserHeader = () => {
