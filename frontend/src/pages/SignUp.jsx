@@ -15,6 +15,7 @@ import { FaApple } from "react-icons/fa6";
 import Button from "../components/Button";
 import { useSignup } from "../hooks/useAuth";
 import toast from "react-hot-toast";
+import { createMockUser } from "../services/api";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -104,6 +105,30 @@ const SignUp = () => {
 
       navigate("/login");
     } catch (error) {
+      // TEMPORARY, DEV-ONLY FALLBACK: mirrors the exact same fallback used
+      // in LogIn.jsx — only triggers when the real backend is genuinely
+      // unreachable (no response, or a 5xx server error), never on a real
+      // rejection like "email already taken" from a working backend. See
+      // the longer comment in LogIn.jsx's catch block for full reasoning.
+      // Safe to delete this whole "if" block once real backend integration
+      // no longer needs a local fallback.
+      const isBackendUnreachable =
+        !error.response || error.response.status >= 500;
+
+      if (import.meta.env.DEV && isBackendUnreachable) {
+        try {
+          const mockUser = await createMockUser(signupData);
+          toast.success(
+            "Account created (backend unreachable — saved to local test data)",
+          );
+          navigate("/login");
+          return;
+        } catch (mockError) {
+          toast.error(mockError.message || "Signup failed. Please try again.");
+          return;
+        }
+      }
+
       toast.error(
         error.response?.data?.message || "Signup failed. Please try again.",
       );

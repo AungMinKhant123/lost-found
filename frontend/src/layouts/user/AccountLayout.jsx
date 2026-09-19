@@ -2,24 +2,29 @@ import { useEffect, useState } from "react";
 import { Outlet } from "react-router";
 import AccountSidebar from "../../components/user/AccountSidebar";
 import { getCurrentUser } from "../../services/api";
+import { useAuthStore } from "../../store/authStore";
 
 const AccountLayout = () => {
   // Holds the fetched current user (name, email, etc.) for the Sidebar.
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Watches the actual logged-in user's id from the auth store. This is
+  // the key fix: including authUserId in the effect's dependency array
+  // below means "re-fetch whenever WHO is logged in changes" — covering
+  // a real login, the dev-only mock switcher, or logging out and back
+  // in as someone else. Previously this effect only ran once on mount
+  // and never again, which is why switching mock users didn't update
+  // the sidebar.
+  const authUserId = useAuthStore((state) => state.user?.id);
+
   useEffect(() => {
+    setLoading(true);
     getCurrentUser()
       .then((data) => setUser(data))
       .catch((err) => console.error("Failed to load current user:", err))
       .finally(() => setLoading(false));
-  }, []);
-
-  // Placeholder logout handler — replace with real auth logout later
-  // (clearing token/session, redirecting to /login, etc.)
-  const handleLogout = () => {
-    console.log("Logout clicked — wire up real auth logic here.");
-  };
+  }, [authUserId]);
 
   return (
     <div className="max-w-[1280px] mx-auto px-10 py-10">
@@ -32,7 +37,6 @@ const AccountLayout = () => {
           <AccountSidebar
             name={user ? `${user.firstName} ${user.lastName}` : undefined}
             email={user?.email}
-            onLogout={handleLogout}
           />
         )}
         <div className="flex-1">

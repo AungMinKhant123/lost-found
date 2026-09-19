@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import { useLogin } from "../hooks/useAuth";
 import { useAuthStore } from "../store/authStore";
+import { getMockUserByCredentials } from "../services/api";
 
 import {
   Mail,
@@ -109,6 +110,42 @@ const Login = () => {
 
       navigate("/");
     } catch (error) {
+      // TEMPORARY, DEV-ONLY FALLBACK: only triggers when the real backend
+      // is genuinely unreachable (error.response is undefined — no
+      // response came back at all, e.g. the server isn't running). If the
+      // backend DID respond (even with "wrong password"), error.response
+      // exists and we skip straight to the normal error message below,
+      // exactly as before. This means real backend behavior is completely
+      // unaffected once it's actually running — this only helps local
+      // testing when it's not. Safe to delete this whole "if" block once
+      // real backend integration no longer needs a local fallback.
+      // Treat as "backend unreachable" if either: no response came back at
+      // all (network/connection failure), OR the response was a 5xx server
+      // error (500/502/503/504 — meaning the backend itself is broken/down,
+      // as opposed to a 4xx like 401 which means "your backend IS working,
+      // it just rejected these specific credentials").
+      const isBackendUnreachable =
+        !error.response || error.response.status >= 500;
+
+      if (import.meta.env.DEV && isBackendUnreachable) {
+        try {
+          const mockUser = await getMockUserByCredentials(
+            loginData.email,
+            loginData.password,
+          );
+          if (mockUser) {
+            login(mockUser, "mock-token");
+            toast.success(
+              "Logged in (backend unreachable — used local test data)",
+            );
+            navigate("/");
+            return;
+          }
+        } catch (mockError) {
+          console.error("Mock login fallback also failed:", mockError);
+        }
+      }
+
       console.log("Login error:", error.response?.data);
 
       toast.error(
@@ -448,7 +485,7 @@ const Login = () => {
             "
             >
               <img
-                src="https://res.cloudinary.com/d5tnusci/image/upload/v1789382550/login_hh77bf.png"                
+                src="https://res.cloudinary.com/d5tnusci/image/upload/v1789382550/login_hh77bf.png"
                 alt="LostFound items"
                 className="
                 h-80

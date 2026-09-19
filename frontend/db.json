@@ -173,6 +173,24 @@
       "userId": "1",
       "category": "Documents",
       "color": "Red"
+    },
+    {
+      "id": "15",
+      "title": "Grey Hoodie",
+      "status": "found",
+      "location": "Library",
+      "date": "2026-09-12",
+      "resolved": false,
+      "userId": "2"
+    },
+    {
+      "id": "16",
+      "title": "Water Bottle",
+      "status": "lost",
+      "location": "Cafeteria",
+      "date": "2026-09-13",
+      "resolved": false,
+      "userId": "2"
     }
   ],
   "users": [
@@ -306,6 +324,18 @@
       "firstName": "Jordan",
       "lastName": "Lee",
       "email": "jordan.lee@gmail.com"
+    },
+    {
+      "firstName": "Goku",
+      "lastName": "Senpai",
+      "email": "goku@gmail.com",
+      "password": "goku1234567`",
+      "id": "9yDpuSXxtbc",
+      "confirmPassword": "goku1234567`",
+      "phone": "077 9455 281",
+      "aboutMe": "I am a fighter. Goku Senpai !!",
+      "socialMedia": "gokusenpai insta",
+      "profession": "Student"
     }
   ],
   "claims": [

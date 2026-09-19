@@ -24,6 +24,7 @@ import PostClaims from "./pages/user/PostClaims";
 import AcceptedClaimView from "./pages/user/AcceptedClaimView";
 import ItemList from "./pages/user/ItemList";
 import AboutUs from "./pages/user/AboutUs";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
   return (
@@ -37,8 +38,17 @@ const App = () => {
           <Route path="about-us" element={<AboutUs />} />
           <Route path="item-list" element={<ItemList />} />
 
-          {/* Account section: sidebar + nested pages */}
-          <Route path="account" element={<AccountLayout />}>
+          {/* Account section: sidebar + nested pages. Wrapped in ProtectedRoute
+          so every page underneath (posts, claims, settings, etc.) requires
+          a logged-in user — guests get redirected to /login automatically. */}
+          <Route
+            path="account"
+            element={
+              <ProtectedRoute>
+                <AccountLayout />
+              </ProtectedRoute>
+            }
+          >
             <Route index element={<AccountProfile />} />
             <Route path="edit-profile" element={<EditProfile />} />
             <Route path="change-password" element={<ChangePassword />} />
@@ -47,10 +57,6 @@ const App = () => {
             <Route path="claims" element={<MyClaims />} />
             <Route path="claims/:id" element={<ClaimDetails />} />
             <Route path="settings" element={<AccountSettings />} />
-            <Route path="notifications" element={<Notification />} />
-            <Route path="delete-account" element={<DeleteAccount />} />
-            <Route path="logout" element={<LogOut />} />
-            <Route path="*" element={<NotFound />} />
             <Route path="posts/:id" element={<PostClaims />} />
             <Route
               path="posts/:itemId/claims/:claimId"

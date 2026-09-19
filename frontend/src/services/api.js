@@ -1,3 +1,5 @@
+import { useAuthStore } from "../store/authStore";
+
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 async function request(endpoint, options = {}) {
@@ -77,12 +79,18 @@ export async function signUp(data) {
   });
 }
 
-// Mock "current logged-in user" — since there's no real authentication yet,
-// this hardcodes fetching user id "1" (David). Once real login/auth exists,
-// this should instead read the logged-in user's actual id (e.g. from a token
-// or auth context) rather than a hardcoded "1".
+// Fetches the CURRENTLY LOGGED IN user's full data from json-server.
+//
+// Reads the logged-in user's id from the shared Zustand auth store
+// (the same store the Navbar, LogIn.jsx, and the mock switcher all use).
+// Falls back to user "1" (David) if nobody's logged in — this keeps
+// existing pages working exactly as before for anyone testing without
+// bothering to log in first, while ALSO correctly personalizing once
+// someone actually is logged in (real or mock).
 export function getCurrentUser() {
-  return request("/users/1");
+  const { user } = useAuthStore.getState();
+  const userId = user?.id || "1";
+  return request(`/users/${userId}`);
 }
 
 export function updateUser(id, data) {
@@ -165,4 +173,64 @@ export function updateItemStatus(itemId, updates) {
 // anywhere else that needs to filter the full claims list client-side.
 export function getClaims() {
   return request("/claims");
+}
+
+// TEMPORARY, DEV-ONLY: lets you test the app as different mock users
+// from json-server, without needing the real backend running. Call
+// from the browser console, e.g. window.mockLoginAs('2').
+//
+// This does NOT touch the real login flow at all — it writes to the
+// exact same auth store LogIn.jsx does, which is why the Navbar and
+// every "current user" page reacts to it identically to a real login.
+// Safe to delete this whole block once real backend integration is
+// complete and no longer needed for local testing.
+if (import.meta.env.DEV) {
+  window.mockLoginAs = async (userId) => {
+    const user = await getUserById(userId);
+    useAuthStore.getState().login(user, "mock-token");
+    console.log("Logged in as mock user:", user);
+  };
+
+  window.mockLogout = () => {
+    useAuthStore.getState().logout();
+    console.log("Logged out.");
+  };
+}
+
+// TEMPORARY, DEV-ONLY: looks up a mock user in json-server by email +
+// password, used ONLY as a fallback in LogIn.jsx when the real backend
+// is unreachable (see the comment there for the exact condition). Real,
+// successful backend responses never reach this function at all.
+export async function getMockUserByCredentials(email, password) {
+  const allUsers = await request("/users");
+  return allUsers.find(
+    (u) =>
+      u.email?.toLowerCase() === email.toLowerCase() && u.password === password,
+  );
+}
+
+// TEMPORARY, DEV-ONLY: creates a new user directly in json-server, used
+// ONLY as a fallback in SignUp.jsx when the real backend is unreachable
+// (same exact condition/reasoning as the login fallback above). Mirrors
+// the id-numbering logic from our very first mock signUp() function.
+export async function createMockUser(userData) {
+  const existingUsers = await getUsers();
+
+  const emailTaken = existingUsers.some(
+    (u) => u.email?.toLowerCase() === userData.email.toLowerCase(),
+  );
+  if (emailTaken) {
+    throw new Error("An account with this email already exists.");
+  }
+
+  const highestId = existingUsers.reduce((max, user) => {
+    const numericId = parseInt(user.id, 10);
+    return Number.isNaN(numericId) ? max : Math.max(max, numericId);
+  }, 0);
+  const nextId = String(highestId + 1);
+
+  return request("/users", {
+    method: "POST",
+    body: JSON.stringify({ ...userData, id: nextId }),
+  });
 }

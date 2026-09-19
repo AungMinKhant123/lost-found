@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router";
 import { getCurrentUser, getItemsByUser } from "../../services/api";
+import { useAuthStore } from "../../store/authStore";
 
 const AccountProfile = () => {
   const [user, setUser] = useState(null);
@@ -21,17 +22,25 @@ const AccountProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Watches the actual logged-in user's id from the auth store. Including
+  // authUserId in the effect's dependency array below is the fix: it
+  // makes this page re-fetch whenever WHO is logged in changes (a real
+  // login, the dev-only mock switcher, or logging out and back in as
+  // someone else). Previously this effect only ran once on mount and
+  // never again, which is why switching mock users didn't update this page.
+  const authUserId = useAuthStore((state) => state.user?.id);
+
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
         setLoading(true);
 
         // Retrieve local auth state if present, or fall back to getCurrentUser()
-       const currentUser = await getCurrentUser();
+        const currentUser = await getCurrentUser();
 
-       console.log("Latest user from json-server:", currentUser);
+        console.log("Latest user from json-server:", currentUser);
 
-       setUser(currentUser);
+        setUser(currentUser);
 
         // Fetch user items to compute stats
         if (currentUser?.id) {
@@ -47,7 +56,7 @@ const AccountProfile = () => {
     };
 
     fetchProfileData();
-  }, []);
+  }, [authUserId]);
 
   if (loading) {
     return (
@@ -124,7 +133,7 @@ const AccountProfile = () => {
               <div className="flex flex-row items-start gap-8 w-66 h-11.5">
                 <Link
                   to="/account/edit-profile"
-                  className="flex justify-center items-center w-29 h-11 px-2.5 rounded-lg bg-primary text-body-md text-text-inverse hover:bg-primary-dark transition-colors"
+                  className="flex justify-center items-center w-29 h-11 px-2.5 rounded-lg bg-primary text-body-md text-text-inverse hover:bg-primary-darktransition-colors"
                 >
                   Edit Profile
                 </Link>
@@ -141,7 +150,7 @@ const AccountProfile = () => {
             {/* ================= STATISTICS ================= */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-1 w-full">
               {/* Item Reports */}
-               
+
               <div className="box-border flex flex-row justify-center items-center gap-6 w-full h-15.5 border border-border rounded">
                 <Flag
                   size={24}
