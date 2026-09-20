@@ -80,7 +80,7 @@ const UserHeader = () => {
               the real Report Item page exists, this "#" for logged-in
               users should become its actual route. */}
           <Link
-            to={isAuthenticated ? "#" : "/login"}
+            to={isAuthenticated ? "/account/new-post" : "/login"}
             className="bg-primary hover:bg-primary-dark text-text-inverse rounded-lg px-6 py-3 text-label-lg font-medium transition-colors"
           >
             New Post

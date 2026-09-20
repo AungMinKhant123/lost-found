@@ -11,23 +11,23 @@ const footerLinks = [
     title: "PRODUCT",
     links: [
       { label: "Home", href: "/" },
-      { label: "Lost Item", href: "#" },
-      { label: "Report Item", href: "#" },
-      { label: "Found Item", href: "#" },
+      { label: "Lost Item", href: "/item-list" },
+      { label: "Report Item", href: "/account/new-post" },
+      { label: "Found Item", href: "/item-list" },
     ],
   },
   {
     title: "COMMUNITY",
     links: [
       { label: "Guidelines", href: "#" },
-      { label: "About Us", href: "#" },
+      { label: "About Us", href: "/about-us" },
       { label: "Contact", href: "#" },
     ],
   },
   {
     title: "LEARN",
     links: [
-      { label: "How it works?", href: "#" },
+      { label: "How it works?", href: "/how-it-works" },
       { label: "Getting Started", href: "#" },
       { label: "Safety Tips", href: "#" },
     ],

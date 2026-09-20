@@ -15,8 +15,26 @@ async function request(endpoint, options = {}) {
   return response.json();
 }
 
-export function getItems() {
-  return request("/items");
+// Fetches all items, sorted NEWEST FIRST by createdAt.
+//
+// Sorting by id was unreliable, since json-server doesn't consistently
+// respect a client-supplied id (it sometimes generates its own random
+// string instead — see createItemWithSequentialId's comment). createdAt
+// is a timestamp WE set ourselves at creation time, so it's always
+// trustworthy regardless of what id ends up assigned.
+//
+// Older seed items in db.json don't have a createdAt field at all —
+// those are treated as oldest (sorted to the bottom), which is fine
+// since their exact relative order doesn't matter; what matters is that
+// genuinely new items always float to the top.
+export async function getItems() {
+  const items = await request("/items");
+  return [...items].sort((a, b) => {
+    if (!a.createdAt && !b.createdAt) return 0;
+    if (!a.createdAt) return 1;
+    if (!b.createdAt) return -1;
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
 }
 
 export function getUsers() {
@@ -232,5 +250,27 @@ export async function createMockUser(userData) {
   return request("/users", {
     method: "POST",
     body: JSON.stringify({ ...userData, id: nextId }),
+  });
+}
+
+// Creates a new item. Also stamps a "createdAt" timestamp ourselves —
+// NOT relying on json-server's id assignment, since it doesn't reliably
+// respect a client-supplied id (same issue we saw with signUp()). This
+// timestamp is what getItems() actually sorts by, so "newest first"
+// stays correct regardless of what id json-server ends up assigning.
+export async function createItemWithSequentialId(data) {
+  const existingItems = await getItems();
+
+  const highestId = existingItems.reduce((max, item) => {
+    const numericId = parseInt(item.id, 10);
+    return Number.isNaN(numericId) ? max : Math.max(max, numericId);
+  }, 0);
+
+  const nextId = String(highestId + 1);
+
+  return createItem({
+    ...data,
+    id: nextId, // still attempted, harmless even if ignored
+    createdAt: new Date().toISOString(),
   });
 }

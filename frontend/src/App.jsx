@@ -25,10 +25,13 @@ import AcceptedClaimView from "./pages/user/AcceptedClaimView";
 import ItemList from "./pages/user/ItemList";
 import AboutUs from "./pages/user/AboutUs";
 import ProtectedRoute from "./components/ProtectedRoute";
+import NewPost from "./pages/user/NewPost";
+import ScrollToTop from "./components/ScrollToTop";
 
 const App = () => {
   return (
     <>
+      <ScrollToTop />
       <Routes>
         <Route element={<UserLayout />}>
           <Route path="/" element={<Home />} />
@@ -57,11 +60,15 @@ const App = () => {
             <Route path="claims" element={<MyClaims />} />
             <Route path="claims/:id" element={<ClaimDetails />} />
             <Route path="settings" element={<AccountSettings />} />
+            <Route path="notifications" element={<Notification />} />
+            <Route path="delete-account" element={<DeleteAccount />} />
+            <Route path="logout" element={<LogOut />} />
             <Route path="posts/:id" element={<PostClaims />} />
             <Route
               path="posts/:itemId/claims/:claimId"
               element={<AcceptedClaimView />}
             />
+            <Route path="new-post" element={<NewPost />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Route>

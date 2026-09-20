@@ -191,6 +191,71 @@
       "date": "2026-09-13",
       "resolved": false,
       "userId": "2"
+    },
+    {
+      "title": "Grey Cap",
+      "status": "lost",
+      "category": "Clothing",
+      "color": "Grey",
+      "location": "Library",
+      "date": "2026-09-20",
+      "description": "It has a cute cat sticker and a green slime sticker pasted on the front.",
+      "resolved": false,
+      "userId": "1",
+      "postedBy": {
+        "name": "David Linn",
+        "email": "myolwin400400@gmail.com"
+      },
+      "id": "PJLPIZXllh0"
+    },
+    {
+      "title": "Blue Diary",
+      "status": "found",
+      "category": "Documents",
+      "color": "Blue",
+      "location": "Library",
+      "date": "2026-09-20",
+      "description": "The diary contains various stickers of Vehicles",
+      "resolved": false,
+      "userId": "1",
+      "postedBy": {
+        "name": "David Linn",
+        "email": "myolwin400400@gmail.com"
+      },
+      "id": "SIG5maMWM80"
+    },
+    {
+      "title": "HP Laptop",
+      "status": "lost",
+      "category": "Electronics",
+      "color": "Grey",
+      "location": "Library",
+      "date": "2026-09-20",
+      "description": "I has a small dent on the right top corner.",
+      "resolved": false,
+      "userId": "1",
+      "postedBy": {
+        "name": "David Linn",
+        "email": "myolwin400400@gmail.com"
+      },
+      "id": "IyYDZI-r4ZM"
+    },
+    {
+      "title": "Apple Ipad",
+      "status": "found",
+      "category": "Electronics",
+      "color": "Black",
+      "location": "IT Lab",
+      "date": "2026-09-20",
+      "description": "It has stickers of anime pasted at the back.",
+      "resolved": false,
+      "userId": "1",
+      "postedBy": {
+        "name": "David Linn",
+        "email": "myolwin400400@gmail.com"
+      },
+      "id": "aIziyNV_EuM",
+      "createdAt": "2026-09-20T13:17:11.950Z"
     }
   ],
   "users": [
