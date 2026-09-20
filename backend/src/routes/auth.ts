@@ -7,9 +7,16 @@ import { LogoutSchema } from "../handlers/auth/logout/schema.js";
 import { logoutHandler } from "../handlers/auth/logout/handler.js";
 import { RefreshSchema } from "../handlers/auth/refresh/schema.js";
 import { refreshHandler } from "../handlers/auth/refresh/handler.js";
+import { ProfileSchema } from "../handlers/auth/profile/schema.js";
+import { profileHandler } from "../handlers/auth/profile/handler.js";
+import { PasswordChangeSchema } from "../handlers/auth/passwordChange/schema.js";
+import { passwordChangeHandler } from "../handlers/auth/passwordChange/handler.js";
 export async function authRoutes(app: FastifyInstance) {
+
   app.post("/auth/signup", { schema: SignupSchema }, signupHandler);
+
   app.post("/auth/login", { schema: LoginSchema }, loginHandler);
+
   app.post(
     "/auth/logout",
     {
@@ -18,5 +25,24 @@ export async function authRoutes(app: FastifyInstance) {
     },
     logoutHandler,
   );
+
   app.post("/auth/refresh", { schema: RefreshSchema }, refreshHandler);
+
+  app.get(
+    "/auth/profile",
+    {
+      preHandler: app.verifyUser,
+      schema: ProfileSchema,
+    },
+    profileHandler,
+  )
+
+  app.post(
+    "/auth/password",
+    {
+      preHandler: app.verifyUser,
+      schema: PasswordChangeSchema
+    },
+    passwordChangeHandler
+  )
 }

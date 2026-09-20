@@ -5,5 +5,11 @@ export const LogoutSchema = {
   summary: "logout",
   description: "This API is for Logout",
 
+  security: [
+    {
+      bearerAuth: [],
+    },
+  ],
+
   response: { 200: LogoutResponseBodySchema },
 };
