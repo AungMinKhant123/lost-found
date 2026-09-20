@@ -3,6 +3,7 @@ import { Outlet } from "react-router";
 import AccountSidebar from "../../components/user/AccountSidebar";
 import { getCurrentUser } from "../../services/api";
 import { useAuthStore } from "../../store/authStore";
+import DecorativeBackground from "../../components/DecorativeBackground/DecorativeBackground";
 
 const AccountLayout = () => {
   // Holds the fetched current user (name, email, etc.) for the Sidebar.
@@ -27,8 +28,18 @@ const AccountLayout = () => {
   }, [authUserId]);
 
   return (
-    <div className="max-w-[1280px] mx-auto px-10 py-10">
-      <div className="flex gap-8 items-start">
+    // relative + overflow-hidden: this is what lets the circles inside
+    // DecorativeBackground bleed off the container's edges (via negative
+    // left/right offsets in designs.js) while getting clipped cleanly at
+    // the container's actual boundary, instead of spilling further out
+    // and affecting the rest of the page's layout.
+    <div className="max-w-[1280px] mx-auto px-10 py-10 relative">
+      <DecorativeBackground variant="account" />
+
+      {/* relative + z-10: lifts all real page content above the circles
+          (which sit at z-0), so the sidebar/pages are never visually
+          covered by them. */}
+      <div className="flex gap-8 items-start relative z-10">
         {loading ? (
           <div className="w-full max-w-xs text-body-sm text-text-secondary">
             Loading...
@@ -39,7 +50,7 @@ const AccountLayout = () => {
             email={user?.email}
           />
         )}
-        <div className="flex-1">
+        <div className="flex-1 min-h-[600px]">
           <Outlet />
         </div>
       </div>

@@ -15,6 +15,7 @@ import {
   X,
 } from "lucide-react";
 import { getItems } from "../../services/api";
+import DecorativeBackground from "../../components/DecorativeBackground/DecorativeBackground";
 
 // Item type radio options — single select.
 const ITEM_TYPES = [
@@ -208,325 +209,331 @@ const ItemList = () => {
   );
 
   return (
-    <div>
-      {/* ================= HERO ================= */}
-      {/* NOTE: wireframe has organic purple shapes behind this section —
+    <div className="relative w-full">
+      <DecorativeBackground variant="itemList" />
+
+      <div className="relative z-10">
+        {/* ================= HERO ================= */}
+        {/* NOTE: wireframe has organic purple shapes behind this section —
           deferred per team decision, same as Home and How It Works. */}
-      <section className="max-w-[1280px] mx-auto px-10 py-16">
-        <div className="grid grid-cols-2 gap-10 items-center">
-          <div>
-            <p className="text-body-lg font-semibold text-text-primary tracking-wide">
-              LOST &amp; FOUND COMMUNITY
-            </p>
-            <h1 className="text-display-lg font-bold text-primary-dark mt-2">
-              Find what
-              <br /> you're looking for.
-            </h1>
-            <p className="text-body-lg text-text-secondary mt-4 max-w-md">
-              Browse recently reported lost and found items. Search, filter, and
-              discover a possible match in just a few clicks.
-            </p>
+        <section className="max-w-[1280px] mx-auto px-10 py-16">
+          <div className="grid grid-cols-2 gap-10 items-center">
+            <div>
+              <p className="text-body-lg font-semibold text-text-primary tracking-wide">
+                LOST &amp; FOUND COMMUNITY
+              </p>
+              <h1 className="text-display-lg font-bold text-primary-dark mt-2">
+                Find what
+                <br /> you're looking for.
+              </h1>
+              <p className="text-body-lg text-text-secondary mt-4 max-w-md">
+                Browse recently reported lost and found items. Search, filter,
+                and discover a possible match in just a few clicks.
+              </p>
+            </div>
+
+            {/* Illustration placeholder — swap for the real box/items image later */}
+            <div className="w-full h-80 rounded-xl bg-neutral-100 flex items-center justify-center text-text-secondary text-body-sm">
+              Image Placeholder
+            </div>
           </div>
 
-          {/* Illustration placeholder — swap for the real box/items image later */}
-          <div className="w-full h-80 rounded-xl bg-neutral-100 flex items-center justify-center text-text-secondary text-body-sm">
-            Image Placeholder
-          </div>
-        </div>
-
-        {/* Search bar */}
-        <form
-          onSubmit={handleSearchSubmit}
-          className="flex justify-center gap-4 mt-10"
-        >
-          <div className="relative w-full max-w-xl">
-            <Search
-              size={18}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary"
-            />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="(Search for items eg. wallets,backpacks..)"
-              className="w-full border border-border rounded-lg pl-11 pr-10 py-3 text-body-md focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-            {/* Clear button — only shows once a search is actually active.
+          {/* Search bar */}
+          <form
+            onSubmit={handleSearchSubmit}
+            className="flex justify-center gap-4 mt-10"
+          >
+            <div className="relative w-full max-w-xl">
+              <Search
+                size={18}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary"
+              />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="(Search for items eg. wallets,backpacks..)"
+                className="w-full border border-border rounded-lg pl-11 pr-10 py-3 text-body-md focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+              {/* Clear button — only shows once a search is actually active.
         Resets both the input text AND the applied search filter, so
         results immediately return to their unfiltered state. */}
-            {activeSearch && (
+              {activeSearch && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setActiveSearch("");
+                  }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-primary"
+                >
+                  <X size={18} />
+                </button>
+              )}
+            </div>
+            <button
+              type="submit"
+              className="bg-primary hover:bg-primary-dark text-text-inverse rounded-lg px-8 py-3 text-body-md font-medium transition-colors"
+            >
+              Search
+            </button>
+          </form>
+        </section>
+
+        {/* ================= FILTERS + RESULTS ================= */}
+        <section className="max-w-[1280px] mx-auto px-10 pb-16">
+          <div className="grid grid-cols-[280px_1fr] gap-10 items-start">
+            {/* ===== FILTER SIDEBAR ===== */}
+            <div className="border border-border rounded-lg p-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-heading-3 font-bold text-text-primary">
+                  Filters
+                </h2>
+                <button
+                  type="button"
+                  onClick={handleClearAll}
+                  className="text-body-sm text-text-secondary hover:text-primary"
+                >
+                  Clear All
+                </button>
+              </div>
+
+              {/* Item Types — single select radio group */}
+              <div className="mt-6">
+                <h3 className="bg-background-subtle px-3 py-2 rounded text-label-md font-medium text-text-primary">
+                  Item Types
+                </h3>
+                <div className="flex flex-col gap-3 mt-3 px-1">
+                  {ITEM_TYPES.map((type) => (
+                    <label
+                      key={type.value}
+                      className="flex items-center gap-2 text-body-md text-text-primary cursor-pointer"
+                    >
+                      <input
+                        type="radio"
+                        name="itemType"
+                        checked={pendingType === type.value}
+                        onChange={() => setPendingType(type.value)}
+                        className="accent-primary"
+                      />
+                      {type.label}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Category — multi-select checkboxes with icons */}
+              <div className="mt-6">
+                <h3 className="bg-background-subtle px-3 py-2 rounded text-label-md font-medium text-text-primary">
+                  Category
+                </h3>
+                <div className="flex flex-col gap-3 mt-3 px-1">
+                  {CATEGORIES.map(({ label, icon: Icon }) => (
+                    <label
+                      key={label}
+                      className="flex items-center gap-2 text-body-md text-text-primary cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={pendingCategories.includes(label)}
+                        onChange={() => toggleCategory(label)}
+                        className="accent-primary"
+                      />
+                      <Icon size={16} className="text-text-secondary" />
+                      {label}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Color — multi-select swatches */}
+              <div className="mt-6">
+                <button
+                  type="button"
+                  onClick={() => setIsColorsExpanded((v) => !v)}
+                  className="w-full flex items-center justify-between bg-background-subtle px-3 py-2 rounded text-label-md font-medium text-text-primary"
+                >
+                  Color
+                  <ChevronDown
+                    size={16}
+                    className={`transition-transform ${isColorsExpanded ? "rotate-180" : ""}`}
+                  />
+                </button>
+                {isColorsExpanded && (
+                  <div className="flex flex-wrap gap-2 mt-3 px-1">
+                    {COLORS.map((color) => (
+                      <button
+                        key={color.name}
+                        type="button"
+                        title={color.name}
+                        onClick={() => toggleColor(color.name)}
+                        className={`w-7 h-7 rounded-full border-2 transition-all ${
+                          pendingColors.includes(color.name)
+                            ? "border-primary scale-110"
+                            : "border-border"
+                        }`}
+                        style={{ backgroundColor: color.hex }}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Expired Date — date range */}
+              <div className="mt-6">
+                <h3 className="bg-background-subtle px-3 py-2 rounded text-label-md font-medium text-text-primary">
+                  Expired Date
+                </h3>
+                <div className="px-1 mt-3">
+                  <label className="text-body-sm text-text-secondary">
+                    From
+                  </label>
+                  <div className="relative mt-1">
+                    <input
+                      type="date"
+                      value={pendingDateFrom}
+                      onChange={(e) => setPendingDateFrom(e.target.value)}
+                      className="w-full border border-border rounded-lg px-3 py-2 text-body-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+
+                  <label className="text-body-sm text-text-secondary mt-3 block">
+                    To
+                  </label>
+                  <div className="relative mt-1">
+                    <input
+                      type="date"
+                      value={pendingDateTo}
+                      onChange={(e) => setPendingDateTo(e.target.value)}
+                      className="w-full border border-border rounded-lg px-3 py-2 text-body-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+                </div>
+              </div>
+
               <button
                 type="button"
-                onClick={() => {
-                  setSearchQuery("");
-                  setActiveSearch("");
-                }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-primary"
+                onClick={handleApplyFilters}
+                className="w-full bg-primary hover:bg-primary-dark text-text-inverse rounded-lg py-2.5 text-body-md font-medium mt-6 transition-colors"
               >
-                <X size={18} />
+                Apply Filters
               </button>
-            )}
-          </div>
-          <button
-            type="submit"
-            className="bg-primary hover:bg-primary-dark text-text-inverse rounded-lg px-8 py-3 text-body-md font-medium transition-colors"
-          >
-            Search
-          </button>
-        </form>
-      </section>
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="w-full border border-border rounded-lg py-2.5 text-body-md text-text-primary hover:bg-background-subtle mt-3 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
 
-      {/* ================= FILTERS + RESULTS ================= */}
-      <section className="max-w-[1280px] mx-auto px-10 pb-16">
-        <div className="grid grid-cols-[280px_1fr] gap-10 items-start">
-          {/* ===== FILTER SIDEBAR ===== */}
-          <div className="border border-border rounded-lg p-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-heading-3 font-bold text-text-primary">
-                Filters
+            {/* ===== RESULTS ===== */}
+            <div>
+              <h2 className="text-heading-2 font-bold text-primary-dark">
+                {loading ? "Loading..." : `${filteredItems.length} items found`}
               </h2>
-              <button
-                type="button"
-                onClick={handleClearAll}
-                className="text-body-sm text-text-secondary hover:text-primary"
-              >
-                Clear All
-              </button>
-            </div>
 
-            {/* Item Types — single select radio group */}
-            <div className="mt-6">
-              <h3 className="bg-background-subtle px-3 py-2 rounded text-label-md font-medium text-text-primary">
-                Item Types
-              </h3>
-              <div className="flex flex-col gap-3 mt-3 px-1">
-                {ITEM_TYPES.map((type) => (
-                  <label
-                    key={type.value}
-                    className="flex items-center gap-2 text-body-md text-text-primary cursor-pointer"
-                  >
-                    <input
-                      type="radio"
-                      name="itemType"
-                      checked={pendingType === type.value}
-                      onChange={() => setPendingType(type.value)}
-                      className="accent-primary"
-                    />
-                    {type.label}
-                  </label>
-                ))}
-              </div>
-            </div>
+              {error && (
+                <p className="text-error text-body-md mt-4">Error: {error}</p>
+              )}
 
-            {/* Category — multi-select checkboxes with icons */}
-            <div className="mt-6">
-              <h3 className="bg-background-subtle px-3 py-2 rounded text-label-md font-medium text-text-primary">
-                Category
-              </h3>
-              <div className="flex flex-col gap-3 mt-3 px-1">
-                {CATEGORIES.map(({ label, icon: Icon }) => (
-                  <label
-                    key={label}
-                    className="flex items-center gap-2 text-body-md text-text-primary cursor-pointer"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={pendingCategories.includes(label)}
-                      onChange={() => toggleCategory(label)}
-                      className="accent-primary"
-                    />
-                    <Icon size={16} className="text-text-secondary" />
-                    {label}
-                  </label>
-                ))}
-              </div>
-            </div>
+              {!loading && !error && filteredItems.length === 0 && (
+                <p className="text-body-md text-text-secondary mt-8">
+                  No items match your filters. Try adjusting or clearing them.
+                </p>
+              )}
 
-            {/* Color — multi-select swatches */}
-            <div className="mt-6">
-              <button
-                type="button"
-                onClick={() => setIsColorsExpanded((v) => !v)}
-                className="w-full flex items-center justify-between bg-background-subtle px-3 py-2 rounded text-label-md font-medium text-text-primary"
-              >
-                Color
-                <ChevronDown
-                  size={16}
-                  className={`transition-transform ${isColorsExpanded ? "rotate-180" : ""}`}
-                />
-              </button>
-              {isColorsExpanded && (
-                <div className="flex flex-wrap gap-2 mt-3 px-1">
-                  {COLORS.map((color) => (
-                    <button
-                      key={color.name}
-                      type="button"
-                      title={color.name}
-                      onClick={() => toggleColor(color.name)}
-                      className={`w-7 h-7 rounded-full border-2 transition-all ${
-                        pendingColors.includes(color.name)
-                          ? "border-primary scale-110"
-                          : "border-border"
-                      }`}
-                      style={{ backgroundColor: color.hex }}
-                    />
+              {!loading && !error && filteredItems.length > 0 && (
+                <div className="grid grid-cols-3 gap-6 mt-6">
+                  {paginatedItems.map((item) => (
+                    <div
+                      key={item.id}
+                      className="border border-border rounded-lg overflow-hidden"
+                    >
+                      {/* Image placeholder — swap for the real uploaded photo
+                        once the Report Item feature exists. */}
+                      <div className="w-full h-40 bg-neutral-100 flex items-center justify-center text-text-secondary text-body-sm">
+                        Image Placeholder
+                      </div>
+
+                      <div className="p-4">
+                        <span
+                          className={`inline-block px-2 py-0.5 rounded text-label-sm font-medium ${
+                            item.status === "lost"
+                              ? "bg-error/10 text-error"
+                              : "bg-success/10 text-success"
+                          }`}
+                        >
+                          {item.status === "lost" ? "Lost" : "Found"}
+                        </span>
+
+                        <h3 className="text-heading-3 font-bold text-text-primary mt-2 truncate">
+                          {item.title}
+                        </h3>
+
+                        <div className="flex items-center gap-1 text-body-sm text-text-secondary mt-1">
+                          <MapPin size={14} />
+                          {item.location}
+                        </div>
+
+                        <p className="text-body-sm text-text-secondary mt-1">
+                          {formatDate(item.date)} ·{" "}
+                          {item.resolved ? "Resolved" : "Searching"}
+                        </p>
+
+                        <Link
+                          to={`/items/${item.id}`}
+                          className="mt-3 inline-flex items-center justify-center w-full border border-border rounded-lg px-4 py-2 text-body-md text-text-primary hover:bg-primary hover:text-text-inverse hover:border-primary transition-colors"
+                        >
+                          More Details
+                        </Link>
+                      </div>
+                    </div>
                   ))}
                 </div>
               )}
-            </div>
-
-            {/* Expired Date — date range */}
-            <div className="mt-6">
-              <h3 className="bg-background-subtle px-3 py-2 rounded text-label-md font-medium text-text-primary">
-                Expired Date
-              </h3>
-              <div className="px-1 mt-3">
-                <label className="text-body-sm text-text-secondary">From</label>
-                <div className="relative mt-1">
-                  <input
-                    type="date"
-                    value={pendingDateFrom}
-                    onChange={(e) => setPendingDateFrom(e.target.value)}
-                    className="w-full border border-border rounded-lg px-3 py-2 text-body-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
-
-                <label className="text-body-sm text-text-secondary mt-3 block">
-                  To
-                </label>
-                <div className="relative mt-1">
-                  <input
-                    type="date"
-                    value={pendingDateTo}
-                    onChange={(e) => setPendingDateTo(e.target.value)}
-                    className="w-full border border-border rounded-lg px-3 py-2 text-body-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={handleApplyFilters}
-              className="w-full bg-primary hover:bg-primary-dark text-text-inverse rounded-lg py-2.5 text-body-md font-medium mt-6 transition-colors"
-            >
-              Apply Filters
-            </button>
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="w-full border border-border rounded-lg py-2.5 text-body-md text-text-primary hover:bg-background-subtle mt-3 transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-
-          {/* ===== RESULTS ===== */}
-          <div>
-            <h2 className="text-heading-2 font-bold text-primary-dark">
-              {loading ? "Loading..." : `${filteredItems.length} items found`}
-            </h2>
-
-            {error && (
-              <p className="text-error text-body-md mt-4">Error: {error}</p>
-            )}
-
-            {!loading && !error && filteredItems.length === 0 && (
-              <p className="text-body-md text-text-secondary mt-8">
-                No items match your filters. Try adjusting or clearing them.
-              </p>
-            )}
-
-            {!loading && !error && filteredItems.length > 0 && (
-              <div className="grid grid-cols-3 gap-6 mt-6">
-                {paginatedItems.map((item) => (
-                  <div
-                    key={item.id}
-                    className="border border-border rounded-lg overflow-hidden"
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-2 mt-8">
+                  <button
+                    type="button"
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage((p) => p - 1)}
+                    className="border border-border rounded-lg px-4 py-2 text-body-md text-text-primary hover:bg-background-subtle disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                   >
-                    {/* Image placeholder — swap for the real uploaded photo
-                        once the Report Item feature exists. */}
-                    <div className="w-full h-40 bg-neutral-100 flex items-center justify-center text-text-secondary text-body-sm">
-                      Image Placeholder
-                    </div>
+                    Previous
+                  </button>
 
-                    <div className="p-4">
-                      <span
-                        className={`inline-block px-2 py-0.5 rounded text-label-sm font-medium ${
-                          item.status === "lost"
-                            ? "bg-error/10 text-error"
-                            : "bg-success/10 text-success"
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (page) => (
+                      <button
+                        key={page}
+                        type="button"
+                        onClick={() => setCurrentPage(page)}
+                        className={`w-10 h-10 rounded-lg text-body-md font-medium transition-colors ${
+                          currentPage === page
+                            ? "bg-primary text-text-inverse"
+                            : "border border-border text-text-primary hover:bg-background-subtle"
                         }`}
                       >
-                        {item.status === "lost" ? "Lost" : "Found"}
-                      </span>
+                        {page}
+                      </button>
+                    ),
+                  )}
 
-                      <h3 className="text-heading-3 font-bold text-text-primary mt-2 truncate">
-                        {item.title}
-                      </h3>
-
-                      <div className="flex items-center gap-1 text-body-sm text-text-secondary mt-1">
-                        <MapPin size={14} />
-                        {item.location}
-                      </div>
-
-                      <p className="text-body-sm text-text-secondary mt-1">
-                        {formatDate(item.date)} ·{" "}
-                        {item.resolved ? "Resolved" : "Searching"}
-                      </p>
-
-                      <Link
-                        to={`/items/${item.id}`}
-                        className="mt-3 inline-flex items-center justify-center w-full border border-border rounded-lg px-4 py-2 text-body-md text-text-primary hover:bg-primary hover:text-text-inverse hover:border-primary transition-colors"
-                      >
-                        More Details
-                      </Link>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-2 mt-8">
-                <button
-                  type="button"
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage((p) => p - 1)}
-                  className="border border-border rounded-lg px-4 py-2 text-body-md text-text-primary hover:bg-background-subtle disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                >
-                  Previous
-                </button>
-
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (page) => (
-                    <button
-                      key={page}
-                      type="button"
-                      onClick={() => setCurrentPage(page)}
-                      className={`w-10 h-10 rounded-lg text-body-md font-medium transition-colors ${
-                        currentPage === page
-                          ? "bg-primary text-text-inverse"
-                          : "border border-border text-text-primary hover:bg-background-subtle"
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  ),
-                )}
-
-                <button
-                  type="button"
-                  disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage((p) => p + 1)}
-                  className="border border-border rounded-lg px-4 py-2 text-body-md text-text-primary hover:bg-background-subtle disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                >
-                  Next
-                </button>
-              </div>
-            )}
+                  <button
+                    type="button"
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage((p) => p + 1)}
+                    className="border border-border rounded-lg px-4 py-2 text-body-md text-text-primary hover:bg-background-subtle disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
     </div>
   );
 };
