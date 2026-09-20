@@ -10,28 +10,32 @@ import DecorativeBackground from "../../components/DecorativeBackground/Decorati
 // scroll animation logic below is new.
 const STEPS = [
   {
-    id: "report",
     title: "Report",
     description: "Report a lost or found item with details and location.",
     className: "left-[95px] top-[80px]",
+    photo:
+      "https://res.cloudinary.com/d5tnusci/image/upload/v1789923340/howdoesitwork1_luaqcu.jpg",
   },
   {
-    id: "search",
     title: "Search",
     description: "Browse or search items in your area.",
     className: "right-[90px] top-[650px]",
+    photo:
+      "https://res.cloudinary.com/d5tnusci/image/upload/v1789923340/howdoesitwork2_rqrkbk.jpg",
   },
   {
-    id: "connect",
     title: "Connect",
     description: "Contact the poster and arrange to return it.",
     className: "right-[425px] top-[1250px]",
+    photo:
+      "https://res.cloudinary.com/d5tnusci/image/upload/v1789923340/howdoesitwork3_qobbo5.jpg",
   },
   {
-    id: "reunite",
     title: "Reunite",
     description: "Get your item back and make someone's day.",
     className: "left-[180px] top-[1800px]",
+    photo:
+      "https://res.cloudinary.com/d5tnusci/image/upload/v1789923340/howdoesitwork4_cesaqi.jpg",
   },
 ];
 
@@ -358,7 +362,7 @@ const HowItWorks = () => {
             {step.description}
           </p>
           <div className="w-full h-56 rounded-lg bg-neutral-100 flex items-center justify-center text-text-secondary text-body-sm mt-4">
-            Image Placeholder
+            <img src={step.photo} alt="" />
           </div>
         </div>
       ))}
