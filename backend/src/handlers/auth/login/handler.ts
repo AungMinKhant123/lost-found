@@ -82,5 +82,7 @@ export async function loginHandler(
         role: user.role,
       },
     },
+    refreshToken: refreshToken, //need to delete, only for testing
+    accessToken: accessToken, //need to delete, only for testing
   });
 }

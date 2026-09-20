@@ -111,8 +111,8 @@
       "phone": "0945609416",
       "profession": "Student",
       "socialMedia": "https://www.facebook.com/david.lin",
-      "password": "12345678`",
-      "confirmPassword": "12345678`",
+      "password": "abcd1234!",
+      "confirmPassword": "abcd1234!",
       "agreeTerms": true,
       "aboutMe": "I am a UI/UX designer"
     },

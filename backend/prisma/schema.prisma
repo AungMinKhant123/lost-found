@@ -20,6 +20,8 @@ model User {
   facebookUsername  String?
   instagramUsername String?
   className         String?
+  aboutMe           String?
+  passwordUpdatedAt DateTime?
   profession        UserProfession? @default(STUDENT)
   role              UserRole       @default(USER)
   isActive          Boolean        @default(true)
