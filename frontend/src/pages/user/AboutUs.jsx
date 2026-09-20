@@ -1,4 +1,5 @@
 import React from "react";
+import DecorativeBackground from "../../components/DecorativeBackground/DecorativeBackground";
 
 const teamMembers = [
   {
@@ -30,11 +31,26 @@ const teamMembers = [
       "I worked as a frontend developer on the Lost & Found project because I wanted hands-on experience building a clean, responsive web application from the ground up. My focus was on creating a smooth user experience from designing form validation and photo previews to building search filters. This role gave me the perfect opportunity to sharpen my frontend skills, master team workflows using Git and GitHub, and learn how to seamlessly connect user interfaces with backend APIs.",
   },
   {
+    name: "Htet Min Myat",
+    role: "(Backend Developer)",
+    image: "/assets/shared-image.jpg",
+    description:
+      "The Lost & Found project is a platform designed to make it easier for people to report, search for, and recover lost items in one organized place. I joined this project as a backend developer because I wanted to contribute to building the core system that makes these features work smoothly. My main focus is developing the APIs, managing the database, and implementing the business logic while working with the team to make the platform reliable and easy to use.",
+  },
+  {
     name: "Hein Min Htet",
     role: "(Backend Developer)",
     image: "/assets/hein-min-htet.png",
     description:
       "I chose backend development because I’m interested in what happens behind the user interface. I like working with APIs, databases, authentication, and the logic that makes the application actually function. I also took QA because I think building a feature and making sure it works correctly are closely connected. Testing also helps me understand the system from the user's perspective.",
+  },
+
+  {
+    name: "Myo Lwin",
+    role: "(UI/UX Designer)",
+    image: "/assets/shared-image.jpg",
+    description:
+      "Lostfound is the Web App we really need in recently. My attention to this website is to make it more attractive to the users and can deliver to the person who is belonged to that items.",
   },
 ];
 
@@ -184,6 +200,8 @@ export default function AboutUs() {
         font-sans
       "
     >
+      <DecorativeBackground variant="aboutUs" />
+
       {/* =====================================================
           HERO
       ====================================================== */}
@@ -376,7 +394,6 @@ export default function AboutUs() {
           mx-auto
           w-full
           max-w-[1280px]
-          bg-[#F8FAFC]
         "
       >
         <div
@@ -426,7 +443,6 @@ export default function AboutUs() {
         className="
           relative
           w-full
-          bg-[#F8FAFC]
           pb-[140px]
         "
       >
@@ -435,6 +451,53 @@ export default function AboutUs() {
             <TeamMember key={member.name} member={member} index={index} />
           ))}
         </div>
+      </section>
+
+      {/* =====================================================
+          CLOSING STATEMENT
+      ====================================================== */}
+      <section
+        className="
+          relative
+          z-10
+          mx-auto
+          w-full
+          max-w-[1280px]
+          pt-[75px]
+          pb-[140px]
+          text-center
+        "
+      >
+        <h2
+          className="
+            m-0
+            mb-[16px]
+            text-[28px]
+            font-bold
+            leading-[36px]
+            text-black
+            lg:text-[32px]
+          "
+        >
+          Built around people, not just items.
+        </h2>
+
+        <p
+          className="
+            m-0
+            mx-auto
+            max-w-[720px]
+            text-[16px]
+            font-normal
+            leading-[28px]
+            text-black
+            lg:text-[18px]
+          "
+        >
+          Every item has a story. Behind every lost phone, backpack, wallet, or
+          set of keys is a person hoping to get it back. LostFound is designed
+          to make that connection easier, safer, and more meaningful.
+        </p>
       </section>
     </div>
   );

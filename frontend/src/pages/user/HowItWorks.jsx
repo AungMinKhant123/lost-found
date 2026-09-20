@@ -3,6 +3,7 @@ import {
   buildConnectorPath,
   toContainerRelativeRect,
 } from "../../utils/dottedPath";
+import DecorativeBackground from "../../components/DecorativeBackground/DecorativeBackground";
 
 // Each step: title, description, and its own absolute position.
 // UNCHANGED from before — card positions/lines are untouched, only the
@@ -265,6 +266,7 @@ const HowItWorks = () => {
     >
       {/* NOTE: wireframe has large organic purple shapes behind this whole
           page — deferred per team decision, same as the Home page. */}
+      <DecorativeBackground variant="howItWorks" />
 
       <svg
         className="absolute top-0 left-0 w-full h-full pointer-events-none"
