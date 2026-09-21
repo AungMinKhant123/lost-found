@@ -8,7 +8,10 @@ import { AppError } from "../../../errors/AppError.js";
 import { randomBytes } from "node:crypto";
 import { prisma } from "../../../lib/prisma.js";
 import { verifyPassword } from "../../../utils/password.js";
-import { hashRefreshToken } from "../../../utils/refreshToken.js";
+import {
+  createRefreshTokenLookup,
+  hashRefreshToken,
+} from "../../../utils/refreshToken.js";
 import { SYS_CONSTANTS } from "../../../constants/system.js";
 
 export async function loginHandler(
@@ -46,9 +49,11 @@ export async function loginHandler(
   refreshTokenExpiresAt.setDate(refreshTokenExpiresAt.getDate() + 7);
 
   const refreshTokenHash = await hashRefreshToken(refreshToken);
+  const refreshTokenLookup = createRefreshTokenLookup(refreshToken);
   await prisma.refreshToken.create({
     data: {
       tokenHash: refreshTokenHash,
+      tokenLookup: refreshTokenLookup,
       userId: user.id,
       expiresAt: refreshTokenExpiresAt,
     },

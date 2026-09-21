@@ -15,10 +15,8 @@ model User {
   email             String         @unique
   passwordHash      String
   phone             String?
-  profileUrl        String?
-  lineUsername      String?
-  facebookUsername  String?
-  instagramUsername String?
+  profileKey        String?
+  socialMedia       String?
   className         String?
   aboutMe           String?
   passwordUpdatedAt DateTime?
@@ -41,6 +39,7 @@ model User {
 
 model RefreshToken {
   id        String   @id @default(uuid())
+  tokenLookup String?   @unique
   tokenHash String   @unique
   userId    String
   expiresAt DateTime

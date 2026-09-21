@@ -8,6 +8,7 @@ export async function profileHandler(
   request: FastifyRequest,
   reply: FastifyReply,
 ): Promise<ProfileResponseBody> {
+  console.log("request.user:", request.user);
   const userId = request.user.userId;
 
   // Get user information and statistics
@@ -22,9 +23,7 @@ export async function profileHandler(
       email: true,
       phone: true,
       profileUrl: true,
-      lineUsername: true,
-      facebookUsername: true,
-      instagramUsername: true,
+      socialMedia: true,
       profession: true,
       aboutMe: true,
       passwordUpdatedAt: true,
@@ -64,9 +63,7 @@ export async function profileHandler(
     email: user.email,
     phone: user.phone,
     profileUrl: user.profileUrl,
-    lineUsername: user.lineUsername,
-    facebookUsername: user.facebookUsername,
-    instagramUsername: user.instagramUsername,
+    socialMedia: user.socialMedia,
     profession: user.profession,
     aboutMe: user.aboutMe,
     passwordUpdatedAt: user.passwordUpdatedAt,

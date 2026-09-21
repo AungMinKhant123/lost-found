@@ -3,6 +3,7 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import type { RefreshResponseBody } from "./responseBody.js";
 
 import {
+  createRefreshTokenLookup,
   hashRefreshToken,
   verifyRefreshToken,
 } from "../../../utils/refreshToken.js";
@@ -22,23 +23,24 @@ export async function refreshHandler(
     throw new AppError("Refresh token is required", 401);
   }
 
-  const refreshTokenRecords = await prisma.refreshToken.findMany();
+  const tokenLookup = createRefreshTokenLookup(refreshToken);
 
-  let storedRefreshToken = null;
-
-  for (const tokenRecord of refreshTokenRecords) {
-    const isValid = await verifyRefreshToken(
-      refreshToken,
-      tokenRecord.tokenHash,
-    );
-
-    if (isValid) {
-      storedRefreshToken = tokenRecord;
-      break;
-    }
-  }
+  const storedRefreshToken = await prisma.refreshToken.findUnique({
+    where: {
+      tokenLookup,
+    },
+  });
 
   if (!storedRefreshToken) {
+    throw new AppError("Invalid refresh token", 401);
+  }
+
+  const isValid = await verifyRefreshToken(
+    refreshToken,
+    storedRefreshToken.tokenHash,
+  );
+
+  if (!isValid) {
     throw new AppError("Invalid refresh token", 401);
   }
 
@@ -68,7 +70,7 @@ export async function refreshHandler(
       email: user.email,
     },
     {
-      expiresIn: "10s",
+      expiresIn: "15m",
     },
   );
 
@@ -77,6 +79,8 @@ export async function refreshHandler(
   const newRefreshTokenExpiresAt = new Date();
 
   newRefreshTokenExpiresAt.setDate(newRefreshTokenExpiresAt.getDate() + 7);
+
+  const newRefreshTokenLookup = createRefreshTokenLookup(newRefreshToken);
 
   const newRefreshTokenHash = await hashRefreshToken(newRefreshToken);
 
@@ -89,6 +93,7 @@ export async function refreshHandler(
 
     prisma.refreshToken.create({
       data: {
+        tokenLookup: newRefreshTokenLookup,
         tokenHash: newRefreshTokenHash,
         userId: user.id,
         expiresAt: newRefreshTokenExpiresAt,
@@ -103,6 +108,7 @@ export async function refreshHandler(
     maxAge: 60 * 15,
     path: "/",
   });
+
   reply.setCookie(SYS_CONSTANTS.REFRESH_TOKEN_COOKIE, newRefreshToken, {
     httpOnly: true,
     secure: true,
