@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router";
 import { useState, useRef, useEffect } from "react";
 import { User, LogOut, Settings } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
+import { logoutUser } from "../../api/authApi";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -33,14 +34,29 @@ const UserHeader = () => {
         setIsDropdownOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
-    logout();
-    setIsDropdownOpen(false);
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      // Call backend logout API.
+      // The browser automatically sends the HTTP-only refresh token cookie.
+      await logoutUser();
+
+      // Clear frontend Zustand authentication state.
+      logout();
+
+      // Close dropdown.
+      setIsDropdownOpen(false);
+
+      // Redirect to login.
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   return (
@@ -119,6 +135,7 @@ const UserHeader = () => {
                     <User size={20} />
                     Profile
                   </Link>
+
                   <button
                     type="button"
                     onClick={handleLogout}
@@ -127,6 +144,7 @@ const UserHeader = () => {
                     <LogOut size={20} />
                     Log Out
                   </button>
+
                   <Link
                     to="/account/settings"
                     onClick={() => setIsDropdownOpen(false)}

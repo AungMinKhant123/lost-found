@@ -1,9 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
-import { getCurrentUser, updateUser } from "../../services/api";
+import { useChangePassword } from "../../hooks/useChangePassword";
 
 export default function ChangePassword() {
   const navigate = useNavigate();
+
+  // --------------------------------------------------
+  // Change password mutation
+  // --------------------------------------------------
+
+  const changePasswordMutation = useChangePassword();
+
+  const isLoading = changePasswordMutation.isPending;
 
   // --------------------------------------------------
   // Form state
@@ -35,12 +43,6 @@ export default function ChangePassword() {
     confirmPassword: "",
     general: "",
   });
-
-  // --------------------------------------------------
-  // Loading state
-  // --------------------------------------------------
-
-  const [isLoading, setIsLoading] = useState(false);
 
   // --------------------------------------------------
   // Password requirements
@@ -127,7 +129,7 @@ export default function ChangePassword() {
   // Submit
   // --------------------------------------------------
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     // Clear previous errors
@@ -183,71 +185,94 @@ export default function ChangePassword() {
       hasError = true;
     }
 
+    // -----------------------------------------------
     // Stop if validation fails
+    // -----------------------------------------------
+
     if (hasError) {
       return;
     }
 
-    setIsLoading(true);
+    // -----------------------------------------------
+    // Send request to backend
+    // -----------------------------------------------
 
-    try {
-      // -----------------------------------------------
-      // Get current user
-      // -----------------------------------------------
+    changePasswordMutation.mutate(
+      {
+        currentPassword: formData.currentPassword,
+        newPassword: formData.newPassword,
+        newPassConfirm: formData.confirmPassword,
+      },
+      {
+        onSuccess: () => {
+          console.log(
+            "Password updated successfully. Navigating to PasswordUpdated page.",
+          );
 
-      const user = await getCurrentUser();
+          navigate("/account/password-updated");
+        },
 
-      // -----------------------------------------------
-      // Check current password
-      // -----------------------------------------------
+        onError: (error) => {
+          console.error("Change password error:", error);
 
-      if (user.password !== formData.currentPassword) {
-        setErrors((prev) => ({
-          ...prev,
-          currentPassword: "Current password is incorrect.",
-        }));
+          const status = error.response?.status;
+          const message = error.response?.data?.message;
 
-        return;
-      }
+          // -----------------------------------------
+          // Current password error
+          // -----------------------------------------
 
-      // -----------------------------------------------
-      // Prevent same password
-      // -----------------------------------------------
+          if (status === 401 && message === "Current password is incorrect!") {
+            setErrors((prev) => ({
+              ...prev,
+              currentPassword: "Current password is incorrect.",
+            }));
 
-      if (user.password === formData.newPassword) {
-        setErrors((prev) => ({
-          ...prev,
-          newPassword:
-            "New password must be different from your current password.",
-        }));
+            return;
+          }
 
-        return;
-      }
+          // -----------------------------------------
+          // New password confirmation error
+          // -----------------------------------------
 
-      // -----------------------------------------------
-      // Update password in JSON Server
-      // -----------------------------------------------
+          if (status === 400 && message === "New passwords do not match!") {
+            setErrors((prev) => ({
+              ...prev,
+              confirmPassword: "Passwords do not match.",
+            }));
 
-      await updateUser(user.id, {
-        password: formData.newPassword,
-        confirmPassword: formData.newPassword,
-      });
+            return;
+          }
 
-      navigate("/account/password-updated");
-      console.log(
-        "Password updated successfully. Navigating to PasswordUpdated page.",
-      );
-    } catch (error) {
-      console.error("Change password error:", error);
+          // -----------------------------------------
+          // Same password error
+          // -----------------------------------------
 
-      setErrors((prev) => ({
-        ...prev,
-        general:
-          error.message || "Unable to change password. Please try again.",
-      }));
-    } finally {
-      setIsLoading(false);
-    }
+          if (
+            status === 400 &&
+            message ===
+              "New password must be different from your current password!"
+          ) {
+            setErrors((prev) => ({
+              ...prev,
+              newPassword:
+                "New password must be different from your current password.",
+            }));
+
+            return;
+          }
+
+          // -----------------------------------------
+          // General error
+          // -----------------------------------------
+
+          setErrors((prev) => ({
+            ...prev,
+            general: message || "Unable to change password. Please try again.",
+          }));
+        },
+      },
+    );
   };
 
   // --------------------------------------------------

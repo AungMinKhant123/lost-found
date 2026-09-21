@@ -14,9 +14,7 @@ export async function profileEditHandler(
 
   // Authentication is required.
   const userId = request.user.userId;
-  // TODO: access authenticated user
 
-  // TODO: implement business logic
   // extract the user data from database
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -26,13 +24,13 @@ export async function profileEditHandler(
       lastName: true,
       email: true,
       phone: true,
-      //need to add social media
+      socialMedia: true,
       profession: true,
       aboutMe: true,
-    }
+    },
   });
 
-  if(!user) {
+  if (!user) {
     throw new AppError("User not found!", 404);
   }
 
@@ -49,10 +47,10 @@ export async function profileEditHandler(
       lastName,
       email: body.email,
       phone: body.phone,
-      //need to add social media
+      socialMedia: body.socialMedia,
       profession: body.profession,
       aboutMe: body.aboutMe,
-    }
+    },
   });
 
   return reply.send({

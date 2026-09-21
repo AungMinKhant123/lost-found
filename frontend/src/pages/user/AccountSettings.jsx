@@ -4,13 +4,12 @@ import { UserRound, KeyRound, Bell, LogOut, Trash2 } from "lucide-react";
 const AccountSettings = () => {
   const navigate = useNavigate();
 
-  const handleLogout = () => { 
-
+  const handleLogout = () => {
     // Go back to login page
     navigate("/account/logout");
   };
 
-  const handleDeleteAccount = () => { 
+  const handleDeleteAccount = () => {
     navigate("/account/delete-account");
   };
 

@@ -7,45 +7,16 @@ export const ProfileResponseBodySchema = Type.Object({
   lastName: Type.String(),
   email: Type.String(),
 
-  phone: Type.Union([
-    Type.String(),
-    Type.Null(),
-  ]),
+  phone: Type.Union([Type.String(), Type.Null()]),
 
-  profileUrl: Type.Union([
-    Type.String(),
-    Type.Null(),
-  ]),
+  profileUrl: Type.Union([Type.String(), Type.Null()]),
+  socialMedia: Type.Union([Type.String(), Type.Null()]),
 
-  lineUsername: Type.Union([
-    Type.String(),
-    Type.Null(),
-  ]),
+  profession: Type.Union([Type.String(), Type.Null()]),
 
-  facebookUsername: Type.Union([
-    Type.String(),
-    Type.Null(),
-  ]),
+  aboutMe: Type.Union([Type.String(), Type.Null()]),
 
-  instagramUsername: Type.Union([
-    Type.String(),
-    Type.Null(),
-  ]),
-
-  profession: Type.Union([
-    Type.String(),
-    Type.Null(),
-  ]),
-
-  aboutMe: Type.Union([
-    Type.String(),
-    Type.Null(),
-  ]),
-
-  passwordUpdatedAt: Type.Union([
-    Type.String(),
-    Type.Null(),
-  ]),
+  passwordUpdatedAt: Type.Union([Type.String(), Type.Null()]),
 
   stats: Type.Object({
     itemReports: Type.Number(),
