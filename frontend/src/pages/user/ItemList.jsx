@@ -233,8 +233,12 @@ const ItemList = () => {
             </div>
 
             {/* Illustration placeholder — swap for the real box/items image later */}
-            <div className="w-full h-80 rounded-xl bg-neutral-100 flex items-center justify-center text-text-secondary text-body-sm">
-              Image Placeholder
+            <div className="w-full h-80 rounded-xl  flex items-center justify-center text-text-secondary text-body-sm">
+              <img
+                src="https://res.cloudinary.com/d5tnusci/image/upload/v1789924308/itemlists_f7kjjr.png"
+                alt=""
+                className="w-300 h-auto"
+              />
             </div>
           </div>
 

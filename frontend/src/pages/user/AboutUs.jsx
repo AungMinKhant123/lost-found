@@ -5,42 +5,48 @@ const teamMembers = [
   {
     name: "Mohamed Ashfaqu Ifthicar",
     role: "(Frontend Developer & Project Owner)",
-    image: "/assets/shared-image.jpg",
+    image:
+      "https://res.cloudinary.com/d5tnusci/image/upload/v1789923770/4d41e8252bb97c408baccee3b0f15a433fc9dac0_1_bhhesd.jpg",
     description:
       "Basically, the idea behind LostFound came from noticing how difficult it can be to find something after losing it around campus. So I wanted to create one simple platform where people can post about lost or found items with details like photos, location, and date. Then other students can easily search through the posts and contact the person or make a claim if they find their item. The main idea is just to make the whole lost-and-found process quicker, easier, and more organized.",
   },
   {
     name: "Aung Min Khant",
     role: "(Project Manager & Tester)",
-    image: "/assets/aung-min-khant.png",
+    image:
+      "https://res.cloudinary.com/d5tnusci/image/upload/v1789923771/394a60e48359b11938225a5423b51269758c633d_qtr6nk.png",
     description:
       "Joining the LostFound project as part of the project management and QA testing team gives me the opportunity to blend process organisation with quality control. I am passionate about ensuring our web app runs smoothly so students and staff can effortlessly recover their misplaced belongings. By driving the project timeline and testing every feature, I help deliver a reliable, user-friendly platform tailored to our campus's daily needs. Ultimately, I am taking part in this initiative because I want to turn a stressful campus problem into a seamless, technology-driven solution.",
   },
   {
     name: "May Phu San",
     role: "(Project Manager & UI/UX Designer)",
-    image: "/assets/may-phu-san.jpg",
+    image:
+      "https://res.cloudinary.com/d5tnusci/image/upload/v1789923821/1f18b6522add5a0acd4e9ee21fc9be1e3b307509_slskmh.jpg",
     description:
       "Main idea is to create a simple platform that makes reporting and finding lost items easier. We noticed that people often have to rely on social media or word of mouth, which can make it difficult to find the right information. So, basically, we want to provide one organized platform where users can report, search, claim and connect with the right person. From my role, I’m trying to focus on making the user experience simple and intuitive while also trying to help the team planning and organize the project effectively.",
   },
   {
     name: "Myint Mo Kyaw",
     role: "(Frontend Developer)",
-    image: "/assets/myint-mo-kyaw.jpg",
+    image:
+      "https://res.cloudinary.com/d5tnusci/image/upload/v1789923792/3acb57ea44b0e2a79241655a31d3058645f25393_xts4y3.jpg",
     description:
       "I worked as a frontend developer on the Lost & Found project because I wanted hands-on experience building a clean, responsive web application from the ground up. My focus was on creating a smooth user experience from designing form validation and photo previews to building search filters. This role gave me the perfect opportunity to sharpen my frontend skills, master team workflows using Git and GitHub, and learn how to seamlessly connect user interfaces with backend APIs.",
   },
   {
     name: "Htet Min Myat",
     role: "(Backend Developer)",
-    image: "/assets/shared-image.jpg",
+    image:
+      "https://res.cloudinary.com/d5tnusci/image/upload/v1789923775/70a3503028a7ef8f33b6d1f45a3641a8ec5d8915_1_fwesh4.jpg",
     description:
       "The Lost & Found project is a platform designed to make it easier for people to report, search for, and recover lost items in one organized place. I joined this project as a backend developer because I wanted to contribute to building the core system that makes these features work smoothly. My main focus is developing the APIs, managing the database, and implementing the business logic while working with the team to make the platform reliable and easy to use.",
   },
   {
     name: "Hein Min Htet",
     role: "(Backend Developer)",
-    image: "/assets/hein-min-htet.png",
+    image:
+      "https://res.cloudinary.com/d5tnusci/image/upload/v1789923780/133eb337d364fc8a691dc7b3b17d8db2c5e69334_ygigkf.png",
     description:
       "I chose backend development because I’m interested in what happens behind the user interface. I like working with APIs, databases, authentication, and the logic that makes the application actually function. I also took QA because I think building a feature and making sure it works correctly are closely connected. Testing also helps me understand the system from the user's perspective.",
   },
@@ -48,7 +54,8 @@ const teamMembers = [
   {
     name: "Myo Lwin",
     role: "(UI/UX Designer)",
-    image: "/assets/shared-image.jpg",
+    image:
+      "https://res.cloudinary.com/d5tnusci/image/upload/v1789923771/98f2505a5bcb541576ef404fdcaddda39be55ccb_izqpfo.jpg",
     description:
       "Lostfound is the Web App we really need in recently. My attention to this website is to make it more attractive to the users and can deliver to the person who is belonged to that items.",
   },
@@ -88,7 +95,7 @@ function TeamMember({ member, index }) {
           lg:w-[464px]
         "
       >
-        <div
+        <img
           src={member.image}
           alt={member.name}
           className="
