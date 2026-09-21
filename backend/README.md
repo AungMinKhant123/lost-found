@@ -185,3 +185,5 @@ If Swagger does not show `POST /items`, rebuild the API image:
 ```bash
 docker compose -f compose.yml up --build -d api
 ```
+
+<!-- run "npx prisma db seed" to insert sample data from seeds files to your database -->
