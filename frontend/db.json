@@ -256,6 +256,49 @@
       },
       "id": "aIziyNV_EuM",
       "createdAt": "2026-09-20T13:17:11.950Z"
+    },
+    {
+      "id": "17",
+      "title": "Silver Laptop",
+      "status": "lost",
+      "location": "Computer Lab",
+      "date": "2026-09-21",
+      "resolved": true,
+      "userId": "1"
+    },
+    {
+      "title": "dasdasd",
+      "status": "lost",
+      "category": "Clothing",
+      "color": "Grey",
+      "location": "dadw",
+      "date": "2026-09-21",
+      "description": "dawdadadaw",
+      "resolved": false,
+      "userId": "2",
+      "postedBy": {
+        "name": "Ashfaq Ifthicar",
+        "email": "ash@gmail.com"
+      },
+      "id": "fc5ReyLJB_0",
+      "createdAt": "2026-09-21T03:09:23.011Z"
+    },
+    {
+      "title": "testing",
+      "status": "lost",
+      "category": "Clothing",
+      "color": "Brown",
+      "location": "daw",
+      "date": "2026-09-21",
+      "description": "dwad",
+      "resolved": false,
+      "userId": "2",
+      "postedBy": {
+        "name": "Ashfaq Ifthicar",
+        "email": "ash@gmail.com"
+      },
+      "id": "SbA5DchRyRU",
+      "createdAt": "2026-09-21T03:33:22.205Z"
     }
   ],
   "users": [
@@ -475,6 +518,30 @@
       "status": "accepted",
       "message": "I lost my silver watch at the gym last month. It has a small scratch on the back.",
       "claimedAt": "2026-08-21T16:30:00"
+    },
+    {
+      "id": "13",
+      "itemId": "17",
+      "userId": "8",
+      "status": "accepted",
+      "message": "This is my laptop — it has a small sticker on the lid.",
+      "claimedAt": "2026-09-21T10:00:00"
+    },
+    {
+      "id": "14",
+      "itemId": "17",
+      "userId": "9",
+      "status": "declined",
+      "message": "I lost a silver laptop in the computer lab yesterday.",
+      "claimedAt": "2026-09-21T11:00:00"
+    },
+    {
+      "id": "15",
+      "itemId": "17",
+      "userId": "10",
+      "status": "declined",
+      "message": "That's mine — it has a cracked corner on the case.",
+      "claimedAt": "2026-09-21T12:00:00"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
