@@ -20,7 +20,7 @@ model User {
   className         String?
   aboutMe           String?
   passwordUpdatedAt DateTime?
-  profession        UserProfession? @default(STUDENT)
+  profession        UserProfession?
   role              UserRole       @default(USER)
   isActive          Boolean        @default(true)
   createdAt         DateTime       @default(now())
@@ -92,8 +92,8 @@ model Item {
   claims          Claim[]
   category        Category    @relation(fields: [categoryId], references: [id])
   color           Color       @relation(fields: [colorId], references: [id])
-  createdBy       User        @relation("ItemCreatedBy", fields: [createdById], references: [id])
-  updatedBy       User        @relation("ItemUpdatedBy", fields: [updatedById], references: [id])
+  createdBy       User        @relation("ItemCreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
+  updatedBy       User        @relation("ItemUpdatedBy", fields: [updatedById], references: [id], onDelete: Cascade)
   user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   images          ItemImage[]
 
