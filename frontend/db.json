@@ -550,6 +550,142 @@
       "message": "It has stickers related to anime called Dragon Ball Z in the backside.",
       "claimedAt": "2026-09-23T02:38:32.696Z",
       "id": "_pB_1CDM7IU"
+    },
+    {
+      "itemId": "7",
+      "userId": "2",
+      "status": "pending",
+      "message": "i believe this item is mine because it is mine.",
+      "claimedAt": "2026-09-23T07:24:53.046Z",
+      "id": "4JgQBspkk2k"
+    },
+    {
+      "itemId": "2",
+      "userId": "2",
+      "status": "pending",
+      "message": "this item is mine i said so",
+      "claimedAt": "2026-09-23T07:30:31.367Z",
+      "id": "k5evWJnJIq8"
+    },
+    {
+      "itemId": "2",
+      "userId": "2",
+      "status": "pending",
+      "message": "i am testing this claim",
+      "claimedAt": "2026-09-23T07:32:23.593Z",
+      "id": "bxKz4rtlTjs"
+    },
+    {
+      "itemId": "3",
+      "userId": "2",
+      "status": "pending",
+      "message": "testing this claim again",
+      "claimedAt": "2026-09-23T07:36:44.846Z",
+      "id": "QVMK-rRY574"
+    },
+    {
+      "itemId": "aIziyNV_EuM",
+      "userId": "2",
+      "status": "pending",
+      "message": "dwadaw",
+      "claimedAt": "2026-09-23T07:37:08.510Z",
+      "id": "mEvgkyJba-g"
+    },
+    {
+      "itemId": "aIziyNV_EuM",
+      "userId": "2",
+      "status": "pending",
+      "message": "testing again",
+      "claimedAt": "2026-09-23T07:41:28.318Z",
+      "id": "kdZpiC6ldOs"
+    },
+    {
+      "itemId": "aIziyNV_EuM",
+      "userId": "2",
+      "status": "pending",
+      "message": "testinggg",
+      "claimedAt": "2026-09-23T07:42:07.438Z",
+      "id": "tavrmhscaQw"
+    },
+    {
+      "itemId": "aIziyNV_EuM",
+      "userId": "2",
+      "status": "pending",
+      "message": "dwadwadw",
+      "claimedAt": "2026-09-23T07:43:34.384Z",
+      "id": "AWmO3L5BYFE"
+    },
+    {
+      "itemId": "aIziyNV_EuM",
+      "userId": "2",
+      "status": "pending",
+      "message": "testing",
+      "claimedAt": "2026-09-23T07:45:09.585Z",
+      "id": "kN2TvCqRYXM"
+    },
+    {
+      "itemId": "aIziyNV_EuM",
+      "userId": "2",
+      "status": "pending",
+      "message": "tsting",
+      "claimedAt": "2026-09-23T07:46:38.563Z",
+      "id": "TsYt4M2wVoI"
+    },
+    {
+      "itemId": "aIziyNV_EuM",
+      "userId": "2",
+      "status": "pending",
+      "message": "test",
+      "claimedAt": "2026-09-23T07:47:46.202Z",
+      "id": "igbkiCYwAdg"
+    },
+    {
+      "itemId": "aIziyNV_EuM",
+      "userId": "2",
+      "status": "pending",
+      "message": "testinggg",
+      "claimedAt": "2026-09-23T07:52:05.849Z",
+      "id": "NuhAS6LrEqc"
+    },
+    {
+      "itemId": "aIziyNV_EuM",
+      "userId": "2",
+      "status": "pending",
+      "message": "dawdwd",
+      "claimedAt": "2026-09-23T07:57:10.097Z",
+      "id": "c_1urB0RPg4"
+    },
+    {
+      "itemId": "aIziyNV_EuM",
+      "userId": "2",
+      "status": "pending",
+      "message": "testing",
+      "claimedAt": "2026-09-23T08:01:29.634Z",
+      "id": "JXIlZcCgBw4"
+    },
+    {
+      "itemId": "aIziyNV_EuM",
+      "userId": "2",
+      "status": "pending",
+      "message": "testing",
+      "claimedAt": "2026-09-23T08:06:12.210Z",
+      "id": "B6BoczpDDX0"
+    },
+    {
+      "itemId": "aIziyNV_EuM",
+      "userId": "2",
+      "status": "pending",
+      "message": "mine testing",
+      "claimedAt": "2026-09-23T08:07:11.832Z",
+      "id": "xkNHLWOS-Fg"
+    },
+    {
+      "itemId": "6",
+      "userId": "2",
+      "status": "pending",
+      "message": "testing",
+      "claimedAt": "2026-09-23T08:11:20.327Z",
+      "id": "V4n-ixfDHcw"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

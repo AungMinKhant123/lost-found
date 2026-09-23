@@ -38,6 +38,7 @@ const ItemDetailsModal = ({ item, onClose }) => {
   const isOwnItem = currentUserId && item.userId === currentUserId;
 
   const handleSubmitClaim = async (e) => {
+    console.log("handleSubmitClaim fired", e);
     e.preventDefault();
     if (!message.trim()) {
       toast.error("Please describe why this item belongs to you.");
@@ -46,6 +47,7 @@ const ItemDetailsModal = ({ item, onClose }) => {
 
     setIsSubmitting(true);
     try {
+      console.log("about to call createClaim");
       await createClaim({
         itemId: item.id,
         userId: currentUserId,
@@ -53,8 +55,10 @@ const ItemDetailsModal = ({ item, onClose }) => {
         message: message.trim(),
         claimedAt: new Date().toISOString(),
       });
+      console.log("createClaim succeeded, setting view to claimSuccess");
       setView("claimSuccess");
     } catch (err) {
+      console.log("createClaim FAILED:", err);
       toast.error("Failed to submit claim. Please try again.");
     } finally {
       setIsSubmitting(false);
@@ -183,7 +187,7 @@ const ItemDetailsModal = ({ item, onClose }) => {
 
             <p className="text-body-sm text-text-secondary mt-2">
               Describe something specific about "{item.title}" that only the
-              real owner would know — this helps the poster verify your claim.
+              real owner would know, this helps the poster verify your claim.
             </p>
 
             <form onSubmit={handleSubmitClaim} className="mt-4">
