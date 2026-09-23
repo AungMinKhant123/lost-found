@@ -542,6 +542,14 @@
       "status": "declined",
       "message": "That's mine — it has a cracked corner on the case.",
       "claimedAt": "2026-09-21T12:00:00"
+    },
+    {
+      "itemId": "aIziyNV_EuM",
+      "userId": "2",
+      "status": "pending",
+      "message": "It has stickers related to anime called Dragon Ball Z in the backside.",
+      "claimedAt": "2026-09-23T02:38:32.696Z",
+      "id": "_pB_1CDM7IU"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

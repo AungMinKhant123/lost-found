@@ -274,3 +274,24 @@ export async function createItemWithSequentialId(data) {
     createdAt: new Date().toISOString(),
   });
 }
+
+// Creates a new claim on an item — the actual "submit a claim" action,
+// distinct from updateClaimStatus (which only changes an EXISTING
+// claim's status). Follows the same sequential-id pattern as
+// createItemWithSequentialId, since json-server doesn't reliably
+// respect a client-supplied id.
+export async function createClaim(data) {
+  const existingClaims = await getClaims();
+
+  const highestId = existingClaims.reduce((max, claim) => {
+    const numericId = parseInt(claim.id, 10);
+    return Number.isNaN(numericId) ? max : Math.max(max, numericId);
+  }, 0);
+
+  const nextId = String(highestId + 1);
+
+  return request("/claims", {
+    method: "POST",
+    body: JSON.stringify({ ...data, id: nextId }),
+  });
+}
