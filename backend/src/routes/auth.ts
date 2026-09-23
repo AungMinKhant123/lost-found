@@ -16,6 +16,10 @@ import { profileHandler } from "../handlers/auth/profile/handler.js";
 import { ProfileSchema } from "../handlers/auth/profile/schema.js";
 import { passwordChangeHandler } from "../handlers/auth/passwordChange/handler.js";
 import { PasswordChangeSchema } from "../handlers/auth/passwordChange/schema.js";
+import { ProfileEditSchema } from "../handlers/auth/profileEdit/schema.js";
+import { profileEditHandler } from "../handlers/auth/profileEdit/handler.js";
+import { UserDeleteSchema } from "../handlers/auth/userDelete/schema.js";
+import { userDeleteHandler } from "../handlers/auth/userDelete/handler.js";
 
 export async function authRoutes(app: FastifyInstance) {
   // Public
@@ -41,6 +45,16 @@ export async function authRoutes(app: FastifyInstance) {
     },
     profileHandler,
   );
+
+  app.put(
+    "/auth/profile",
+    {
+      preHandler: app.verifyUser,
+      schema: ProfileEditSchema,
+    },
+    profileEditHandler,
+  )
+
   app.patch(
     "/auth/password",
     {
@@ -49,4 +63,13 @@ export async function authRoutes(app: FastifyInstance) {
     },
     passwordChangeHandler,
   );
+
+  app.delete(
+    "/auth/userDelete",
+    {
+      preHandler: app.verifyUser,
+      schema: UserDeleteSchema,
+    },
+    userDeleteHandler,
+  )
 }
