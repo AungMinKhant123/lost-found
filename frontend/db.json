@@ -686,6 +686,14 @@
       "message": "testing",
       "claimedAt": "2026-09-23T08:11:20.327Z",
       "id": "V4n-ixfDHcw"
+    },
+    {
+      "itemId": "aIziyNV_EuM",
+      "userId": "2",
+      "status": "pending",
+      "message": "testing",
+      "claimedAt": "2026-09-23T13:45:42.426Z",
+      "id": "XhuTKGBfJhY"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
