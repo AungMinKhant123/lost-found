@@ -8,6 +8,7 @@ import authPlugin from "./plugins/auth.js";
 
 import { authRoutes } from "./routes/auth.js";
 import { publicRoutes } from "./routes/public.js";
+import { itemRoutes } from "./routes/item.js";
 
 export async function buildApp() {
   const app = Fastify({
@@ -32,6 +33,7 @@ export async function buildApp() {
 
   await app.register(authRoutes);
   await app.register(publicRoutes);
+  await app.register(itemRoutes);
 
   return app;
 }
