@@ -101,9 +101,7 @@ const Login = () => {
 
       console.log("Login successful:", response);
 
-      const { user } = response.data;
-
-      login(user);
+      login();
 
       toast.success("Logged in successfully!");
       console.log(response.data);

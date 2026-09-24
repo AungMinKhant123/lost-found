@@ -9,9 +9,9 @@ export async function profileHandler(
   reply: FastifyReply,
 ): Promise<ProfileResponseBody> {
   console.log("request.user:", request.user);
+
   const userId = request.user.userId;
 
-  // Get user information and statistics
   const user = await prisma.user.findUnique({
     where: {
       id: userId,
@@ -41,7 +41,18 @@ export async function profileHandler(
     throw new AppError("User not found!", 404);
   }
 
-  // Calculate profile statistics
+  let profileUrl: string | null = null;
+
+  if (user.profileKey) {
+    const bucketName = process.env.MINIO_BUCKET || "lost-found";
+
+    profileUrl = await request.server.minio.presignedGetObject(
+      bucketName,
+      user.profileKey,
+      60 * 60,
+    );
+  }
+
   const itemsFound = await prisma.item.count({
     where: {
       userId: userId,

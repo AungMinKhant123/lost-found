@@ -6,6 +6,7 @@ export const ProfileEditRequestBodySchema = Type.Object({
   fullName: Type.String({ minLength: 1 }),
   email: Type.String({ format: "email" }),
   phone: Type.Optional(Type.String()),
+
   socialMedia: Type.Optional(Type.String()),
   profession: Type.Optional(
     Type.Union([

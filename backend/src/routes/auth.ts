@@ -46,15 +46,6 @@ export async function authRoutes(app: FastifyInstance) {
     profileHandler,
   );
 
-  app.put(
-    "/auth/profile",
-    {
-      preHandler: app.verifyUser,
-      schema: ProfileEditSchema,
-    },
-    profileEditHandler,
-  )
-
   app.patch(
     "/auth/password",
     {
@@ -64,6 +55,14 @@ export async function authRoutes(app: FastifyInstance) {
     passwordChangeHandler,
   );
 
+  app.patch(
+    "/auth/profile",
+    {
+      preHandler: app.verifyUser,
+      schema: ProfileEditSchema,
+    },
+    profileEditHandler,
+  );
   app.delete(
     "/auth/userDelete",
     {

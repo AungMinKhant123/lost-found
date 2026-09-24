@@ -1,57 +1,69 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { getCurrentUser, updateUser } from "../../services/api";
+
+import { useProfile, useUpdateProfile } from "../../hooks/useProfile";
 
 export default function EditProfile() {
   const navigate = useNavigate();
+
+  // ==================================================
+  // PROFILE QUERY
+  // ==================================================
+
+  const {
+    data: user,
+    isLoading: profileLoading,
+    isError: profileError,
+  } = useProfile();
+
+  // ==================================================
+  // UPDATE PROFILE MUTATION
+  // ==================================================
+
+  const updateProfileMutation = useUpdateProfile();
+
+  // ==================================================
+  // FORM STATE
+  // ==================================================
 
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     phone: "",
+    socialMedia: "",
+    profession: "",
     about: "",
   });
 
+  // Preview URL for displaying the selected image
   const [profileImage, setProfileImage] = useState(null);
 
-  const [userId, setUserId] = useState(null);
-
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  // Actual File object that will be sent to the backend
+  const [profileImageFile, setProfileImageFile] = useState(null);
 
   const [error, setError] = useState("");
 
-  // ================= LOAD CURRENT USER =================
+  // ==================================================
+  // LOAD USER INTO FORM
+  // ==================================================
+
   useEffect(() => {
-    const loadUser = async () => {
-      try {
-        setLoading(true);
-        setError("");
+    if (!user) return;
 
-        const user = await getCurrentUser();
+    setFormData({
+      fullName: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
+      email: user.email || "",
+      phone: user.phone || "",
+      socialMedia: user.socialMedia || "",
+      profession: user.profession || "",
+      about: user.aboutMe || "",
+    });
+  }, [user]);
 
-        setUserId(user.id);
+  // ==================================================
+  // INPUT CHANGE
+  // ==================================================
 
-        setFormData({
-          fullName: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
-          email: user.email || "",
-            phone: user.phone || "",
-            socialMedia: user.socialMedia || "",
-            profession: user.profession || "",
-          about: user.aboutMe || "",
-        });
-      } catch (err) {
-        console.error("Failed to load user:", err);
-        setError("Unable to load your profile.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadUser();
-  }, []);
-
-  // ================= INPUT CHANGE =================
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -60,68 +72,125 @@ export default function EditProfile() {
       [name]: value,
     }));
 
-    // Remove error when user starts correcting
     if (error) {
       setError("");
     }
   };
 
-  // ================= PHOTO CHANGE =================
+  // ==================================================
+  // PHOTO CHANGE
+  // ==================================================
+
   const handlePhotoChange = (e) => {
     const file = e.target.files?.[0];
 
     if (!file) return;
 
-    const imageUrl = URL.createObjectURL(file);
+    // Client-side validation
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
 
+    if (!allowedTypes.includes(file.type)) {
+      setError("Only JPEG, PNG, and WebP images are allowed.");
+      return;
+    }
+
+    // Backend limit is 5 MB
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Profile image must be smaller than 5 MB.");
+      return;
+    }
+
+    // Store the actual File object
+    setProfileImageFile(file);
+
+    // Create preview
+    const imageUrl = URL.createObjectURL(file);
     setProfileImage(imageUrl);
+
+    if (error) {
+      setError("");
+    }
   };
 
-  // ================= SAVE PROFILE =================
+  // ==================================================
+  // SAVE PROFILE
+  // ==================================================
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!userId) {
+    if (!user) {
       setError("User information could not be found.");
       return;
     }
 
     try {
-      setSaving(true);
       setError("");
 
-      // Split Full Name into first and last name
-      const nameParts = formData.fullName.trim().split(/\s+/);
+      // ----------------------------------------------
+      // Basic validation
+      // ----------------------------------------------
 
-      const firstName = nameParts[0] || "";
-      const lastName = nameParts.slice(1).join(" ") || "";
+      const fullName = formData.fullName.trim();
 
-      const updatedUser = {
-        firstName,
-        lastName,
-        email: formData.email.trim(),
-        phone: formData.phone.trim(),
-        aboutMe: formData.about.trim(),
-        socialMedia: formData.socialMedia.trim(),
-        profession: formData.profession.trim(),
-      };
+      if (!fullName) {
+        setError("Full name cannot be empty.");
+        return;
+      }
 
-      await updateUser(userId, updatedUser);
+      if (!formData.profession) {
+        setError("Please select your profession.");
+        return;
+      }
 
-      console.log("Profile updated:", updatedUser);
+      // ----------------------------------------------
+      // Create multipart FormData
+      // ----------------------------------------------
 
+      const data = new FormData();
+
+      data.append("fullName", fullName);
+      data.append("phone", formData.phone.trim());
+      data.append("socialMedia", formData.socialMedia.trim());
+      data.append("profession", formData.profession);
+      data.append("aboutMe", formData.about.trim());
+
+      // Only append the image when the user selected
+      // a new one.
+      if (profileImageFile) {
+        data.append("profileImage", profileImageFile);
+      }
+
+      // ----------------------------------------------
+      // Send to backend
+      // ----------------------------------------------
+
+      await updateProfileMutation.mutateAsync(data);
+
+      console.log("Profile updated successfully");
+
+      // ----------------------------------------------
       // Return to account/profile page
+      // ----------------------------------------------
+
       navigate("/account");
     } catch (err) {
       console.error("Failed to update profile:", err);
-      setError("Unable to save your profile. Please try again.");
-    } finally {
-      setSaving(false);
+
+      const message =
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        "Unable to save your profile. Please try again.";
+
+      setError(message);
     }
   };
 
-  // ================= LOADING =================
-  if (loading) {
+  // ==================================================
+  // LOADING
+  // ==================================================
+
+  if (profileLoading) {
     return (
       <div className="flex justify-center">
         <div className="box-border flex flex-col justify-center items-center w-full border border-border rounded-lg">
@@ -133,6 +202,26 @@ export default function EditProfile() {
     );
   }
 
+  // ==================================================
+  // PROFILE ERROR
+  // ==================================================
+
+  if (profileError && !user) {
+    return (
+      <div className="flex justify-center">
+        <div className="box-border flex flex-col justify-center items-center w-full border border-border rounded-lg">
+          <div className="py-10 text-body-md text-error">
+            Unable to load your profile.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ==================================================
+  // MAIN UI
+  // ==================================================
+
   return (
     <div className="flex justify-center">
       <div className="box-border flex flex-col justify-center items-center w-full border border-border rounded-lg">
@@ -141,6 +230,7 @@ export default function EditProfile() {
           className="flex flex-col items-start w-full max-w-169.75 gap-8 px-4 sm:px-6 lg:px-8 py-8"
         >
           {/* ================= HEADER ================= */}
+
           <div className="flex flex-col items-start gap-4 w-full">
             <h1 className="w-full text-heading-1 font-bold text-text-primary">
               My Profile
@@ -152,6 +242,7 @@ export default function EditProfile() {
           </div>
 
           {/* ================= PROFILE PHOTO ================= */}
+
           <div className="flex flex-row items-center gap-3 w-full h-46">
             {profileImage ? (
               <img
@@ -160,7 +251,7 @@ export default function EditProfile() {
                 className="w-45.5[184px] rounded-full object-cover shrink-0"
               />
             ) : (
-              <div className="w-45.5 h-46 bg-neutral-300 rounded-full shrink-0 " />
+              <div className="w-45.5 h-46 bg-neutral-300 rounded-full shrink-0" />
             )}
 
             <label
@@ -173,15 +264,17 @@ export default function EditProfile() {
             <input
               id="profile-photo"
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/webp"
               onChange={handlePhotoChange}
               className="hidden"
             />
           </div>
 
           {/* ================= FORM FIELDS ================= */}
+
           <div className="flex flex-col justify-center items-start gap-5 w-full">
             {/* Full Name */}
+
             <div className="flex flex-col items-start gap-2.5 w-full">
               <label
                 htmlFor="fullName"
@@ -203,6 +296,7 @@ export default function EditProfile() {
             </div>
 
             {/* Email */}
+
             <div className="flex flex-col items-start gap-2.5 w-full">
               <label
                 htmlFor="email"
@@ -216,14 +310,14 @@ export default function EditProfile() {
                 name="email"
                 type="email"
                 value={formData.email}
-                onChange={handleChange}
-                required
+                readOnly
                 maxLength={254}
                 className="box-border w-full h-10 px-4 bg-background border border-border rounded-lg outline-none text-center text-body-sm font-medium text-text-secondary focus:border-primary-dark focus:ring-1 focus:ring-primary-dark"
               />
             </div>
 
             {/* Phone Number */}
+
             <div className="flex flex-col items-start gap-2.5 w-full">
               <label
                 htmlFor="phone"
@@ -245,6 +339,7 @@ export default function EditProfile() {
             </div>
 
             {/* Social Media */}
+
             <div className="flex flex-col items-start gap-2.5 w-full">
               <label
                 htmlFor="socialMedia"
@@ -266,6 +361,7 @@ export default function EditProfile() {
             </div>
 
             {/* Profession */}
+
             <div className="flex flex-col items-start gap-2.5 w-full">
               <label
                 htmlFor="profession"
@@ -274,19 +370,26 @@ export default function EditProfile() {
                 Profession <span className="text-error">*</span>
               </label>
 
-              <input
+              <select
                 id="profession"
                 name="profession"
-                type="text"
                 value={formData.profession}
                 onChange={handleChange}
                 required
-                maxLength={254}
                 className="box-border w-full h-10 px-4 bg-background border border-border rounded-lg outline-none text-center text-body-sm font-medium text-text-secondary focus:border-primary-dark focus:ring-1 focus:ring-primary-dark"
-              />
+              >
+                <option value="" disabled>
+                  Select profession
+                </option>
+
+                <option value="STUDENT">Student</option>
+                <option value="TEACHER">Teacher</option>
+                <option value="WORKER">Worker</option>
+              </select>
             </div>
 
             {/* About Me */}
+
             <div className="flex flex-col items-end gap-1 w-full">
               <div className="flex flex-col items-start gap-1 w-full">
                 <label
@@ -314,6 +417,7 @@ export default function EditProfile() {
           </div>
 
           {/* ================= ERROR MESSAGE ================= */}
+
           {error && (
             <p className="w-full text-center text-body-sm text-error">
               {error}
@@ -321,6 +425,7 @@ export default function EditProfile() {
           )}
 
           {/* ================= BUTTONS ================= */}
+
           <div className="flex flex-row justify-center items-center gap-8.5 w-full h-11.5">
             <Link
               to="/account"
@@ -331,10 +436,10 @@ export default function EditProfile() {
 
             <button
               type="submit"
-              disabled={saving}
+              disabled={updateProfileMutation.isPending}
               className="flex justify-center items-center w-37.5 h-11 px-2.5 bg-primary rounded-lg text-body-md text-text-inverse hover:bg-primary-dark transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {saving ? "Saving..." : "Save Changes"}
+              {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
             </button>
           </div>
         </form>

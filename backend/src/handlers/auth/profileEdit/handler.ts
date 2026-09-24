@@ -1,78 +1,207 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
+import { randomUUID } from "node:crypto";
 
-import type { ProfileEditRequestBody } from "./requestBody.js";
-
-import type { ProfileEditResponseBody } from "./responseBody.js";
 import { prisma } from "../../../lib/prisma.js";
 import { AppError } from "../../../errors/AppError.js";
+import { UserProfession } from "../../../generated/enums.js";
+
+import type { ProfileEditResponseBody } from "./responseBody.js";
+
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 import { Prisma } from "../../../generated/client.js";
 
 export async function profileEditHandler(
   request: FastifyRequest,
   reply: FastifyReply,
 ): Promise<ProfileEditResponseBody> {
-  const body = request.body as ProfileEditRequestBody;
-
   const userId = request.user.userId;
 
-  const nameParts = body.fullName.trim().split(/\s+/);
-  const firstName = nameParts[0];
-  const lastName = nameParts.slice(1).join(" ");
-
-  //check whether the email is already used by another user
-  const existingUser = await prisma.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: {
-      email: body.email,
-    }, 
+      id: userId,
+    },
     select: {
       id: true,
-    }
+      firstName: true,
+      lastName: true,
+      email: true,
+      phone: true,
+      profileKey: true,
+      socialMedia: true,
+      profession: true,
+      aboutMe: true,
+    },
   });
 
   if(existingUser && existingUser.id !== userId) {
     throw new AppError("Email is already in use.", 400);
   }
 
+  let fullName: string | undefined;
+  let phone: string | undefined;
+  let socialMedia: string | undefined;
+  let profession: string | undefined;
+  let aboutMe: string | undefined;
+
+  let newProfileKey: string | undefined;
+
+  let databaseUpdated = false;
+
+  const bucketName = process.env.MINIO_BUCKET || "lost-found";
+
   try {
+    const parts = request.parts();
+
+    for await (const part of parts) {
+      if (part.type === "field") {
+        switch (part.fieldname) {
+          case "fullName":
+            fullName = String(part.value);
+            break;
+
+          case "phone":
+            phone = String(part.value);
+            break;
+
+          case "socialMedia":
+            socialMedia = String(part.value);
+            break;
+
+          case "profession":
+            profession = String(part.value);
+            break;
+
+          case "aboutMe":
+            aboutMe = String(part.value);
+            break;
+
+          default:
+            // Ignore unknown text fields
+            break;
+        }
+
+        continue;
+      }
+
+      if (part.type === "file") {
+        if (part.fieldname !== "profileImage") {
+          part.file.resume();
+
+          throw new AppError("Only profileImage is allowed.", 400);
+        }
+
+        if (!ALLOWED_IMAGE_TYPES.includes(part.mimetype)) {
+          part.file.resume();
+
+          throw new AppError(
+            "Only JPEG, PNG, and WebP images are allowed.",
+            400,
+          );
+        }
+
+        const extension =
+          part.filename.split(".").pop()?.toLowerCase() || "jpg";
+
+        newProfileKey = `profiles/${userId}/avatar-${randomUUID()}.${extension}`;
+        await request.server.minio.putObject(
+          bucketName,
+          newProfileKey,
+          part.file,
+        );
+      }
+    }
+
+    if (fullName !== undefined) {
+      fullName = fullName.trim();
+
+      if (!fullName) {
+        throw new AppError("Full name cannot be empty.", 400);
+      }
+    }
+
+    let firstName = user.firstName;
+    let lastName = user.lastName;
+
+    if (fullName !== undefined) {
+      const nameParts = fullName.split(/\s+/);
+
+      firstName = nameParts[0];
+
+      lastName = nameParts.slice(1).join(" ");
+    }
+
+    let professionValue: UserProfession | undefined;
+
+    if (profession !== undefined) {
+      const isValidProfession = Object.values(UserProfession).includes(
+        profession as UserProfession,
+      );
+
+      if (!isValidProfession) {
+        throw new AppError(
+          "Invalid profession. Allowed values: STUDENT, TEACHER, WORKER.",
+          400,
+        );
+      }
+
+      professionValue = profession as UserProfession;
+    }
+
     await prisma.user.update({
       where: {
         id: userId,
       },
+
       data: {
         firstName,
         lastName,
-        email: body.email,
 
-        ...(body.profileKey !== undefined && {
-          profileKey: body.profileKey,
-        }),
+        phone: phone !== undefined ? phone : user.phone,
 
-        ...(body.phone !== undefined && {
-          phone: body.phone,
-        }),
+        socialMedia: socialMedia !== undefined ? socialMedia : user.socialMedia,
 
-        ...(body.socialMedia !== undefined && {
-          socialMedia: body.socialMedia,
-        }),
+        profession:
+          professionValue !== undefined ? professionValue : user.profession,
 
-        ...(body.profession !== undefined && {
-          profession: body.profession === "" ? null : body.profession,
-        }),
+        aboutMe: aboutMe !== undefined ? aboutMe : user.aboutMe,
 
-        ...(body.aboutMe !== undefined && {
-          aboutMe: body.aboutMe,
+        ...(newProfileKey !== undefined && {
+          profileKey: newProfileKey,
         }),
+      },
+    });
+
+    databaseUpdated = true;
+
+    if (newProfileKey && user.profileKey && user.profileKey !== newProfileKey) {
+      try {
+        await request.server.minio.removeObject(bucketName, user.profileKey);
+      } catch (error) {
+        // Do NOT rollback the database update.
+        // The new image and database are already correct.
+        request.log.error(error, "Failed to delete old profile image");
       }
-    })
-  } catch (error) {
-    //have to handle duplicate email in case another request uses it
-    if(error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
-      throw new AppError("Email is already in use.", 400);
     }
+
+    return reply.send({
+      message: "Profile updated successfully",
+
+      ...(newProfileKey && {
+        profileKey: newProfileKey,
+      }),
+    });
+  } catch (error) {
+    if (newProfileKey && !databaseUpdated) {
+      try {
+        await request.server.minio.removeObject(bucketName, newProfileKey);
+      } catch (cleanupError) {
+        request.log.error(
+          cleanupError,
+          "Failed to clean up uploaded profile image",
+        );
+      }
+    }
+
     throw error;
   }
-
-  return reply.send({
-    message: "Profile updated successfully!",
-  });
 }
