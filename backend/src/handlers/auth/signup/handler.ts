@@ -35,6 +35,6 @@ export async function signupHandler(
   });
 
   return reply.send({
-    message: "Success",
+    message: "New account created!",
   });
 }

@@ -73,10 +73,7 @@ export async function profileHandler(
     lastName: user.lastName,
     email: user.email,
     phone: user.phone,
-
     profileKey: user.profileKey,
-    profileUrl,
-
     socialMedia: user.socialMedia,
     profession: user.profession,
     aboutMe: user.aboutMe,

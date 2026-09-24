@@ -8,6 +8,7 @@ import { UserProfession } from "../../../generated/enums.js";
 import type { ProfileEditResponseBody } from "./responseBody.js";
 
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+import { Prisma } from "../../../generated/client.js";
 
 export async function profileEditHandler(
   request: FastifyRequest,
@@ -32,8 +33,8 @@ export async function profileEditHandler(
     },
   });
 
-  if (!user) {
-    throw new AppError("User not found!", 404);
+  if(existingUser && existingUser.id !== userId) {
+    throw new AppError("Email is already in use.", 400);
   }
 
   let fullName: string | undefined;
