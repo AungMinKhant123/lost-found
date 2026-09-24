@@ -17,7 +17,7 @@ services:
       retries: 10
 
   minio:
-    image: quay.io/minio/minio
+    image: elestio/minio
     container_name: lost-found-minio
     command: server /data --console-address ":9001"
     environment:
