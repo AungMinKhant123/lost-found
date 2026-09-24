@@ -41,21 +41,22 @@ const UserHeader = () => {
   }, []);
 
   const handleLogout = async () => {
+    // Always clear local auth state and navigate away, regardless of
+    // whether the backend logout call succeeds. A failed network request
+    // should never leave the user stuck "logged in" on their own device —
+    // the backend call is a best-effort cleanup (e.g. invalidating a
+    // server-side session), not a requirement for the local logout to work.
     try {
-      // Call backend logout API.
-      // The browser automatically sends the HTTP-only refresh token cookie.
       await logoutUser();
-
-      // Clear frontend Zustand authentication state.
-      logout();
-
-      // Close dropdown.
-      setIsDropdownOpen(false);
-
-      // Redirect to login.
-      navigate("/login");
     } catch (error) {
-      console.error("Logout failed:", error);
+      console.error(
+        "Backend logout call failed (logging out locally anyway):",
+        error,
+      );
+    } finally {
+      logout();
+      setIsDropdownOpen(false);
+      navigate("/login");
     }
   };
 

@@ -28,9 +28,13 @@ const ItemDetailsModal = ({ item, onClose }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
 
+  console.log("ItemDetailsModal rendered, view =", view);
+
   useEffect(() => {
     if (isAuthenticated) {
-      getCurrentUser().then((user) => setCurrentUserId(user.id));
+      getCurrentUser()
+        .then((user) => setCurrentUserId(user.id))
+        .catch((err) => console.error("Failed to load current user:", err));
     }
   }, [isAuthenticated]);
 

@@ -99,15 +99,20 @@ export async function signUp(data) {
 
 // Fetches the CURRENTLY LOGGED IN user's full data from json-server.
 //
-// Reads the logged-in user's id from the shared Zustand auth store
-// (the same store the Navbar, LogIn.jsx, and the mock switcher all use).
-// Falls back to user "1" (David) if nobody's logged in — this keeps
-// existing pages working exactly as before for anyone testing without
-// bothering to log in first, while ALSO correctly personalizing once
-// someone actually is logged in (real or mock).
+// IMPORTANT: since the real backend now stores users with UUID-style
+// ids (e.g. "46a56141-6d45-4456-8820..."), and our persisted auth store
+// can hold either a real backend user OR one of our json-server mock
+// users, we need to detect which kind we have. A UUID (containing
+// dashes) means "real backend session" — that user won't exist in
+// json-server at all, so we fall back to mock user "1" (David) instead
+// of 404ing. This only affects json-server-only pages (My Posts, My
+// Claims, this Item Details modal, etc.) — it does NOT touch or
+// interfere with the real backend session itself, which lives
+// separately in authApi.js/useAuth.js and is untouched by this file.
 export function getCurrentUser() {
   const { user } = useAuthStore.getState();
-  const userId = user?.id || "1";
+  const isRealBackendId = user?.id && String(user.id).includes("-");
+  const userId = !user?.id || isRealBackendId ? "1" : user.id;
   return request(`/users/${userId}`);
 }
 
