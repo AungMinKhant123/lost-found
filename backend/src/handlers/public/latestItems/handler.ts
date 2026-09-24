@@ -27,7 +27,7 @@ export async function latestItemsHandler(
   const data = items.map((item) => ({
     id: item.id,
     title: item.title,
-    imageUrl: item.images[0]?.imageUrl ?? "",
+    imageUrl: item.images[0]?.objectKey ?? "",
     createdAt: item.createdAt.toISOString(),
     type: item.type,
     status: item.status,

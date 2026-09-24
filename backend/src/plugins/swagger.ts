@@ -52,9 +52,7 @@ export default fp(async (app: FastifyInstance) => {
 
                 profession: {
                   type: "string",
-
                   enum: ["STUDENT", "TEACHER", "WORKER"],
-
                   example: "STUDENT",
                 },
 
@@ -66,6 +64,75 @@ export default fp(async (app: FastifyInstance) => {
                 profileImage: {
                   type: "string",
                   format: "binary",
+                },
+              },
+            },
+          },
+
+          url,
+        };
+      }
+
+      if (url === "/item/createNewPost" && route.method === "POST") {
+        return {
+          schema: {
+            ...schema,
+
+            body: {
+              type: "object",
+
+              required: [
+                "type",
+                "title",
+                "categoryId",
+                "location",
+                "colorId",
+                "dateLostOrFound",
+              ],
+
+              properties: {
+                type: {
+                  type: "string",
+                  enum: ["LOST", "FOUND"],
+                },
+
+                title: {
+                  type: "string",
+                  minLength: 1,
+                  maxLength: 200,
+                },
+
+                categoryId: {
+                  type: "string",
+                },
+
+                location: {
+                  type: "string",
+                  minLength: 1,
+                  maxLength: 255,
+                },
+
+                colorId: {
+                  type: "string",
+                },
+
+                dateLostOrFound: {
+                  type: "string",
+                  format: "date-time",
+                },
+
+                description: {
+                  type: "string",
+                  maxLength: 2000,
+                },
+
+                images: {
+                  type: "array",
+
+                  items: {
+                    type: "string",
+                    format: "binary",
+                  },
                 },
               },
             },

@@ -7,7 +7,7 @@ export async function seedItemImages(prisma: PrismaClient, items: any[]) {
     const image = await prisma.itemImage.create({
       data: {
         itemId: items[i].id,
-        imageUrl:
+        objectKey:
           "https://res.cloudinary.com/d5tnusci/image/upload/v1789664555/earphone_zxmi2w.png",
       },
     });
@@ -18,7 +18,7 @@ export async function seedItemImages(prisma: PrismaClient, items: any[]) {
       const secondImage = await prisma.itemImage.create({
         data: {
           itemId: items[i].id,
-          imageUrl:
+          objectKey:
             "https://res.cloudinary.com/d5tnusci/image/upload/v1789664528/phone_siep1d.jpg",
         },
       });

@@ -26,7 +26,7 @@ const MyClaimItemSchema = Type.Object({
     images: Type.Array(
       Type.Object({
         id: Type.String({ format: "uuid" }),
-        imageUrl: Type.String(),
+        objectKey: Type.String(),
       }),
     ),
   }),
@@ -47,7 +47,7 @@ export const MyClaimsResponseBodySchema = Type.Object({
     pending: Type.Number(),
     accepted: Type.Number(),
     declined: Type.Number(),
-  })
+  }),
 });
 
 export type MyClaimsResponseBody = Static<typeof MyClaimsResponseBodySchema>;

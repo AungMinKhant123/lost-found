@@ -3,25 +3,22 @@ import { Type, type Static } from "@sinclair/typebox";
 const ItemCategorySchema = Type.Object({
   id: Type.String(),
   name: Type.String(),
-})
+});
 
 const ItemColorSchema = Type.Object({
   id: Type.String(),
   name: Type.String(),
-})
+});
 
 const ItemImageSchema = Type.Object({
   id: Type.String(),
-  imageUrl: Type.String(),
-})
+  objectKey: Type.String(),
+});
 
 const ItemSchema = Type.Object({
   id: Type.String(),
   title: Type.String(),
-  description: Type.Union([
-    Type.String(),
-    Type.Null()
-  ]),
+  description: Type.Union([Type.String(), Type.Null()]),
   type: Type.String(),
   status: Type.String(),
   location: Type.String(),
