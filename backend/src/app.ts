@@ -5,9 +5,11 @@ import swaggerPlugin from "./plugins/swagger.js";
 import errorHandlerPlugin from "./plugins/error-handler.js";
 import jwtPlugin from "./plugins/jwt.js";
 import authPlugin from "./plugins/auth.js";
+import minioPlugin from "./plugins/minio.js";
 
 import { authRoutes } from "./routes/auth.js";
 import { publicRoutes } from "./routes/public.js";
+import multipart from "./plugins/multipart.js";
 
 export async function buildApp() {
   const app = Fastify({
@@ -25,6 +27,8 @@ export async function buildApp() {
   await app.register(errorHandlerPlugin);
 
   await app.register(cookie);
+  await app.register(minioPlugin);
+  await app.register(multipart);
 
   await app.register(jwtPlugin);
 

@@ -74,10 +74,17 @@ const AccountProfile = () => {
               {/* Profile Image + User Information */}
               <div className="flex flex-row justify-center items-center gap-4.75 w-full xl:w-98.75 h-46">
                 {/* Profile Avatar */}
-                <div className="w-45.5 h-46 bg-neutral-300 rounded-full shrink-0 flex items-center justify-center text-4xl font-bold text-white uppercase">
-                  {fullName.charAt(0)}
-                </div>
-
+                {user.profileUrl ? (
+                  <img
+                    src={user.profileUrl}
+                    alt={`${fullName}'s profile`}
+                    className="w-45.5 h-46 rounded-full object-cover shrink-0"
+                  />
+                ) : (
+                  <div className="w-45.5 h-46 bg-neutral-300 rounded-full shrink-0 flex items-center justify-center text-4xl font-bold text-white uppercase">
+                    {fullName.charAt(0)}
+                  </div>
+                )}
                 {/* User Details */}
                 <div className="flex flex-col justify-center items-center gap-1 w-48.5 h-46">
                   <h2 className="w-full text-heading-1 font-bold text-text-primary truncate">

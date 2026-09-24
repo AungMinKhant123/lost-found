@@ -1,5 +1,6 @@
 import { NavLink } from "react-router";
 import { User, FileText, ShoppingCart, Settings } from "lucide-react";
+import { useProfile } from "../../hooks/useProfile";
 
 // Each nav item: the label, icon, and the route it links to.
 // "end: true" on the Profile link means it only counts as active on an
@@ -10,35 +11,45 @@ const navItems = [
   { label: "My Claims", icon: ShoppingCart, to: "/account/claims" },
 ];
 
-const AccountSidebar = ({
-  // Defaults only used briefly during the loading state in AccountLayout —
-  // real values are always passed in once the user data has loaded.
-  name = "David",
-  email = "myolwin400400@gmail.com",
-}) => {
+const AccountSidebar = () => {
+  const { data: user, isLoading, isError } = useProfile();
+
+  // Temporary fallback while profile is loading
+  const fullName =
+    user?.firstName || user?.lastName
+      ? `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim()
+      : "User";
+
   return (
     <aside className="w-full max-w-xs">
-      {/* User info */}
+      {/* ================= USER INFO ================= */}
       <div className="flex items-center gap-3">
-        {/* Avatar placeholder — swap for the real profile photo later */}
-        <div className="w-14 h-14 rounded-full bg-neutral-300 shrink-0" />
+        {/* Profile Image */}
+        {user?.profileUrl ? (
+          <img
+            src={user.profileUrl}
+            alt={`${fullName}'s profile`}
+            className="w-15 h-15 rounded-full object-cover shrink-0"
+          />
+        ) : (
+          <div className="w-15 h-15 rounded-full bg-neutral-300 shrink-0 flex items-center justify-center text-xl font-bold text-white uppercase">
+            {fullName.charAt(0)}
+          </div>
+        )}
 
-        {/* min-w-0 lets this text container actually shrink/wrap inside
-            the flex row instead of overflowing past the sidebar's edge —
-            without it, a long name (e.g. "Ashfaq Ifthicar") can visually
-            spill outside its bounds since flex items don't shrink below
-            their content size by default. */}
+        {/* User Information */}
         <div className="min-w-0">
           <p className="text-heading-3 font-bold text-text-primary break-words">
-            {name}
+            {isLoading ? "Loading..." : fullName}
           </p>
+
           <p className="text-body-sm text-text-secondary break-words">
-            {email}
+            {isError ? "Unable to load profile" : user?.email}
           </p>
         </div>
       </div>
 
-      {/* Nav links */}
+      {/* ================= NAV LINKS ================= */}
       <nav className="mt-8 space-y-3">
         {navItems.map(({ label, icon: Icon, to, end }) => (
           <NavLink
@@ -58,9 +69,7 @@ const AccountSidebar = ({
           </NavLink>
         ))}
 
-        {/* Logout button removed per UI/UX — logging out now happens
-            exclusively from the Navbar's profile dropdown. */}
-
+        {/* Settings */}
         <NavLink
           to="/account/settings"
           className={({ isActive }) =>

@@ -9,10 +9,17 @@ export const ProfileResponseBodySchema = Type.Object({
 
   phone: Type.Union([Type.String(), Type.Null()]),
 
+  profileKey: Type.Union([Type.String(), Type.Null()]),
   profileUrl: Type.Union([Type.String(), Type.Null()]),
+
   socialMedia: Type.Union([Type.String(), Type.Null()]),
 
-  profession: Type.Union([Type.String(), Type.Null()]),
+  profession: Type.Union([
+    Type.Literal("STUDENT"),
+    Type.Literal("TEACHER"),
+    Type.Literal("WORKER"),
+    Type.Null(),
+  ]),
 
   aboutMe: Type.Union([Type.String(), Type.Null()]),
 
