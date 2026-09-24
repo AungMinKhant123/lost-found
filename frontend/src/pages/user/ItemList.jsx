@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { getItems } from "../../services/api";
 import DecorativeBackground from "../../components/DecorativeBackground/DecorativeBackground";
+import ItemDetailsModal from "../../components/ItemDetailsModal";
 
 // Item type radio options — single select.
 const ITEM_TYPES = [
@@ -63,6 +64,8 @@ const ItemList = () => {
   const [allItems, setAllItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const [selectedItem, setSelectedItem] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 9;
@@ -485,12 +488,13 @@ const ItemList = () => {
                           {item.resolved ? "Resolved" : "Searching"}
                         </p>
 
-                        <Link
-                          to={`/items/${item.id}`}
+                        <button
+                          type="button"
+                          onClick={() => setSelectedItem(item)}
                           className="mt-3 inline-flex items-center justify-center w-full border border-border rounded-lg px-4 py-2 text-body-md text-text-primary hover:bg-primary hover:text-text-inverse hover:border-primary transition-colors"
                         >
                           More Details
-                        </Link>
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -538,6 +542,12 @@ const ItemList = () => {
           </div>
         </section>
       </div>
+      {selectedItem && (
+        <ItemDetailsModal
+          item={selectedItem}
+          onClose={() => setSelectedItem(null)}
+        />
+      )}
     </div>
   );
 };
