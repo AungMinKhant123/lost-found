@@ -136,7 +136,7 @@ const Login = () => {
             toast.success(
               "Logged in (backend unreachable — used local test data)",
             );
-            navigate("/");
+            navigate(mockUser.role === "admin" ? "/admin" : "/");
             return;
           }
         } catch (mockError) {
