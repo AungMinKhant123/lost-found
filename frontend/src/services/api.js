@@ -212,6 +212,11 @@ if (import.meta.env.DEV) {
     const user = await getUserById(userId);
     useAuthStore.getState().login(user, "mock-token");
     console.log("Logged in as mock user:", user);
+    if (user.role === "admin") {
+      console.log(
+        "This user is an admin — navigate to /admin manually (console can't redirect the router).",
+      );
+    }
   };
 
   window.mockLogout = () => {
@@ -299,4 +304,85 @@ export async function createClaim(data) {
     method: "POST",
     body: JSON.stringify({ ...data, id: nextId }),
   });
+}
+
+// Computes the admin dashboard's aggregate stats across ALL items/claims
+// (not filtered to one user) — total claims made, resolved items, open
+// (unresolved) items, and total items ever posted.
+export async function getAdminStats() {
+  const [items, claims] = await Promise.all([getItems(), getClaims()]);
+
+  return {
+    totalClaimsMade: claims.length,
+    resolvedItems: items.filter((item) => item.resolved).length,
+    openItems: items.filter((item) => !item.resolved).length,
+    totalItemsPosted: items.length,
+  };
+}
+
+// Computes how many items fall into each category, for the dashboard's
+// "Items by category" bar list. Items with no category are grouped
+// under "Others".
+export async function getItemsByCategory() {
+  const items = await getItems();
+  const counts = {};
+
+  items.forEach((item) => {
+    const category = item.category || "Others";
+    counts[category] = (counts[category] || 0) + 1;
+  });
+
+  return counts;
+}
+
+// Builds a simple "recent activity" feed from the most recent items and
+// claims combined, sorted newest first. Each entry is normalized to the
+// same shape (type, message, timestamp) so the dashboard can render
+// them uniformly regardless of source.
+//
+// NOTE: this is a best-effort feed built from what our mock data
+// actually tracks (item creation via createdAt, claim creation via
+// claimedAt) — it doesn't capture every possible event type a real
+// backend audit log might (e.g. "item marked resolved" isn't tracked
+// with its own timestamp in our schema). Good enough to demonstrate
+// the UI; a real backend would likely have a dedicated activity log.
+export async function getRecentActivity(limit = 12) {
+  const [items, claims, users] = await Promise.all([
+    getItems(),
+    getClaims(),
+    getUsers(),
+  ]);
+
+  const findUserName = (userId) => {
+    const user = users.find((u) => u.id === userId);
+    return user ? `${user.firstName} ${user.lastName}` : "Someone";
+  };
+
+  const itemEvents = items
+    .filter((item) => item.createdAt)
+    .map((item) => ({
+      type: item.status === "lost" ? "lost" : "found",
+      message: `${findUserName(item.userId)} posted a ${item.status === "lost" ? "Lost" : "Found"} item`,
+      timestamp: item.createdAt,
+    }));
+
+  const resolvedEvents = items
+    .filter((item) => item.resolved)
+    .map((item) => ({
+      type: "resolved",
+      message: `${item.title} was marked Resolved`,
+      timestamp: item.createdAt || item.date,
+    }));
+
+  const claimEvents = claims
+    .filter((claim) => claim.claimedAt)
+    .map((claim) => ({
+      type: "claim",
+      message: `${findUserName(claim.userId)} submitted a claim`,
+      timestamp: claim.claimedAt,
+    }));
+
+  return [...itemEvents, ...resolvedEvents, ...claimEvents]
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+    .slice(0, limit);
 }

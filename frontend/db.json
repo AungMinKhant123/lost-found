@@ -444,6 +444,14 @@
       "aboutMe": "I am a fighter. Goku Senpai !!",
       "socialMedia": "gokusenpai insta",
       "profession": "Student"
+    },
+    {
+      "id": "13",
+      "firstName": "Nero",
+      "lastName": "Chrono",
+      "email": "nero.chrono@example.com",
+      "password": "admin1234",
+      "role": "admin"
     }
   ],
   "claims": [
@@ -790,6 +798,22 @@
       "message": "dadawdad",
       "claimedAt": "2026-09-24T02:59:19.382Z",
       "id": "Stsdf6Xb6_0"
+    },
+    {
+      "itemId": "aIziyNV_EuM",
+      "userId": "2",
+      "status": "pending",
+      "message": "sadsdsa",
+      "claimedAt": "2026-09-24T12:41:01.215Z",
+      "id": "b5_lLOUfhRE"
+    },
+    {
+      "itemId": "aIziyNV_EuM",
+      "userId": "2",
+      "status": "pending",
+      "message": "asdf",
+      "claimedAt": "2026-09-25T02:53:23.654Z",
+      "id": "7lGRDpPxMVY"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
