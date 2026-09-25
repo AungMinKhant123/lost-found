@@ -8,7 +8,6 @@ import { UserProfession } from "../../../generated/enums.js";
 import type { ProfileEditResponseBody } from "./responseBody.js";
 
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
-import { Prisma } from "../../../generated/client.js";
 
 export async function profileEditHandler(
   request: FastifyRequest,
@@ -16,6 +15,7 @@ export async function profileEditHandler(
 ): Promise<ProfileEditResponseBody> {
   const userId = request.user.userId;
 
+  // Get the current user's existing profile.
   const user = await prisma.user.findUnique({
     where: {
       id: userId,
@@ -33,8 +33,9 @@ export async function profileEditHandler(
     },
   });
 
-  if(existingUser && existingUser.id !== userId) {
-    throw new AppError("Email is already in use.", 400);
+  // The authenticated user should exist.
+  if (!user) {
+    throw new AppError("User not found.", 404);
   }
 
   let fullName: string | undefined;
@@ -76,7 +77,7 @@ export async function profileEditHandler(
             break;
 
           default:
-            // Ignore unknown text fields
+            // Ignore unknown text fields.
             break;
         }
 
@@ -103,6 +104,7 @@ export async function profileEditHandler(
           part.filename.split(".").pop()?.toLowerCase() || "jpg";
 
         newProfileKey = `profiles/${userId}/avatar-${randomUUID()}.${extension}`;
+
         await request.server.minio.putObject(
           bucketName,
           newProfileKey,
@@ -111,6 +113,7 @@ export async function profileEditHandler(
       }
     }
 
+    // Validate fullName if the client sent it.
     if (fullName !== undefined) {
       fullName = fullName.trim();
 
@@ -119,9 +122,11 @@ export async function profileEditHandler(
       }
     }
 
+    // Keep the existing name by default.
     let firstName = user.firstName;
     let lastName = user.lastName;
 
+    // Update firstName/lastName only when fullName was provided.
     if (fullName !== undefined) {
       const nameParts = fullName.split(/\s+/);
 
@@ -130,6 +135,7 @@ export async function profileEditHandler(
       lastName = nameParts.slice(1).join(" ");
     }
 
+    // Validate profession.
     let professionValue: UserProfession | undefined;
 
     if (profession !== undefined) {
@@ -147,6 +153,7 @@ export async function profileEditHandler(
       professionValue = profession as UserProfession;
     }
 
+    // Update the user's profile.
     await prisma.user.update({
       where: {
         id: userId,
@@ -173,12 +180,12 @@ export async function profileEditHandler(
 
     databaseUpdated = true;
 
+    // Delete the old profile image only after the database update succeeds.
     if (newProfileKey && user.profileKey && user.profileKey !== newProfileKey) {
       try {
         await request.server.minio.removeObject(bucketName, user.profileKey);
       } catch (error) {
-        // Do NOT rollback the database update.
-        // The new image and database are already correct.
+        // Do not rollback the database update.
         request.log.error(error, "Failed to delete old profile image");
       }
     }
@@ -191,6 +198,8 @@ export async function profileEditHandler(
       }),
     });
   } catch (error) {
+    // If MinIO upload succeeded but database update failed,
+    // remove the newly uploaded image.
     if (newProfileKey && !databaseUpdated) {
       try {
         await request.server.minio.removeObject(bucketName, newProfileKey);

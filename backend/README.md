@@ -1,189 +1,105 @@
-# Lost and Found Backend
+## Database Setup
 
-Fastify + Prisma backend for a lost-and-found app.
+After cloning the project, follow these steps to set up the database.
 
-## Requirements
-
-- Docker Desktop
-- Node.js 24 or newer, only needed for local development outside Docker
-- npm
-
-## Run With Docker
-
-Use this path if you only want to start the full project and open Swagger.
-
-1. Clone the project and enter the backend folder.
-
-```bash
-git clone <repo-url>
-cd lost-found/backend
-```
-
-2. Start the containers.
-
-```bash
-docker compose -f compose.yml up --build -d
-```
-
-The first build can take a few minutes because Docker installs dependencies and builds the API image.
-
-3. Check that all containers are running.
-
-```bash
-docker compose -f compose.yml ps
-```
-
-You should see:
-
-- `lost-found-postgresql`
-- `lost-found-minio`
-
-to run server
-- npm run dev
-- npx prisma migrate
-- npx prisma generate
-
-The API is ready when you see Fastify listening on port `5001`.
-
-5. Open Swagger.
-
-```text
-http://localhost:5001/docs
-```
-
-You should see the `Items` tag with `POST /items`.
-
-## Docker Ports
-
-- API: `http://localhost:5001`
-- Swagger: `http://localhost:5001/docs`
-- PostgreSQL from host machine: `localhost:5433`
-- PostgreSQL inside Docker network: `postgresql:5432`
-- MinIO API: `http://localhost:9000`
-- MinIO console: `http://localhost:9001`
-
-## Stop Docker
-
-Stop containers but keep database data:
-
-```bash
-docker compose -f compose.yml down
-```
-
-Stop containers and delete volumes/database data:
-
-```bash
-docker compose -f compose.yml down -v
-```
-
-## Local Development
-
-Use this path if you want to run the API with hot reload on your machine while PostgreSQL and MinIO run in Docker.
-
-1. Install dependencies.
+### 1. Install dependencies
 
 ```bash
 npm install
 ```
 
-2. Create a local environment file.
+### 2. Start PostgreSQL
+
+Make sure Docker Desktop is running, then start the development database:
 
 ```bash
-cp .env.example .env
+docker compose -f ./docker.dev/docker-compose.yml up -d
 ```
 
-3. Start only PostgreSQL and MinIO.
+### 3. Apply existing Prisma migrations
+
+The project already contains the migration files, so **do not create a new migration** during initial setup.
 
 ```bash
-docker compose -f compose.yml up -d postgresql minio
+npx prisma migrate dev
 ```
 
-4. Generate Prisma client.
+This applies all existing migrations in `prisma/migrations/` to your local PostgreSQL database.
+
+### 4. Generate Prisma Client
 
 ```bash
 npx prisma generate
 ```
 
-5. Apply database migrations.
+This generates the Prisma Client based on `prisma/schema.prisma`.
+
+### 5. Seed the database
+
+Populate the database with the project's initial/test data:
 
 ```bash
-npx prisma migrate deploy
+npx prisma db seed
 ```
 
-6. Start the development server.
+### 6. Start the backend
 
 ```bash
 npm run dev
 ```
 
-7. Open Swagger.
+The API will be available at:
+
+```text
+http://localhost:5001
+```
+
+Swagger API documentation:
 
 ```text
 http://localhost:5001/docs
 ```
 
-## Main Endpoints
+---
 
-- `GET /` - health message
-- `POST /auth/register` - register a user
-- `POST /auth/login` - login and receive JWT token
-- `POST /items` - create lost/found item, requires bearer token
+## Quick Setup
 
-## Create Item Request
-
-`POST /items` requires `Authorization: Bearer <token>`.
-
-```json
-{
-  "type": "LOST",
-  "title": "Black wallet",
-  "description": "Small leather wallet",
-  "categoryId": "category-uuid",
-  "location": "Library",
-  "colorId": "color-uuid",
-  "dateLostOrFound": "2026-09-04T10:00:00.000Z",
-  "imageUrls": ["https://example.com/image.jpg"]
-}
-```
-
-The `categoryId` and `colorId` must already exist in the database.
-
-## Useful Commands
-
-Build TypeScript:
+For a fresh local setup, run:
 
 ```bash
-npm run build
+npm install
+
+docker compose -f ./docker.dev/docker-compose.yml up -d
+
+npx prisma migrate dev
+
+npx prisma generate
+
+npx prisma db seed
+
+npm run dev
 ```
 
-View API logs:
+### Important
+
+If you only want to use the **existing migrations**, do not run:
 
 ```bash
-docker compose -f compose.yml logs -f api
+npx prisma migrate dev --name <migration-name>
 ```
 
-Rebuild only the API image:
+That command is for creating a **new migration** after changing `schema.prisma`.
+
+If you only need to apply migrations that already exist, use:
 
 ```bash
-docker compose -f compose.yml build api
+npx prisma migrate dev
 ```
 
-Restart only the API container:
+If you need to completely reset your local development database and re-run all migrations:
 
 ```bash
-docker compose -f compose.yml up -d api
+npx prisma migrate reset
 ```
 
-## Troubleshooting
-
-If port `5001` is already used, change the API port mapping in `compose.yml`.
-
-If port `5433` is already used, change the PostgreSQL host port in `compose.yml`, then update `.env` to use the same host port for local development.
-
-If Swagger does not show `POST /items`, rebuild the API image:
-
-```bash
-docker compose -f compose.yml up --build -d api
-```
-
-<!-- run "npx prisma db seed" to insert sample data from seeds files to your database -->
+⚠️ `migrate reset` deletes all existing data in the development database.

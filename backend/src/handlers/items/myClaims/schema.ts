@@ -3,14 +3,15 @@ import { MyClaimsRequestQuerySchema } from "./requestQuery.js";
 import { MyClaimsResponseBodySchema } from "./responseBody.js";
 
 export const MyClaimsSchema = {
-  tags: ["Claims"],
+  tags: ["Items"],
   summary: "My Claims",
-  description: "API to show the authenticated user's claims and their statuses on other users' posts.",
+  description:
+    "API to show the authenticated user's claims and their statuses on other users' posts.",
 
   security: [
     {
-      bearerAuth: []
-    }
+      bearerAuth: [],
+    },
   ],
 
   querystring: MyClaimsRequestQuerySchema,

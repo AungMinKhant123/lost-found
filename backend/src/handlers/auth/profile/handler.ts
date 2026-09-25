@@ -55,14 +55,14 @@ export async function profileHandler(
 
   const itemsFound = await prisma.item.count({
     where: {
-      userId: userId,
+      userId,
       type: "FOUND",
     },
   });
 
   const itemsReturned = await prisma.item.count({
     where: {
-      userId: userId,
+      userId,
       status: "RESOLVED",
     },
   });
@@ -73,7 +73,10 @@ export async function profileHandler(
     lastName: user.lastName,
     email: user.email,
     phone: user.phone,
+
     profileKey: user.profileKey,
+    profileUrl,
+
     socialMedia: user.socialMedia,
     profession: user.profession,
     aboutMe: user.aboutMe,

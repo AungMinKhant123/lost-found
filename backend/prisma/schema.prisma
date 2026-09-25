@@ -108,7 +108,7 @@ model Item {
 model ItemImage {
   id        String   @id @default(uuid())
   itemId    String
-  imageUrl  String
+  objectKey  String
   createdAt DateTime @default(now())
   item      Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
 

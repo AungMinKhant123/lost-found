@@ -10,7 +10,9 @@ import minioPlugin from "./plugins/minio.js";
 import { authRoutes } from "./routes/auth.js";
 import { publicRoutes } from "./routes/public.js";
 import multipart from "./plugins/multipart.js";
-import { itemRoutes } from "./routes/item.js";
+import { itemsRoutes } from "./routes/items.js";
+import { categoryRoutes } from "./routes/categories.js";
+import { colorRoutes } from "./routes/colors.js";
 
 export async function buildApp() {
   const app = Fastify({
@@ -37,7 +39,9 @@ export async function buildApp() {
 
   await app.register(authRoutes);
   await app.register(publicRoutes);
-  await app.register(itemRoutes);
+  await app.register(categoryRoutes);
+  await app.register(colorRoutes);
+  await app.register(itemsRoutes);
 
   return app;
 }

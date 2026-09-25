@@ -1,7 +1,7 @@
 import { GetColorResponseBodySchema } from "./responseBody.js";
 
 export const GetColorSchema = {
-  tags: ["Public"],
+  tags: ["Color"],
   summary: "Getting Color",
   description: "API for fetching available Color.",
 
