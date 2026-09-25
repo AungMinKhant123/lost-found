@@ -31,6 +31,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import ManageListings from "./pages/admin/ManageListings";
 import ManageAttributes from "./pages/admin/ManageAttributes";
 import AdminProfile from "./pages/admin/AdminProfile";
+import AdminRoute from "./components/AdminRoute";
 
 const App = () => {
   return (
