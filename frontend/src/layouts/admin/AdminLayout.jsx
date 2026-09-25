@@ -13,9 +13,9 @@ const AdminLayout = () => {
   }, [authUserId]);
 
   return (
-    <div className="flex min-h-screen bg-background-subtle">
+    <div className="flex h-screen overflow-hidden bg-background-subtle">
       <AdminSidebar
-        name={admin ? `${admin.firstName}` : "Admin"}
+        name={admin ? `${admin.firstName} ${admin.lastName}` : "Admin"}
         role="Admin"
       />
       <main className="flex-1">
