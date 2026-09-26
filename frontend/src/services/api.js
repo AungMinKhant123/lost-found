@@ -427,3 +427,22 @@ export async function getRecentActivity(limit = 12) {
     .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
     .slice(0, limit);
 }
+
+// TEMPORARY, DEV-ONLY FALLBACK: reshapes our json-server mock items to
+// match the real backend's item shape (imageUrl, type: "LOST"/"FOUND",
+// status: "RESOLVED"/"OPEN", createdAt) — used only when the real
+// /public/latest-items endpoint is unreachable, so Home.jsx can render
+// either source without needing to know which one it got.
+export async function getLatestItemsMock(limit = 6) {
+  const items = await getRecentItems(limit); // already sorted newest-first
+
+  return items.map((item) => ({
+    id: item.id,
+    title: item.title,
+    location: item.location,
+    type: item.status === "lost" ? "LOST" : "FOUND",
+    status: item.resolved ? "RESOLVED" : "OPEN",
+    createdAt: item.createdAt || item.date,
+    imageUrl: null, // our mock data has no real images
+  }));
+}
