@@ -40,7 +40,10 @@ const Home = () => {
                 details private until a claim is confirmed
               </p>
 
-              <Button variant="primary" className="mt-6">
+              <Button
+                variant="primary"
+                className="mt-6 !bg-[#F8FAFC] !text-[#4B32A8] hover:!bg-primary-dark hover:!text-text-inverse"
+              >
                 See Recent Reunion
               </Button>
             </div>
@@ -57,49 +60,29 @@ const Home = () => {
 
         {/* ================= LOST / FOUND ================= */}
         <section className="max-w-[1280px] mx-auto px-10 py-16">
-          <div className="flex justify-center items-start gap-24">
-            <div className="relative pt-20">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 flex flex-col items-center">
-                <div className="border border-border rounded-full px-6 py-3 bg-background text-body-md text-primary font-medium shadow-sm">
-                  Lost??
-                </div>
-
-                <div className="w-3 h-3 rounded-full border border-border bg-background mt-1" />
-                <div className="w-2 h-2 rounded-full border border-border bg-background mt-1" />
-              </div>
-
-              <div className="w-56 h-72 rounded-xl bg-neutral-100 flex items-center justify-center text-text-secondary text-body-sm">
-                <img
-                  src="https://res.cloudinary.com/d5tnusci/image/upload/v1789664528/phone_siep1d.jpg"
-                  alt=""
-                  className="w-200 h-auto"
-                />
-              </div>
+          <div className="relative h-[420px]">
+            {/* Lost bubble */}
+            <div className="absolute left-[25%] top-[140px] w-24 h-24 border border-border rounded-full bg-background flex items-center justify-center text-body-md text-primary font-medium shadow-sm -rotate-25">
+              Lost??
             </div>
 
-            <div className="pt-6">
-              <div className="border border-border rounded-full w-14 h-14 flex items-center justify-center text-heading-3 font-bold text-text-primary bg-background shadow-sm">
-                ?
-              </div>
+            {/* Question bubble */}
+            <div className="absolute left-1/2 -translate-x-1/2 top-[75px] w-20 h-20 border border-border rounded-full bg-background flex items-center justify-center text-heading-3 font-bold text-text-primary shadow-sm rotate-10">
+              ?
             </div>
 
-            <div className="relative pt-20">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 flex flex-col items-center">
-                <div className="border border-border rounded-full px-6 py-3 bg-background text-body-md text-primary font-medium shadow-sm">
-                  Found??
-                </div>
+            {/* Found bubble */}
+            <div className="absolute right-[29%] top-[150px] w-24 h-24 border border-border rounded-full bg-background flex items-center justify-center text-body-md text-primary font-medium shadow-sm rotate-20">
+              Found??
+            </div>
 
-                <div className="w-3 h-3 rounded-full border border-border bg-background mt-1" />
-                <div className="w-2 h-2 rounded-full border border-border bg-background mt-1" />
-              </div>
-
-              <div className="w-56 h-72 rounded-xl flex items-center justify-center text-text-secondary text-body-sm">
-                <img
-                  src="https://res.cloudinary.com/d5tnusci/image/upload/v1789664555/earphone_zxmi2w.png"
-                  alt=""
-                  className="w-300 h-auto"
-                />
-              </div>
+            {/* Phone */}
+            <div className="absolute left-[25%] top-[20px] w-100 h-202 flex items-center justify-center">
+              <img
+                src="https://res.cloudinary.com/d5tnusci/image/upload/v1790133618/phone_siep1d.png"
+                alt=""
+                className="w-70 h-auto rotate-10"
+              />
             </div>
           </div>
         </section>
@@ -108,11 +91,11 @@ const Home = () => {
         <section className="max-w-[1280px] mx-auto px-10 py-16">
           <div className="grid grid-cols-2 gap-10 items-center">
             <div className="w-full h-72 rounded-xl flex items-center justify-center text-text-secondary text-body-sm">
-              <img
-                src="https://res.cloudinary.com/d5tnusci/image/upload/v1789664528/phone_siep1d.jpg"
+              {/* <img
+                src="https://res.cloudinary.com/d5tnusci/image/upload/v1790133618/phone_siep1d.png"
                 alt=""
                 className="w-50 h-auto"
-              />
+              /> */}
             </div>
 
             <div>
@@ -126,7 +109,7 @@ const Home = () => {
 
               <p className="text-body-md text-text-secondary mt-4 max-w-sm">
                 Or the listing stays open, free of charge, for as long as it
-                takes — nobody pays to post, search, or claim.
+                takes - nobody pays to post, search, or claim.
               </p>
             </div>
           </div>
@@ -135,15 +118,15 @@ const Home = () => {
         {/* ================= FEATURE: HUMAN REVIEW ================= */}
         <section className="max-w-[1280px] mx-auto px-10 py-16">
           <div className="grid grid-cols-2 gap-10 items-center">
-            <div className="w-full h-72 rounded-xl flex items-center justify-center text-text-secondary text-body-sm">
+            <div className="w-full h-102 rounded-xl flex items-center justify-center text-text-secondary text-body-sm">
               <img
                 src="https://res.cloudinary.com/d5tnusci/image/upload/v1789664555/earphone_zxmi2w.png"
                 alt=""
-                className="w-50 h-auto"
+                className="w-90 h-auto absolute left-[12%] top-[1320px] rotate-35"
               />
             </div>
 
-            <div>
+            <div className="-ml-35 mt-10">
               <p className="text-heading-3 font-semibold text-primary">
                 A REAL PERSON, NOT AN ALGORITHM
               </p>
@@ -153,7 +136,7 @@ const Home = () => {
               </h2>
 
               <p className="text-body-md text-text-secondary mt-4 max-w-sm">
-                Contact details only unlock once a poster accepts a claim — and
+                Contact details only unlock once a poster accepts a claim - and
                 admin can always step in if two people believe the same item is
                 theirs.
               </p>
@@ -189,12 +172,18 @@ const Home = () => {
                   key={item.id}
                   className="border border-border rounded-lg overflow-hidden"
                 >
-                  <div className="w-full h-40 bg-neutral-100 overflow-hidden">
-                    <img
-                      src={item.imageUrl}
-                      alt={item.title}
-                      className="w-full h-full object-cover"
-                    />
+                  <div className="w-full h-40 bg-neutral-100 overflow-hidden flex items-center justify-center">
+                    {item.imageUrl ? (
+                      <img
+                        src={item.imageUrl}
+                        alt={item.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-text-secondary text-body-sm">
+                        Image Placeholder
+                      </span>
+                    )}
                   </div>
 
                   <div className="p-4">
