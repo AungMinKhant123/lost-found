@@ -14,7 +14,7 @@ const navItems = [
 
 const AdminSidebar = ({ name = "Admin", role = "Admin" }) => {
   return (
-    <aside className="w-64 min-h-screen bg-[#1B1533] flex flex-col shrink-0">
+    <aside className="w-64 h-full bg-[#1B1533] flex flex-col shrink-0">
       {/* Logo */}
       <div className="flex items-center gap-2 px-6 py-6">
         <img

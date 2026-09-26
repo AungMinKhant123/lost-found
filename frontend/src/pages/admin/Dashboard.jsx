@@ -29,23 +29,28 @@ const Dashboard = () => {
   const [categories, setCategories] = useState({});
   const [activity, setActivity] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [categoryPeriod, setCategoryPeriod] = useState("all");
 
   useEffect(() => {
-    Promise.all([getAdminStats(), getItemsByCategory(), getRecentActivity(12)])
+    Promise.all([
+      getAdminStats(),
+      getItemsByCategory(categoryPeriod),
+      getRecentActivity(12),
+    ])
       .then(([statsData, categoryData, activityData]) => {
         setStats(statsData);
         setCategories(categoryData);
         setActivity(activityData);
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [categoryPeriod]);
 
   if (loading) return <div className="p-10">Loading...</div>;
 
   const maxCategoryCount = Math.max(...Object.values(categories), 1);
 
   return (
-    <div className="p-10">
+    <div className="px-10 py-5">
       {/* Header + search */}
       <div className="flex items-center justify-between gap-6">
         <div>
@@ -115,8 +120,16 @@ const Dashboard = () => {
             <h2 className="text-heading-3 font-bold text-text-primary">
               Items by category
             </h2>
-            <select className="border border-border rounded-lg px-3 py-1.5 text-body-sm">
-              <option>All Time</option>
+            <select
+              value={categoryPeriod}
+              onChange={(e) => setCategoryPeriod(e.target.value)}
+              className="border border-border rounded-lg px-3 py-1.5 text-body-sm"
+            >
+              <option value="all">All Time</option>
+              <option value="year">This Year</option>
+              <option value="month">This Month</option>
+              <option value="week">This Week</option>
+              <option value="day">Today</option>
             </select>
           </div>
           <p className="text-body-sm text-primary mt-1">
@@ -129,7 +142,7 @@ const Dashboard = () => {
                 <span className="text-body-md text-text-primary w-40 shrink-0">
                   {category}
                 </span>
-                <div className="flex-1 h-2 bg-background-subtle rounded-full overflow-hidden">
+                <div className="flex-1 h-2 bg-primary/10 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-primary rounded-full"
                     style={{ width: `${(count / maxCategoryCount) * 100}%` }}
@@ -151,7 +164,7 @@ const Dashboard = () => {
             Last 12 platform events
           </p>
 
-          <div className="flex flex-col gap-3 mt-5">
+          <div className="flex flex-col gap-3 mt-5 max-h-64 overflow-y-auto pr-2 admin-scrollbar">
             {activity.map((event, i) => {
               const Icon = ACTIVITY_ICONS[event.type] || Flag;
               return (

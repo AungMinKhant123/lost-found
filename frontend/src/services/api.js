@@ -321,14 +321,55 @@ export async function getAdminStats() {
 }
 
 // Computes how many items fall into each category, for the dashboard's
-// "Items by category" bar list. Items with no category are grouped
-// under "Others".
-export async function getItemsByCategory() {
+// "Items by category" bar list. Accepts an optional "period" filter
+// (year/month/week/day) to restrict counting to items posted within
+// that window — based on each item's createdAt timestamp.
+export async function getItemsByCategory(period = "all") {
   const items = await getItems();
-  const counts = {};
 
-  items.forEach((item) => {
+  const cutoff = (() => {
+    const now = new Date();
+    if (period === "year") return new Date(now.getFullYear(), 0, 1);
+    if (period === "month")
+      return new Date(now.getFullYear(), now.getMonth(), 1);
+    if (period === "week") {
+      const d = new Date(now);
+      d.setDate(d.getDate() - 7);
+      return d;
+    }
+    if (period === "day") {
+      const d = new Date(now);
+      d.setHours(0, 0, 0, 0);
+      return d;
+    }
+    return null; // 'all' — no cutoff
+  })();
+
+  const filteredItems = cutoff
+    ? items.filter(
+        (item) => item.createdAt && new Date(item.createdAt) >= cutoff,
+      )
+    : items;
+
+  // Initialize all base categories with 0 so they remain present
+  const ALL_CATEGORIES = [
+    "Clothing",
+    "Electronics",
+    "Accessories",
+    "Other",
+    "Bags",
+    "Documents",
+    "Others",
+  ];
+
+  const counts = ALL_CATEGORIES.reduce((acc, cat) => {
+    acc[cat] = 0;
+    return acc;
+  }, {});
+
+  filteredItems.forEach((item) => {
     const category = item.category || "Others";
+    // Increment if it exists in base categories, otherwise set or create it
     counts[category] = (counts[category] || 0) + 1;
   });
 

@@ -70,3 +70,20 @@ body {
   --text-label-sm: 12px;
   --text-label-sm--line-height: 1.4;
 }
+
+/* Custom scrollbar for the admin dashboard's internally-scrolling
+   panels (e.g. Recent Activity) — thin, rounded, brand-colored, instead
+   of the browser's bulky default scrollbar. */
+.admin-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.admin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.admin-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #a9b3bd;
+  border-radius: 9999px;
+}
+.admin-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #4b32a8;
+}
