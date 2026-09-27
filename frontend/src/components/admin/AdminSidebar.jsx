@@ -1,4 +1,4 @@
-import { NavLink } from "react-router";
+import { NavLink, Link } from "react-router";
 import { LayoutGrid, List, SlidersHorizontal, UserCog } from "lucide-react";
 
 const navItems = [
@@ -16,16 +16,18 @@ const AdminSidebar = ({ name = "Admin", role = "Admin" }) => {
   return (
     <aside className="w-64 h-full bg-[#1B1533] flex flex-col shrink-0">
       {/* Logo */}
-      <div className="flex items-center gap-2 px-6 py-6">
-        <img
-          src="https://res.cloudinary.com/d5tnusci/image/upload/v1789382451/signup2_bzibei.png"
-          alt=""
-          className="w-8 h-auto"
-        />
-        <span className="text-white font-bold text-xl">
-          Lost<span className="text-primary">Found</span>
-        </span>
-      </div>
+      <Link to="/">
+        <div className="flex items-center gap-2 px-6 py-6">
+          <img
+            src="https://res.cloudinary.com/d5tnusci/image/upload/v1789382451/signup2_bzibei.png"
+            alt=""
+            className="w-8 h-auto"
+          />
+          <span className="text-white font-bold text-xl">
+            Lost<span className="text-primary">Found</span>
+          </span>
+        </div>
+      </Link>
 
       {/* Nav */}
       <div className="px-4 mt-4 flex-1">

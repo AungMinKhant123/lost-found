@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { getItems, getUsers, getClaims, deleteItem } from "../../services/api";
 import ListingDetailsModal from "../../components/admin/ListingDetailsModal";
 import ConfirmDeleteModal from "../../components/admin/ConfirmDeleteModal";
+import AdminSelect from "../../components/admin/AdminSelect";
 
 const CATEGORIES = [
   "Electronics",
@@ -178,53 +179,40 @@ const ManageListings = () => {
         </div>
 
         <div className="relative">
-          <select
+          <AdminSelect
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="appearance-none border border-border rounded-lg pl-4 pr-9 py-2.5 text-body-md"
-          >
-            <option value="all">All Status</option>
-            <option value="open">Open</option>
-            <option value="resolved">Resolved</option>
-          </select>
-          <ChevronDown
-            size={16}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none"
+            onChange={setStatusFilter}
+            className="w-40"
+            options={[
+              { value: "all", label: "All Status" },
+              { value: "open", label: "Open" },
+              { value: "resolved", label: "Resolved" },
+            ]}
           />
         </div>
 
         <div className="relative">
-          <select
+          <AdminSelect
             value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-            className="appearance-none border border-border rounded-lg pl-4 pr-9 py-2.5 text-body-md"
-          >
-            <option value="all">All Type</option>
-            <option value="lost">Lost</option>
-            <option value="found">Found</option>
-          </select>
-          <ChevronDown
-            size={16}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none"
+            onChange={setTypeFilter}
+            className="w-36"
+            options={[
+              { value: "all", label: "All Type" },
+              { value: "lost", label: "Lost" },
+              { value: "found", label: "Found" },
+            ]}
           />
         </div>
 
         <div className="relative">
-          <select
+          <AdminSelect
             value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="appearance-none border border-border rounded-lg pl-4 pr-9 py-2.5 text-body-md"
-          >
-            <option value="all">All Categories</option>
-            {CATEGORIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-          <ChevronDown
-            size={16}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none"
+            onChange={setCategoryFilter}
+            className="w-44"
+            options={[
+              { value: "all", label: "All Categories" },
+              ...CATEGORIES.map((c) => ({ value: c, label: c })),
+            ]}
           />
         </div>
       </div>

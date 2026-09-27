@@ -23,7 +23,7 @@ const AdminLayout = () => {
       {/* overflow-y-auto + h-full on just the content area is what lets
           THIS scroll independently, while the sidebar (a separate flex
           sibling) stays completely fixed regardless of content height. */}
-      <main className="flex-1 h-full overflow-y-auto">
+      <main className="flex-1 h-full overflow-hidden">
         <Outlet />
       </main>
     </div>

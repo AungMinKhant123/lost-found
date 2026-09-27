@@ -1,5 +1,11 @@
-import { NavLink } from "react-router";
-import { User, FileText, ShoppingCart, Settings } from "lucide-react";
+import { NavLink, Link } from "react-router";
+import {
+  User,
+  FileText,
+  ShoppingCart,
+  Settings,
+  LayoutGrid,
+} from "lucide-react";
 import { useProfile } from "../../hooks/useProfile";
 
 // Each nav item: the label, icon, and the route it links to.
@@ -68,6 +74,19 @@ const AccountSidebar = () => {
             {label}
           </NavLink>
         ))}
+
+        {/* Admin Dashboard — only visible to admins */}
+        {user?.role === "admin" && (
+          <Link
+            to="/admin"
+            className="flex items-center gap-3 border border-border rounded-lg px-4 py-3 text-body-md text-text-primary hover:bg-background-subtle transition-colors"
+          >
+            <LayoutGrid size={20} />
+            Admin Dashboard
+          </Link>
+        )}
+
+        {/* Settings */}
 
         {/* Settings */}
         <NavLink
