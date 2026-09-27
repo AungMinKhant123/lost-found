@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router";
+import { Link, NavLink, useNavigate } from "react-router";
 import { useState, useRef, useEffect } from "react";
 import { User, LogOut, Settings } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
@@ -67,7 +67,7 @@ const UserHeader = () => {
       : "User";
 
   return (
-    <header className="w-full bg-background-subtle border-b border-border px-10 py-4">
+    <header className="fixed top-0 left-0 z-50 w-full bg-background-subtle border-b border-border px-10 py-3">
       <div className="flex items-center justify-between">
         {/* ================= LOGO ================= */}
         <Link to="/">
@@ -88,13 +88,20 @@ const UserHeader = () => {
         {/* ================= NAV LINKS ================= */}
         <nav className="flex items-center gap-8">
           {navLinks.map((link) => (
-            <Link
+            <NavLink
               key={link.label}
               to={link.href}
-              className="text-body-md text-text-primary hover:text-primary"
+              end={link.href === "/"}
+              className={({ isActive }) =>
+                `relative pb-1 text-body-md transition-colors ${
+                  isActive
+                    ? "text-primary after:absolute after:left-0 after:right-0 after:-bottom-1 after:h-0.5 after:bg-primary after:rounded-full"
+                    : "text-text-primary hover:text-primary"
+                }`
+              }
             >
               {link.label}
-            </Link>
+            </NavLink>
           ))}
         </nav>
 
