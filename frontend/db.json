@@ -878,6 +878,14 @@
       "message": "testing",
       "claimedAt": "2026-09-26T09:09:13.768Z",
       "id": "yaJQEfTVMI4"
+    },
+    {
+      "itemId": "13",
+      "userId": "1",
+      "status": "pending",
+      "message": "I believe this item is mine so give it to me.",
+      "claimedAt": "2026-09-27T03:45:57.402Z",
+      "id": "cpzuqKWtgA0"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
