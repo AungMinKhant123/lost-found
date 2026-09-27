@@ -267,23 +267,6 @@
       "userId": "1"
     },
     {
-      "title": "dasdasd",
-      "status": "lost",
-      "category": "Clothing",
-      "color": "Grey",
-      "location": "dadw",
-      "date": "2026-09-21",
-      "description": "dawdadadaw",
-      "resolved": false,
-      "userId": "2",
-      "postedBy": {
-        "name": "Ashfaq Ifthicar",
-        "email": "ash@gmail.com"
-      },
-      "id": "fc5ReyLJB_0",
-      "createdAt": "2026-09-21T03:09:23.011Z"
-    },
-    {
       "title": "testing",
       "status": "lost",
       "category": "Clothing",
