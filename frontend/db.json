@@ -316,6 +316,23 @@
       },
       "id": "It8vSeJUq8w",
       "createdAt": "2026-09-27T12:14:32.390Z"
+    },
+    {
+      "title": "Nike Shoes",
+      "status": "found",
+      "category": "Clothing",
+      "color": "Pink",
+      "location": "Dressing Room",
+      "date": "2026-09-28",
+      "description": " Has a custom painted logo.",
+      "resolved": false,
+      "userId": "2",
+      "postedBy": {
+        "name": "Ashfaq Ifthicar",
+        "email": "ash@gmail.com"
+      },
+      "id": "9WgfPB-bZFE",
+      "createdAt": "2026-09-28T10:58:14.992Z"
     }
   ],
   "users": [
@@ -343,7 +360,7 @@
       "agreeTerms": true,
       "id": "2",
       "socialMedia": "",
-      "aboutMe": ""
+      "aboutMe": "Hi I am Ashfaq. I am currently studying CS"
     },
     {
       "firstName": "Ash",
@@ -479,17 +496,6 @@
       "email": "bruce@example.com",
       "password": "admin1234",
       "role": "admin"
-    },
-    {
-      "firstName": "Delta",
-      "lastName": "User",
-      "email": "delta@gmail.com",
-      "password": "12345678",
-      "id": "nVtf2sTKHyw",
-      "phone": "123456789",
-      "socialMedia": "",
-      "aboutMe": "Hi I am delta. I am here to test account deletion",
-      "profession": "TEACHER"
     }
   ],
   "claims": [
@@ -942,61 +948,93 @@
       "id": "9FyWDL1uZME"
     }
   ],
-  "colours": [
-    {
-      "id": "5",
-      "name": "Red",
-      "color": "#FF0000"
-    },
-    {
-      "id": "7",
-      "name": "Blue",
-      "color": "#0000FF"
-    },
-    {
-      "id": "10",
-      "name": "Purple",
-      "color": "#800080"
-    },
-    {
-      "name": "Pink",
-      "color": "#ff40ff",
-      "id": "nSxj4_CjDWk"
-    },
-    {
-      "name": "Green",
-      "color": "#96d35f",
-      "id": "lEwiZrZpXAc"
-    }
-  ],
   "categories": [
     {
+      "id": "1",
       "name": "Electronics",
-      "id": "1"
+      "icon": "cable"
+    },
+    {
+      "id": "2",
+      "name": "Bags",
+      "icon": "handbag"
     },
     {
       "id": "3",
-      "name": "Clothing"
+      "name": "Clothing",
+      "icon": "shirt"
+    },
+    {
+      "id": "4",
+      "name": "Accessories",
+      "icon": "watch"
     },
     {
       "id": "5",
-      "name": "Accessories"
+      "name": "Keys",
+      "icon": "key"
+    },
+    {
+      "id": "6",
+      "name": "Documents",
+      "icon": "file-text"
+    },
+    {
+      "id": "7",
+      "name": "Other",
+      "icon": "package"
+    }
+  ],
+  "colours": [
+    {
+      "id": "1",
+      "name": "Black",
+      "hex": "#1F2933"
+    },
+    {
+      "id": "3",
+      "name": "White",
+      "hex": "#FFFFFF"
+    },
+    {
+      "id": "4",
+      "name": "Grey",
+      "hex": "#9CA3AF"
+    },
+    {
+      "id": "5",
+      "name": "Silver",
+      "hex": "#C0C0C0"
+    },
+    {
+      "id": "6",
+      "name": "Brown",
+      "hex": "#8B5E3C"
+    },
+    {
+      "id": "7",
+      "name": "Red",
+      "hex": "#EB5757"
+    },
+    {
+      "id": "8",
+      "name": "Blue",
+      "hex": "#2F80ED"
     },
     {
       "id": "9",
-      "name": "Other"
+      "name": "Green",
+      "hex": "#2E9B62"
     },
     {
-      "name": "Documents",
-      "id": "kXlM3f7kR-I"
+      "id": "10",
+      "name": "Other",
+      "hex": "#CBD5E1"
     },
     {
-      "name": "Bags",
-      "id": "_JncDIVC7CU"
-    },
-    {
-      "name": "Phone",
-      "id": "Al5JHvxsO4o"
+      "name": "Pink",
+      "hex": "#ff1af7",
+      "id": "wGCGGYoeDUM"
     }
   ],
   "locations": [

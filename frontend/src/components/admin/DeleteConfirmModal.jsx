@@ -1,148 +1,52 @@
-import { AlertTriangle } from "lucide-react";
-
-const DeleteConfirmModal = ({ isOpen, item, onClose, onConfirm }) => {
-  if (!isOpen || !item) {
-    return null;
-  }
+const DeleteConfirmModal = ({
+  isOpen,
+  item,
+  itemCount,
+  isDeleting,
+  onClose,
+  onConfirm,
+}) => {
+  if (!isOpen || !item) return null;
 
   return (
     <div
-      className="
-        fixed
-        inset-0
-        z-50
-        flex
-        items-center
-        justify-center
-        bg-black/10
-        px-5
-      "
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
       onMouseDown={(e) => {
-        if (e.target === e.currentTarget) {
-          onClose();
-        }
+        if (e.target === e.currentTarget && !isDeleting) onClose();
       }}
     >
-      <div
-        className="
-          w-full
-          max-w-[400px]
-          rounded-lg
-          border
-          border-[#B8C2CC]
-          bg-[#F8FAFC]
-          px-[18px]
-          pb-[34px]
-          pt-[35px]
-          shadow-[0_4px_12px_rgba(0,0,0,0.12)]
-        "
-      >
-        {/* TITLE */}
-
-        <h2
-          className="
-            m-0
-            text-[23px]
-            font-bold
-            leading-[30px]
-            text-black
-          "
-        >
+      <div className="bg-background rounded-lg border border-border w-full max-w-md p-6 shadow-lg">
+        <h2 className="text-heading-2 font-bold text-text-primary">
           Delete this value?
         </h2>
 
-        {/* DESCRIPTION */}
-
-        <p
-          className="
-            mt-[10px]
-            mb-0
-            text-[14px]
-            leading-[20px]
-            text-black
-          "
-        >
+        <p className="mt-3 text-body-md text-text-secondary">
           "{item.name}" is currently used by{" "}
-          <span className="font-medium">{item.itemCount ?? 0}</span> items.
+          <strong className="text-text-primary">{itemCount}</strong>{" "}
+          {itemCount === 1 ? "item" : "items"}.
         </p>
 
-        {/* WARNING */}
-
-        <div
-          className="
-            mt-[17px]
-            flex
-            min-h-[62px]
-            items-center
-            justify-center
-            rounded-lg
-            bg-[#FBE8C8]
-            px-5
-            py-2
-            text-center
-            text-[16px]
-            leading-[23px]
-            text-black
-          "
-        >
-          <p className="m-0">
-            Those items will be reassigned to "Other" automatically — they won't
-            be deleted.
-          </p>
+        <div className="mt-4 rounded-lg bg-warning/10 px-4 py-3 text-center text-body-sm font-medium text-text-primary">
+          Those items will be reassigned to "Other" automatically - they won't
+          be deleted.
         </div>
 
-        {/* BUTTONS */}
-
-        <div
-          className="
-            mt-[12px]
-            flex
-            justify-center
-            gap-[15px]
-          "
-        >
-          {/* CANCEL */}
-
+        <div className="mt-6 flex justify-center gap-4">
           <button
             type="button"
             onClick={onClose}
-            className="
-              h-[45px]
-              min-w-[152px]
-              rounded-lg
-              border
-              border-[#B8C2CC]
-              bg-transparent
-              px-5
-              text-[16px]
-              font-normal
-              text-black
-              transition
-              hover:bg-gray-100
-            "
+            disabled={isDeleting}
+            className="rounded-lg border border-border px-6 py-2.5 text-body-md text-text-primary transition-colors hover:bg-background-subtle disabled:opacity-50"
           >
             Cancel
           </button>
-
-          {/* DELETE */}
-
           <button
             type="button"
-            onClick={() => onConfirm(item)}
-            className="
-              h-[45px]
-              min-w-[150px]
-              rounded-lg
-              bg-[#E3262E]
-              px-5
-              text-[16px]
-              font-normal
-              text-white
-              transition
-              hover:bg-[#C91E26]
-            "
+            onClick={onConfirm}
+            disabled={isDeleting}
+            className="rounded-lg bg-error px-6 py-2.5 text-body-md font-medium text-white transition-colors hover:bg-error/90 disabled:opacity-50"
           >
-            Delete & Resigned
+            {isDeleting ? "Deleting..." : "Delete & Reassign"}
           </button>
         </div>
       </div>
