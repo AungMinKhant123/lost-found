@@ -64,7 +64,7 @@
       "resolved": false,
       "userId": "1",
       "category": "Electronics",
-      "color": "Grey"
+      "color": "Other"
     },
     {
       "id": "7",
@@ -124,7 +124,7 @@
       "resolved": false,
       "userId": "10",
       "category": "Other",
-      "color": "Grey",
+      "color": "Other",
       "postedBy": {
         "name": "Marcus Tan",
         "phone": "+66 35 456 1287",
@@ -196,7 +196,7 @@
       "title": "Grey Cap",
       "status": "lost",
       "category": "Clothing",
-      "color": "Grey",
+      "color": "Other",
       "location": "Library",
       "date": "2026-09-20",
       "description": "It has a cute cat sticker and a green slime sticker pasted on the front.",
@@ -228,7 +228,7 @@
       "title": "HP Laptop",
       "status": "lost",
       "category": "Electronics",
-      "color": "Grey",
+      "color": "Other",
       "location": "Library",
       "date": "2026-09-20",
       "description": "I has a small dent on the right top corner.",
@@ -270,7 +270,7 @@
       "title": "dasdasd",
       "status": "lost",
       "category": "Clothing",
-      "color": "Grey",
+      "color": "Other",
       "location": "dadw",
       "date": "2026-09-21",
       "description": "dawdadadaw",
@@ -826,11 +826,6 @@
   ],
   "colours": [
     {
-      "id": "4",
-      "name": "Grey",
-      "color": "#888888"
-    },
-    {
       "id": "5",
       "name": "Red",
       "color": "#FF0000"
@@ -844,6 +839,16 @@
       "id": "10",
       "name": "Purple",
       "color": "#800080"
+    },
+    {
+      "name": "Pink",
+      "color": "#ff40ff",
+      "id": "nSxj4_CjDWk"
+    },
+    {
+      "name": "Green",
+      "color": "#96d35f",
+      "id": "lEwiZrZpXAc"
     }
   ],
   "categories": [
@@ -864,12 +869,16 @@
       "name": "Other"
     },
     {
-      "name": "Bags",
-      "id": "4_-Q9bHWGTQ"
-    },
-    {
       "name": "Documents",
       "id": "kXlM3f7kR-I"
+    },
+    {
+      "name": "Bags",
+      "id": "_JncDIVC7CU"
+    },
+    {
+      "name": "Phone",
+      "id": "Al5JHvxsO4o"
     }
   ],
   "locations": [
