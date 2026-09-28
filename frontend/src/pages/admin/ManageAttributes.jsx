@@ -1,359 +1,370 @@
 import { useEffect, useState } from "react";
 
-import ManageAttributesLayout from "../../components/admin/ManageAttributesLayout";
-import AttributeModal from "../../components/admin/AttributeModal";
-import DeleteConfirmModal from "../../components/admin/DeleteConfirmModal";
-import SuccessModal from "../../components/admin/SuccessModal";
+import { Search, X, Plus } from "lucide-react";
+
+import toast from "react-hot-toast";
 
 import {
-  getColours,
   getCategories,
-  createColour,
-  getItemsColorCategory,
-  updateItemColorCategory,
-  updateColour,
-  deleteColour,
+  getColours,
+  getItems,
   createCategory,
   updateCategory,
   deleteCategory,
+  createColour,
+  updateColour,
+  deleteColour,
+  sameAttributeName,
 } from "../../services/api";
+
+import AttributeRow from "../../components/admin/AttributeRow";
+
+import AttributeModal from "../../components/admin/AttributeModal";
+
+import DeleteConfirmModal from "../../components/admin/DeleteConfirmModal";
+
+const TABS = [
+  { value: "colours", label: "Colours" },
+
+  { value: "categories", label: "Categories" },
+];
+
+// Everything that differs between the two tabs lives here, so the rest
+
+// of the page is written once and works for both.
+
+const CONFIG = {
+  colours: {
+    title: "Colours",
+
+    singular: "Colour",
+
+    modalType: "colour",
+
+    subtitle: "shown as a filter on Browse Items",
+
+    itemField: "color", // items store the colour NAME under "color"
+
+    create: createColour,
+
+    update: updateColour,
+
+    remove: deleteColour,
+  },
+
+  categories: {
+    title: "Categories",
+
+    singular: "Category",
+
+    modalType: "category",
+
+    subtitle: "used to tag every listing",
+
+    itemField: "category",
+
+    create: createCategory,
+
+    update: updateCategory,
+
+    remove: deleteCategory,
+  },
+};
 
 const ManageAttributes = () => {
   const [colours, setColours] = useState([]);
+
   const [categories, setCategories] = useState([]);
+
   const [items, setItems] = useState([]);
 
   const [loading, setLoading] = useState(true);
 
-  // Modal
+  const [activeTab, setActiveTab] = useState("colours");
+
+  // Search works like Item List's: type, then press Enter / Search.
+
+  const [searchInput, setSearchInput] = useState("");
+
+  const [activeSearch, setActiveSearch] = useState("");
+
+  // Add/Edit modal
+
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalType, setModalType] = useState("colour");
-  const [editingItem, setEditingItem] = useState(null);
 
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [deleteItem, setDeleteItem] = useState(null);
-  const [deleteType, setDeleteType] = useState(null);
+  const [editing, setEditing] = useState(null); // null = adding
 
-  const [successModalOpen, setSuccessModalOpen] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
+  // Delete confirmation
 
-  /* =========================================================
-     LOAD DATA
-  ========================================================= */
+  const [deleting, setDeleting] = useState(null);
+
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const config = CONFIG[activeTab];
+
+  const source = activeTab === "colours" ? colours : categories;
+
+  // Re-reads everything from json-server. Used after every change so
+
+  // the list AND the item counts always match the real data.
+
+  const fetchData = async () => {
+    const [colourData, categoryData, itemData] = await Promise.all([
+      getColours(),
+
+      getCategories(),
+
+      getItems(),
+    ]);
+
+    setColours(colourData);
+
+    setCategories(categoryData);
+
+    setItems(itemData);
+  };
 
   useEffect(() => {
-    loadAttributes();
+    fetchData()
+      .catch((err) => {
+        console.error("Failed to load attributes:", err);
+
+        toast.error("Couldn't load attributes. Is the mock API running?");
+      })
+
+      .finally(() => setLoading(false));
   }, []);
 
-  const loadAttributes = async () => {
-    try {
-      setLoading(true);
+  // How many items currently use this colour/category.
 
-      const [coloursData, categoriesData, itemsData] = await Promise.all([
-        getColours(),
-        getCategories(),
-        getItemsColorCategory(),
-      ]);
+  const countFor = (attribute) =>
+    items.filter((item) =>
+      sameAttributeName(item[config.itemField], attribute.name),
+    ).length;
 
-      setColours(coloursData);
-      setCategories(categoriesData);
-      setItems(itemsData);
-    } catch (error) {
-      console.error("Failed to load attributes:", error);
-    } finally {
-      setLoading(false);
-    }
+  const visible = source.filter(
+    (attribute) =>
+      !activeSearch || attribute.name.toLowerCase().includes(activeSearch),
+  );
+
+  const switchTab = (tab) => {
+    setActiveTab(tab);
+
+    setSearchInput("");
+
+    setActiveSearch("");
   };
 
-  /* =========================================================
-     OPEN ADD MODAL
-  ========================================================= */
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
 
-  const handleAdd = (type) => {
-    setEditingItem(null);
+    setActiveSearch(searchInput.trim().toLowerCase());
+  };
 
-    if (type === "colours") {
-      setModalType("colour");
-    }
+  const clearSearch = () => {
+    setSearchInput("");
 
-    if (type === "categories") {
-      setModalType("category");
-    }
+    setActiveSearch("");
+  };
+
+  const openAdd = () => {
+    setEditing(null);
 
     setModalOpen(true);
   };
 
-  /* =========================================================
-     OPEN EDIT MODAL
-  ========================================================= */
-
-  const handleEdit = (type, item) => {
-    setEditingItem(item);
-
-    if (type === "colours") {
-      setModalType("colour");
-    }
-
-    if (type === "categories") {
-      setModalType("category");
-    }
+  const openEdit = (attribute) => {
+    setEditing(attribute);
 
     setModalOpen(true);
   };
-
-  /* =========================================================
-     CLOSE MODAL
-  ========================================================= */
 
   const closeModal = () => {
     setModalOpen(false);
-    setEditingItem(null);
+
+    setEditing(null);
   };
 
-  /* =========================================================
-     SAVE
-  ========================================================= */
+  // Called by the modal. If this throws (e.g. duplicate name), the
 
-  const handleSave = async (formData) => {
+  // modal shows the message inline and stays open.
+
+  const handleSave = async (data) => {
+    if (editing) {
+      await config.update(editing.id, data);
+    } else {
+      await config.create(data);
+    }
+
+    await fetchData();
+
+    toast.success(editing ? `Updated "${data.name}"` : `Added "${data.name}"`);
+
+    closeModal();
+  };
+
+  const handleConfirmDelete = async () => {
+    const target = deleting;
+
+    setIsDeleting(true);
+
     try {
-      /* =========================
-         COLOUR
-      ========================= */
+      const { reassigned } = await config.remove(target.id);
 
-      if (modalType === "colour") {
-        if (editingItem) {
-          const updated = await updateColour(editingItem.id, formData);
+      await fetchData();
 
-          setColours((previous) =>
-            previous.map((colour) =>
-              colour.id === editingItem.id ? updated : colour,
-            ),
-          );
-        } else {
-          const created = await createColour(formData);
+      toast.success(
+        reassigned > 0
+          ? `Deleted "${target.name}" — ${reassigned} item${reassigned === 1 ? "" : "s"} reassigned to Other`
+          : `Deleted "${target.name}"`,
+      );
 
-          setColours((previous) => [...previous, created]);
-        }
-      }
-
-      /* =========================
-         CATEGORY
-      ========================= */
-
-      if (modalType === "category") {
-        if (editingItem) {
-          const updated = await updateCategory(editingItem.id, formData);
-
-          setCategories((previous) =>
-            previous.map((category) =>
-              category.id === editingItem.id ? updated : category,
-            ),
-          );
-        } else {
-          const created = await createCategory(formData);
-
-          setCategories((previous) => [...previous, created]);
-        }
-      }
-
-      closeModal();
-    } catch (error) {
-      console.error("Failed to save attribute:", error);
+      setDeleting(null);
+    } catch (err) {
+      toast.error(err.message || "Failed to delete. Please try again.");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
-  /* =========================================================
-     DELETE
-  ========================================================= */
-
-  const handleDelete = (type, item) => {
-    setDeleteType(type);
-    setDeleteItem(item);
-    setDeleteModalOpen(true);
-  };
-
- const handleConfirmDelete = async (item) => {
-   try {
-     if (deleteType === "categories") {
-       const affectedItems = items.filter(
-         (currentItem) =>
-           currentItem.category?.toLowerCase() === item.name?.toLowerCase(),
-       );
-
-       // Reassign affected items to Other
-       for (const currentItem of affectedItems) {
-         await updateItemColorCategory(currentItem.id, {
-           ...currentItem,
-           category: "Other",
-         });
-       }
-
-       // Delete category
-       await deleteCategory(item.id);
-
-       // Update local items
-       setItems((previous) =>
-         previous.map((currentItem) =>
-           currentItem.category?.toLowerCase() === item.name?.toLowerCase()
-             ? {
-                 ...currentItem,
-                 category: "Other",
-               }
-             : currentItem,
-         ),
-       );
-
-       // Remove deleted category
-       setCategories((previous) =>
-         previous.filter((category) => category.id !== item.id),
-       );
-     }
-
-     if (deleteType === "colours") {
-       const affectedItems = items.filter(
-         (currentItem) =>
-           currentItem.color?.toLowerCase() === item.name?.toLowerCase(),
-       );
-
-       // Reassign affected items to Other
-       for (const currentItem of affectedItems) {
-         await updateItemColorCategory(currentItem.id, {
-           ...currentItem,
-           color: "Other",
-         });
-       }
-
-       // Delete colour
-       await deleteColour(item.id);
-
-       // Update local items
-       setItems((previous) =>
-         previous.map((currentItem) =>
-           currentItem.color?.toLowerCase() === item.name?.toLowerCase()
-             ? {
-                 ...currentItem,
-                 color: "Other",
-               }
-             : currentItem,
-         ),
-       );
-
-       // Remove deleted colour
-       setColours((previous) =>
-         previous.filter((colour) => colour.id !== item.id),
-       );
-     }
-
-     // IMPORTANT:
-     // Close delete confirmation only
-     setDeleteModalOpen(false);
-     setDeleteItem(null);
-     setDeleteType(null);
-
-     // Show success modal
-     setSuccessMessage(`Deleted '${item.name}' - items reassigned to others`);
-
-     setSuccessModalOpen(true);
-   } catch (error) {
-     console.error("Delete failed:", error);
-   }
- };
-
-  const coloursWithCount = colours.map((colour) => ({
-    ...colour,
-    itemCount: items.filter(
-      (item) => item.color?.toLowerCase() === colour.name?.toLowerCase(),
-    ).length,
-  }));
-
-  console.log("coloursWithCount", coloursWithCount);
-
-  const categoriesWithCount = categories.map((category) => ({
-    ...category,
-    itemCount: items.filter(
-      (item) => item.category?.toLowerCase() === category.name?.toLowerCase(),
-    ).length,
-  })); 
-
-  if (loading) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <p className="text-body-md text-text-secondary">
-          Loading attributes...
-        </p>
-      </div>
-    );
-  } 
+  if (loading) return <div className="p-10">Loading...</div>;
 
   return (
-    <>
-      <ManageAttributesLayout
-        title="Manage Attributes"
-        description="Categories, locations, and colours used across the app"
-        tabs={[
-          {
-            label: "Colours",
-            value: "colours",
-          },
-          {
-            label: "Categories",
-            value: "categories",
-          },
-        ]}
-        data={{
-          colours: coloursWithCount,
-          categories: categoriesWithCount,
-        }}
-        panelConfig={{
-          colours: {
-            title: "Colours",
-            subtitle: "shown as a filter on Browse Items",
-            showColor: true,
-          showCategoryIcon: false,
-          },
+    <div className="p-10">
+      {/* Header + search */}
 
-          categories: {
-            title: "Categories",
-            subtitle: "shown as a filter on Browse Items",
-            showColor: false,
-            showCategoryIcon: true,
-          },
-        }}
-        onAdd={handleAdd}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
+      <div className="flex items-start justify-between gap-8">
+        <div>
+          <h1 className="text-heading-1 font-bold text-text-primary">
+            Manage Attributes
+          </h1>
 
-      {/* MODAL */}
+          <p className="text-body-md text-text-secondary mt-1 max-w-sm">
+            Categories, locations, and colours used across the app
+          </p>
+        </div>
+
+        <form
+          onSubmit={handleSearchSubmit}
+          className="flex gap-3 w-full max-w-md"
+        >
+          <div className="relative flex-1">
+            <Search
+              size={18}
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-primary"
+            />
+
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder={`Search ${config.title.toLowerCase()}...`}
+              className="w-full border border-border rounded-lg pl-11 pr-10 py-2.5 text-body-md focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+
+            {activeSearch && (
+              <button
+                type="button"
+                onClick={clearSearch}
+                aria-label="Clear search"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-primary"
+              >
+                <X size={18} />
+              </button>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className="bg-primary hover:bg-primary-dark text-text-inverse rounded-lg px-6 py-2.5 text-body-md font-medium transition-colors shrink-0"
+          >
+            Search
+          </button>
+        </form>
+      </div>
+
+      {/* Tabs */}
+
+      <div className="flex gap-2.5 mt-10">
+        {TABS.map((tab) => (
+          <button
+            key={tab.value}
+            type="button"
+            onClick={() => switchTab(tab.value)}
+            className={`px-8 py-2.5 rounded-md text-body-sm font-medium transition-colors ${
+              activeTab === tab.value
+                ? "bg-primary text-text-inverse"
+                : "bg-neutral-100 text-text-primary hover:bg-neutral-300/40"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Panel */}
+
+      <section className="border border-border rounded-lg p-6 mt-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-heading-3 font-bold text-text-primary">
+              {config.title}
+            </h2>
+            <p className="text-body-sm text-text-secondary mt-1">
+              {source.length} values · {config.subtitle}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={openAdd}
+            className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-text-inverse rounded-lg px-5 py-2.5 text-body-md font-medium transition-colors"
+          >
+            <Plus size={18} />
+            Add {config.singular}
+          </button>
+        </div>
+
+        {/* Scrollable list container showing ~7 items */}
+        <div className="flex flex-col mt-5 max-h-[340px] overflow-y-auto admin-scrollbar pr-1">
+          {visible.length === 0 ? (
+            <p className="py-8 text-center text-body-md text-text-secondary">
+              {activeSearch
+                ? `No ${config.title.toLowerCase()} match "${activeSearch}".`
+                : `No ${config.title.toLowerCase()} yet — add one above.`}
+            </p>
+          ) : (
+            visible.map((attribute) => (
+              <AttributeRow
+                key={attribute.id}
+                variant={activeTab}
+                attribute={attribute}
+                itemCount={countFor(attribute)}
+                onEdit={() => openEdit(attribute)}
+                onDelete={() => setDeleting(attribute)}
+              />
+            ))
+          )}
+        </div>
+      </section>
 
       <AttributeModal
         isOpen={modalOpen}
+        type={config.modalType}
+        editing={editing}
         onClose={closeModal}
         onSave={handleSave}
-        type={modalType}
-        editingItem={editingItem}
       />
 
       <DeleteConfirmModal
-        isOpen={deleteModalOpen}
-        item={deleteItem}
-        onClose={() => {
-          setDeleteModalOpen(false);
-          setDeleteItem(null);
-          setDeleteType(null);
-        }}
+        isOpen={Boolean(deleting)}
+        item={deleting}
+        itemCount={deleting ? countFor(deleting) : 0}
+        isDeleting={isDeleting}
+        onClose={() => setDeleting(null)}
         onConfirm={handleConfirmDelete}
       />
-
-      <SuccessModal
-        isOpen={successModalOpen}
-        message={successMessage}
-        onClose={() => {
-          setSuccessModalOpen(false);
-          setSuccessMessage("");
-        }}
-      />
-    </>
+    </div>
   );
 };
 

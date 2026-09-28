@@ -1,22 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import {
-  Search,
-  MapPin,
-  ChevronDown,
-  Smartphone,
-  ShoppingBag,
-  Shirt,
-  Watch,
-  Key,
-  FileText,
-  MoreHorizontal,
-  Calendar,
-  X,
-} from "lucide-react";
+import { Search, MapPin, ChevronDown, Calendar, X } from "lucide-react";
 import { getItems } from "../../services/api";
 import DecorativeBackground from "../../components/DecorativeBackground/DecorativeBackground";
 import ItemDetailsModal from "../../components/ItemDetailsModal";
+import { useAttributes } from "../../hooks/useAttributes";
+import { getCategoryIcon } from "../../utils/categoryIcons";
 
 // Item type radio options — single select.
 const ITEM_TYPES = [
@@ -24,29 +13,6 @@ const ITEM_TYPES = [
   { label: "Lost Items", value: "lost" },
   { label: "Found Items", value: "found" },
   { label: "Resolved", value: "resolved" },
-];
-
-// Category checkboxes — multi-select, each paired with a lucide icon.
-const CATEGORIES = [
-  { label: "Electronics", icon: Smartphone },
-  { label: "Bags", icon: ShoppingBag },
-  { label: "Clothing", icon: Shirt },
-  { label: "Accessories", icon: Watch },
-  { label: "Keys", icon: Key },
-  { label: "Documents", icon: FileText },
-  { label: "Other", icon: MoreHorizontal },
-];
-
-// Color swatches — multi-select. Hex values are just for the visual dot;
-// filtering matches against the "name", which must match each item's
-// "color" field in db.json exactly.
-const COLORS = [
-  { name: "Black", hex: "#1F2933" },
-  { name: "Brown", hex: "#8B5E3C" },
-  { name: "Grey", hex: "#9CA3AF" },
-  { name: "Silver", hex: "#C0C0C0" },
-  { name: "Blue", hex: "#2F80ED" },
-  { name: "Red", hex: "#EB5757" },
 ];
 
 function formatDate(isoDate) {
@@ -96,6 +62,8 @@ const ItemList = () => {
   const [appliedDateTo, setAppliedDateTo] = useState("");
 
   const [isColorsExpanded, setIsColorsExpanded] = useState(true);
+
+  const { categories, colours } = useAttributes();
 
   useEffect(() => {
     getItems()
@@ -335,21 +303,24 @@ const ItemList = () => {
                   Category
                 </h3>
                 <div className="flex flex-col gap-3 mt-3 px-1">
-                  {CATEGORIES.map(({ label, icon: Icon }) => (
-                    <label
-                      key={label}
-                      className="flex items-center gap-2 text-body-md text-text-primary cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={pendingCategories.includes(label)}
-                        onChange={() => toggleCategory(label)}
-                        className="accent-primary"
-                      />
-                      <Icon size={16} className="text-text-secondary" />
-                      {label}
-                    </label>
-                  ))}
+                  {categories.map((category) => {
+                    const Icon = getCategoryIcon(category.icon);
+                    return (
+                      <label
+                        key={category.id}
+                        className="flex items-center gap-2 text-body-md text-text-primary cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={pendingCategories.includes(category.name)}
+                          onChange={() => toggleCategory(category.name)}
+                          className="accent-primary"
+                        />
+                        <Icon size={16} className="text-text-secondary" />
+                        {category.name}
+                      </label>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -368,20 +339,28 @@ const ItemList = () => {
                 </button>
                 {isColorsExpanded && (
                   <div className="flex flex-wrap gap-2 mt-3 px-1">
-                    {COLORS.map((color) => (
-                      <button
-                        key={color.name}
-                        type="button"
-                        title={color.name}
-                        onClick={() => toggleColor(color.name)}
-                        className={`w-7 h-7 rounded-full border-2 transition-all ${
-                          pendingColors.includes(color.name)
-                            ? "border-primary scale-110"
-                            : "border-border"
-                        }`}
-                        style={{ backgroundColor: color.hex }}
-                      />
-                    ))}
+                    {colours.map((colour) => {
+                      const isOther = colour.name.toLowerCase() === "other";
+
+                      return (
+                        <button
+                          key={colour.id}
+                          type="button"
+                          title={colour.name}
+                          onClick={() => toggleColor(colour.name)}
+                          className={`w-7 h-7 rounded-full border-2 transition-all ${
+                            pendingColors.includes(colour.name)
+                              ? "border-primary scale-110 ring-2 ring-primary/20"
+                              : "border-border hover:border-text-secondary"
+                          }`}
+                          style={{
+                            background: isOther
+                              ? "conic-gradient(from 180deg, #ef4444, #f97316, #eab308, #10b981, #3b82f6, #8b5cf6, #ef4444)"
+                              : colour.hex,
+                          }}
+                        />
+                      );
+                    })}
                   </div>
                 )}
               </div>

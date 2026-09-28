@@ -5,16 +5,8 @@ import { getItems, getUsers, getClaims, deleteItem } from "../../services/api";
 import ListingDetailsModal from "../../components/admin/ListingDetailsModal";
 import ConfirmDeleteModal from "../../components/admin/ConfirmDeleteModal";
 import AdminSelect from "../../components/admin/AdminSelect";
+import { useAttributes } from "../../hooks/useAttributes";
 
-const CATEGORIES = [
-  "Electronics",
-  "Bags",
-  "Clothing",
-  "Accessories",
-  "Keys",
-  "Documents",
-  "Other",
-];
 const ROWS_PER_PAGE = 8;
 
 function formatDate(isoDate) {
@@ -55,6 +47,8 @@ const ManageListings = () => {
       })
       .finally(() => setLoading(false));
   };
+
+  const { categories } = useAttributes();
 
   useEffect(() => {
     loadData();
@@ -211,7 +205,7 @@ const ManageListings = () => {
             className="w-44"
             options={[
               { value: "all", label: "All Categories" },
-              ...CATEGORIES.map((c) => ({ value: c, label: c })),
+              ...categories.map((c) => ({ value: c.name, label: c.name })),
             ]}
           />
         </div>

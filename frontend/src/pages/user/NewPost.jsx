@@ -2,37 +2,13 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import { Upload, ChevronDown, Calendar, X, FileCheck } from "lucide-react";
-import {
-  Smartphone,
-  ShoppingBag,
-  Shirt,
-  Watch,
-  Key,
-  FileText,
-  MoreHorizontal,
-} from "lucide-react";
 import { getCurrentUser, createItemWithSequentialId } from "../../services/api";
-
-const CATEGORIES = [
-  { label: "Electronics", icon: Smartphone },
-  { label: "Bags", icon: ShoppingBag },
-  { label: "Clothing", icon: Shirt },
-  { label: "Accessories", icon: Watch },
-  { label: "Keys", icon: Key },
-  { label: "Documents", icon: FileText },
-  { label: "Other", icon: MoreHorizontal },
-];
-
-const COLORS = [
-  { name: "Black", hex: "#1F2933" },
-  { name: "Brown", hex: "#8B5E3C" },
-  { name: "Grey", hex: "#9CA3AF" },
-  { name: "Silver", hex: "#C0C0C0" },
-  { name: "Blue", hex: "#2F80ED" },
-  { name: "Red", hex: "#EB5757" },
-];
+import { useAttributes } from "../../hooks/useAttributes";
+import { getCategoryIcon } from "../../utils/categoryIcons";
 
 const NewPost = () => {
+  const { categories, colours } = useAttributes();
+
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -50,9 +26,6 @@ const NewPost = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Controls the "are you sure?" confirmation modal — separate from
-  // isSubmitting, since the modal can be open WITHOUT a request in
-  // flight (waiting on the user to click Confirm).
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
@@ -60,7 +33,6 @@ const NewPost = () => {
   const categoryRef = useRef(null);
   const colorRef = useRef(null);
 
-  // LOCAL PREVIEW ONLY — see note further down where these are rendered.
   const [imagePreviews, setImagePreviews] = useState([]);
 
   useEffect(() => {
@@ -120,9 +92,6 @@ const NewPost = () => {
     return newErrors;
   };
 
-  // Form submit now just VALIDATES and opens the confirmation modal —
-  // it does NOT create the post yet. The actual creation only happens
-  // in handleConfirmSubmit, after the user explicitly confirms.
   const handleFormSubmit = (e) => {
     e.preventDefault();
     const validationErrors = validate();
@@ -131,8 +100,6 @@ const NewPost = () => {
     setShowConfirmModal(true);
   };
 
-  // Runs when the user clicks "Confirm" in the modal — this is where
-  // the item actually gets created.
   const handleConfirmSubmit = async () => {
     setIsSubmitting(true);
     try {
@@ -256,22 +223,28 @@ const NewPost = () => {
               />
             </button>
             {isCategoryOpen && (
-              <ul className="absolute z-10 w-full mt-1 border border-border rounded-lg bg-surface shadow-lg overflow-hidden">
-                {CATEGORIES.map(({ label, icon: Icon }) => (
-                  <li key={label}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setFormData((prev) => ({ ...prev, category: label }));
-                        setIsCategoryOpen(false);
-                      }}
-                      className="w-full flex items-center gap-2 text-left px-3 py-2.5 text-body-md text-text-primary hover:bg-primary hover:text-text-inverse"
-                    >
-                      <Icon size={16} />
-                      {label}
-                    </button>
-                  </li>
-                ))}
+              <ul className="absolute z-10 w-full mt-1 max-h-[308px] overflow-y-auto admin-scrollbar border border-border rounded-lg bg-surface shadow-lg">
+                {categories.map((category) => {
+                  const Icon = getCategoryIcon(category.icon);
+                  return (
+                    <li key={category.id}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            category: category.name,
+                          }));
+                          setIsCategoryOpen(false);
+                        }}
+                        className="w-full flex items-center gap-2 text-left px-3 py-2.5 text-body-md text-text-primary hover:bg-primary hover:text-text-inverse"
+                      >
+                        <Icon size={16} />
+                        {category.name}
+                      </button>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>
@@ -324,25 +297,36 @@ const NewPost = () => {
               />
             </button>
             {isColorOpen && (
-              <ul className="absolute z-10 w-full mt-1 border border-border rounded-lg bg-surface shadow-lg overflow-hidden">
-                {COLORS.map((color) => (
-                  <li key={color.name}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setFormData((prev) => ({ ...prev, color: color.name }));
-                        setIsColorOpen(false);
-                      }}
-                      className="w-full flex items-center gap-2 text-left px-3 py-2.5 text-body-md text-text-primary hover:bg-primary hover:text-text-inverse"
-                    >
-                      <span
-                        className="w-4 h-4 rounded-full border border-border shrink-0"
-                        style={{ backgroundColor: color.hex }}
-                      />
-                      {color.name}
-                    </button>
-                  </li>
-                ))}
+              <ul className="absolute z-10 w-full mt-1 max-h-[308px] overflow-y-auto admin-scrollbar border border-border rounded-lg bg-surface shadow-lg">
+                {colours.map((colour) => {
+                  const isOther = colour.name.toLowerCase() === "other";
+
+                  return (
+                    <li key={colour.id}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            color: colour.name,
+                          }));
+                          setIsColorOpen(false);
+                        }}
+                        className="w-full flex items-center gap-2 text-left px-3 py-2.5 text-body-md text-text-primary hover:bg-primary hover:text-text-inverse"
+                      >
+                        <span
+                          className="w-4 h-4 rounded-full border border-border shrink-0"
+                          style={{
+                            background: isOther
+                              ? "conic-gradient(from 180deg, #ef4444, #f97316, #eab308, #10b981, #3b82f6, #8b5cf6, #ef4444)"
+                              : colour.hex,
+                          }}
+                        />
+                        {colour.name}
+                      </button>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>
@@ -391,11 +375,7 @@ const NewPost = () => {
           )}
         </div>
 
-        {/* Upload Images — LOCAL PREVIEW ONLY. json-server has no real
-            file storage, so these object URLs exist purely for display
-            in this browser tab; nothing about the actual image data is
-            saved when the post is submitted. This is a known limitation
-            until real image storage exists on the backend. */}
+        {/* Upload Images */}
         <div>
           <label className="text-body-md font-medium text-text-primary">
             Upload Images
@@ -499,9 +479,7 @@ const NewPost = () => {
         </div>
       </form>
 
-      {/* Confirmation modal — appears after clicking Submit Post, before
-          anything actually gets created. Matches the same modal design
-          pattern used for Accept/Decline Claim in PostClaims.jsx. */}
+      {/* Confirmation modal */}
       {showConfirmModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-background rounded-lg p-8 max-w-md w-full mx-4">
