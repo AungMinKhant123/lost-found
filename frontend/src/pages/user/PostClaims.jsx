@@ -8,6 +8,7 @@ import {
   updateClaimStatus,
   updateItemStatus,
 } from "../../services/api";
+import PostActions from "../../components/user/PostActions";
 
 const STATUS_STYLES = {
   pending: "bg-warning/10 text-warning",
@@ -147,6 +148,10 @@ const PostClaims = () => {
           <span className="inline-block mt-2 px-3 py-1 rounded-full border border-error text-error text-body-sm">
             {claimsWithUsers.length} claims received
           </span>
+        </div>
+
+        <div className="ml-auto self-start">
+          <PostActions item={item} />
         </div>
       </div>
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
 import { MapPin, ShieldAlert, Clock } from "lucide-react";
 import { getClaimById, getItemById } from "../services/api";
+import CancelClaimButton from "../components/user/CancelClaimButton";
 
 // Same status-pill colors used in My Claims, for consistency.
 const STATUS_STYLES = {
@@ -84,6 +85,7 @@ const ClaimDetails = () => {
         >
           {claim.status}
         </span>
+        <CancelClaimButton claim={claim} itemTitle={item.title} />
       </div>
 
       {/* Claim message */}

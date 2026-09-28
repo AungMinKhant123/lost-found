@@ -288,7 +288,36 @@ export async function createItemWithSequentialId(data) {
 // createItemWithSequentialId, since json-server doesn't reliably
 // respect a client-supplied id.
 export async function createClaim(data) {
-  const existingClaims = await getClaims();
+  // These rules live here (not only in the UI), so they hold no matter
+  // which screen submits a claim.
+  if (!data.userId) {
+    throw friendlyError("Please log in again before submitting a claim.");
+  }
+
+  const [targetItem, existingClaims] = await Promise.all([
+    getItemById(data.itemId),
+    getClaims(),
+  ]);
+
+  if (targetItem.resolved) {
+    throw friendlyError(
+      "This item is already resolved, so it can't be claimed.",
+    );
+  }
+
+  if (targetItem.userId === data.userId) {
+    throw friendlyError("You can't claim your own post.");
+  }
+
+  const hasPendingClaim = existingClaims.some(
+    (claim) =>
+      claim.itemId === data.itemId &&
+      claim.userId === data.userId &&
+      claim.status === "pending",
+  );
+  if (hasPendingClaim) {
+    throw friendlyError("You already have a pending claim on this item.");
+  }
 
   const highestId = existingClaims.reduce((max, claim) => {
     const numericId = parseInt(claim.id, 10);
@@ -711,3 +740,75 @@ export const createColour = (data) => createAttribute("colours", data);
 export const updateColour = (id, data) =>
   updateAttribute("colours", "color", id, data);
 export const deleteColour = (id) => deleteAttribute("colours", "color", id);
+
+// ===== Owner actions: edit/delete a post, cancel a claim =====
+
+// Errors raised on purpose by our own rules (as opposed to network or
+// server failures) carry a "friendly" flag, so the UI can show their
+// message directly instead of a generic "something went wrong".
+function friendlyError(message) {
+  const error = new Error(message);
+  error.friendly = true;
+  return error;
+}
+
+// Loads an item and makes sure the current user owns it.
+async function getOwnedItem(itemId) {
+  const item = await getItemById(itemId);
+
+  if (item.userId !== getMockUserId()) {
+    throw friendlyError("You can only change your own posts.");
+  }
+
+  return item;
+}
+
+// Saves edits to one of the user's own posts. Only these fields can
+// change: the post type (lost/found), contact details and owner are fixed.
+export async function updatePost(itemId, updates) {
+  const item = await getOwnedItem(itemId);
+
+  if (item.resolved) {
+    throw friendlyError("Resolved posts can't be edited.");
+  }
+
+  const editableFields = [
+    "title",
+    "category",
+    "color",
+    "location",
+    "date",
+    "description",
+  ];
+  const changes = {};
+  editableFields.forEach((field) => {
+    if (field in updates) changes[field] = updates[field];
+  });
+
+  return request(`/items/${itemId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ ...changes, updatedAt: new Date().toISOString() }),
+  });
+}
+
+// Deletes one of the user's own posts. deleteItem (from Manage Listings)
+// also removes every claim made on it.
+export async function deletePost(itemId) {
+  await getOwnedItem(itemId);
+  return deleteItem(itemId);
+}
+
+// Deletes one of the user's own claims, but only while it's still pending.
+export async function cancelClaim(claimId) {
+  const claim = await getClaimById(claimId);
+
+  if (claim.userId !== getMockUserId()) {
+    throw friendlyError("You can only delete your own claims.");
+  }
+
+  if (claim.status !== "pending") {
+    throw friendlyError("Only pending claims can be deleted.");
+  }
+
+  return request(`/claims/${claimId}`, { method: "DELETE" });
+}
