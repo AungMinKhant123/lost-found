@@ -30,7 +30,7 @@
       "date": "2026-09-06",
       "resolved": false,
       "userId": "1",
-      "category": "Bags",
+      "category": "Other",
       "color": "Black"
     },
     {
@@ -74,7 +74,7 @@
       "date": "2026-09-06",
       "resolved": false,
       "userId": "1",
-      "category": "Bags",
+      "category": "Other",
       "color": "Brown"
     },
     {
@@ -123,7 +123,7 @@
       "date": "2026-08-08",
       "resolved": false,
       "userId": "10",
-      "category": "Bags",
+      "category": "Other",
       "color": "Grey",
       "postedBy": {
         "name": "Marcus Tan",
@@ -171,7 +171,7 @@
       "date": "2026-09-15",
       "resolved": false,
       "userId": "1",
-      "category": "Documents",
+      "category": "Other",
       "color": "Red"
     },
     {
@@ -211,7 +211,7 @@
     {
       "title": "Blue Diary",
       "status": "found",
-      "category": "Documents",
+      "category": "Other",
       "color": "Blue",
       "location": "Library",
       "date": "2026-09-20",
@@ -822,6 +822,76 @@
       "message": "hi",
       "claimedAt": "2026-09-25T15:39:49.467Z",
       "id": "90lJU2Av7Gs"
+    }
+  ],
+  "colours": [
+    {
+      "id": "4",
+      "name": "Grey",
+      "color": "#888888"
+    },
+    {
+      "id": "5",
+      "name": "Red",
+      "color": "#FF0000"
+    },
+    {
+      "id": "7",
+      "name": "Blue",
+      "color": "#0000FF"
+    },
+    {
+      "id": "10",
+      "name": "Purple",
+      "color": "#800080"
+    }
+  ],
+  "categories": [
+    {
+      "name": "Electronics",
+      "id": "1"
+    },
+    {
+      "id": "3",
+      "name": "Clothing"
+    },
+    {
+      "id": "5",
+      "name": "Accessories"
+    },
+    {
+      "id": "9",
+      "name": "Other"
+    },
+    {
+      "name": "Bags",
+      "id": "4_-Q9bHWGTQ"
+    },
+    {
+      "name": "Documents",
+      "id": "kXlM3f7kR-I"
+    }
+  ],
+  "locations": [
+    {
+      "id": "1",
+      "name": "Library"
+    },
+    {
+      "id": "2",
+      "name": "Cafeteria"
+    },
+    {
+      "id": "3",
+      "name": "Main Building"
+    },
+    {
+      "id": "4",
+      "name": "Computer Lab"
+    },
+    {
+      "id": "5",
+      "name": "Sports Hall"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

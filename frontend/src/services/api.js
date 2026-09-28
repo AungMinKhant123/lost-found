@@ -427,3 +427,118 @@ export async function getRecentActivity(limit = 12) {
     .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
     .slice(0, limit);
 }
+
+import axios from "axios";
+
+const API = axios.create({
+  baseURL: "http://localhost:3001",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Get all colours
+export const getColours = async () => {
+  const response = await API.get("/colours");
+  return response.data;
+};
+
+// Get one colour
+export const getColour = async (id) => {
+  const response = await API.get(`/colours/${id}`);
+  return response.data;
+};
+
+// Add colour
+export const createColour = async (colour) => {
+  const response = await API.post("/colours", colour);
+  return response.data;
+};
+
+// Update colour
+export const updateColour = async (id, colour) => {
+  const response = await API.put(`/colours/${id}`, colour);
+  return response.data;
+};
+
+// Delete colour
+export const deleteColour = async (id) => {
+  const response = await API.delete(`/colours/${id}`);
+  return response.data;
+};
+
+// Get all categories
+export const getCategories = async () => {
+  const response = await API.get("/categories");
+  return response.data;
+};
+
+// Get one category
+export const getCategory = async (id) => {
+  const response = await API.get(`/categories/${id}`);
+  return response.data;
+};
+
+// Add category
+export const createCategory = async (category) => {
+  const response = await API.post("/categories", category);
+  return response.data;
+};
+
+// Update category
+export const updateCategory = async (id, category) => {
+  const response = await API.put(`/categories/${id}`, category);
+  return response.data;
+};
+
+// Delete category
+export const deleteCategory = async (id) => {
+  const response = await API.delete(`/categories/${id}`);
+  return response.data;
+};
+
+// Get all locations
+export const getLocations = async () => {
+  const response = await API.get("/locations");
+  return response.data;
+};
+
+// Get one location
+export const getLocation = async (id) => {
+  const response = await API.get(`/locations/${id}`);
+  return response.data;
+};
+
+// Add location
+export const createLocation = async (location) => {
+  const response = await API.post("/locations", location);
+  return response.data;
+};
+
+// Update location
+export const updateLocation = async (id, location) => {
+  const response = await API.put(`/locations/${id}`, location);
+  return response.data;
+};
+
+// Delete location
+export const deleteLocation = async (id) => {
+  const response = await API.delete(`/locations/${id}`);
+  return response.data;
+};
+
+export const getItemsColorCategory = async () => {
+  const response = await API.get("/items");
+  return response.data;
+};
+
+export const updateItemColorCategory = async (id, item) => {
+  const response = await API.put(`/items/${id}`, item);
+  return response.data;
+};
+
+/* =========================================================
+   DEFAULT EXPORT
+========================================================= */
+
+export default API;
