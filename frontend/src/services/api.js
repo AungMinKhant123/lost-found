@@ -110,10 +110,7 @@ export async function signUp(data) {
 // interfere with the real backend session itself, which lives
 // separately in authApi.js/useAuth.js and is untouched by this file.
 export function getCurrentUser() {
-  const { user } = useAuthStore.getState();
-  const isRealBackendId = user?.id && String(user.id).includes("-");
-  const userId = !user?.id || isRealBackendId ? "1" : user.id;
-  return request(`/users/${userId}`);
+  return request(`/users/${getMockUserId()}`);
 }
 
 export function updateUser(id, data) {
@@ -570,4 +567,117 @@ export async function deleteItem(itemId) {
     claims.map((claim) => request(`/claims/${claim.id}`, { method: "DELETE" })),
   );
   return request(`/items/${itemId}`, { method: "DELETE" });
+}
+
+// ===== Profile / account helpers (json-server mock mode) =====
+// Everything below is only reached through DEV-ONLY fallbacks, when the
+// real backend is unreachable. None of it touches the real backend flow.
+
+// Real backend ids are UUIDs. Mock (json-server) ids never match this
+// pattern — even random ones containing dashes, like "IyYDZI-r4ZM".
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export function isRealBackendUserId(id) {
+  return UUID_PATTERN.test(String(id ?? ""));
+}
+
+// Which json-server user the mock profile/edit/delete should act on.
+// A real-backend session (UUID) has no matching mock user, so we use
+// mock user "1" (David) — same behavior getCurrentUser always had.
+function getMockUserId() {
+  const { user } = useAuthStore.getState();
+  if (!user?.id || isRealBackendUserId(user.id)) return "1";
+  return String(user.id);
+}
+
+// The real backend stores profession as an enum (STUDENT/TEACHER/WORKER),
+// but older mock users have "Student", "Worker", or "Preferred not to say".
+// Normalize so the profile page and edit form behave the same either way.
+const PROFESSION_ENUMS = ["STUDENT", "TEACHER", "WORKER"];
+function normalizeProfession(value) {
+  const upper = String(value || "").toUpperCase();
+  return PROFESSION_ENUMS.includes(upper) ? upper : "";
+}
+
+// Builds a profile shaped like the real backend's /auth/profile response,
+// including the "stats" object that powers the four KPI cards:
+//   itemReports    = posts the user made (lost + found)
+//   itemsFound     = posts of type "found"
+//   claimsSubmitted= claims the user filed on other people's items
+//   itemsReturned  = the user's posts that are resolved
+export async function getMockProfile() {
+  const userId = getMockUserId();
+  const [user, items, claims] = await Promise.all([
+    request(`/users/${userId}`),
+    getItems(),
+    getClaims(),
+  ]);
+
+  const myItems = items.filter((item) => item.userId === user.id);
+
+  // Never hand passwords to UI components, even mock ones.
+  const safeUser = { ...user };
+  delete safeUser.password;
+  delete safeUser.confirmPassword;
+
+  return {
+    ...safeUser,
+    profession: normalizeProfession(user.profession),
+    stats: {
+      itemReports: myItems.length,
+      itemsFound: myItems.filter((item) => item.status === "found").length,
+      claimsSubmitted: claims.filter((claim) => claim.userId === user.id)
+        .length,
+      itemsReturned: myItems.filter((item) => item.resolved).length,
+    },
+  };
+}
+
+// Saves the Edit Profile form to json-server. Receives the SAME FormData
+// object the real backend would get (fullName, phone, socialMedia,
+// profession, aboutMe, optional profileImage), so EditProfile.jsx doesn't
+// need to know which one is answering.
+// NOTE: json-server can't store files, so profileImage is ignored here.
+export async function updateMockProfile(formData) {
+  const fullName = String(formData.get("fullName") || "").trim();
+  const [firstName, ...rest] = fullName.split(/\s+/);
+
+  const updates = {
+    firstName,
+    lastName: rest.join(" "),
+    phone: String(formData.get("phone") || "").trim(),
+    socialMedia: String(formData.get("socialMedia") || "").trim(),
+    aboutMe: String(formData.get("aboutMe") || "").trim(),
+  };
+
+  const profession = formData.get("profession");
+  if (profession) updates.profession = String(profession);
+
+  return updateUser(getMockUserId(), updates);
+}
+
+// Deletes a mock account and everything tied to it: the user, their
+// posts, claims they filed, and claims other people filed on their posts.
+export async function deleteUserAccount(userId) {
+  const [items, claims] = await Promise.all([getItems(), getClaims()]);
+
+  const ownItemIds = items
+    .filter((item) => item.userId === userId)
+    .map((item) => item.id);
+
+  const claimsToDelete = claims.filter(
+    (claim) => claim.userId === userId || ownItemIds.includes(claim.itemId),
+  );
+
+  await Promise.all(
+    claimsToDelete.map((claim) =>
+      request(`/claims/${claim.id}`, { method: "DELETE" }),
+    ),
+  );
+  await Promise.all(
+    ownItemIds.map((id) => request(`/items/${id}`, { method: "DELETE" })),
+  );
+
+  return request(`/users/${userId}`, { method: "DELETE" });
 }

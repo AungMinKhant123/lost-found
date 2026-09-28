@@ -10,9 +10,50 @@ import {
   SearchCheck,
   CornerDownLeft,
   Loader2,
+  Briefcase,
+  Link2,
 } from "lucide-react";
 import { Link } from "react-router";
 import { useProfile } from "../../hooks/useProfile";
+
+// "STUDENT" -> "Student"
+function formatProfession(value) {
+  if (!value) return "";
+  const lower = String(value).toLowerCase();
+  return lower.charAt(0).toUpperCase() + lower.slice(1);
+}
+
+// Only treat a value as a clickable link if it's a real http(s) URL.
+function isHttpUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+// One row of the Personal Information card
+const InfoRow = ({ icon: Icon, label, children }) => (
+  <div className="flex flex-row items-center gap-14 w-full">
+    <div className="flex flex-row items-center gap-3 w-36.5 shrink-0">
+      <Icon size={20} strokeWidth={2} className="text-primary-dark" />
+      <span className="text-body-md font-medium text-text-primary whitespace-nowrap">
+        {label}
+      </span>
+    </div>
+    {children}
+  </div>
+);
+
+const AddLink = () => (
+  <Link
+    to="/account/edit-profile"
+    className="text-body-lg text-primary-dark hover:underline"
+  >
+    + Add
+  </Link>
+);
 
 const AccountProfile = () => {
   const { data: user, isLoading, isError } = useProfile();
@@ -33,12 +74,6 @@ const AccountProfile = () => {
     );
   }
 
-  // Statistics come from the backend.
-  const itemReportsCount = user.stats?.itemReports ?? 0;
-  const itemsFoundCount = user.stats?.itemsFound ?? 0;
-  const claimsSubmittedCount = user.stats?.claimsSubmitted ?? 0;
-  const itemsReturnedCount = user.stats?.itemsReturned ?? 0;
-
   const fullName =
     user.firstName || user.lastName
       ? `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim()
@@ -51,6 +86,34 @@ const AccountProfile = () => {
         day: "numeric",
       })
     : "Not available";
+
+  // KPI cards arranged in the 2x2 wireframe order
+  const statCards = [
+    {
+      label: "Item Reports",
+      value: user.stats?.itemReports ?? 0,
+      icon: Flag,
+      iconClass: "",
+    },
+    {
+      label: "Items Returned",
+      value: user.stats?.itemsReturned ?? 0,
+      icon: CornerDownLeft,
+      iconClass: "rotate-180",
+    },
+    {
+      label: "Claims Submitted",
+      value: user.stats?.claimsSubmitted ?? 0,
+      icon: SearchCheck,
+      iconClass: "",
+    },
+    {
+      label: "Items Found",
+      value: user.stats?.itemsFound ?? 0,
+      icon: SearchAlert,
+      iconClass: "",
+    },
+  ];
 
   return (
     <div className="flex justify-center">
@@ -85,13 +148,14 @@ const AccountProfile = () => {
                     {fullName.charAt(0)}
                   </div>
                 )}
+
                 {/* User Details */}
-                <div className="flex flex-col justify-center items-center gap-1 w-48.5 h-46">
-                  <h2 className="w-full text-heading-1 font-bold text-text-primary truncate">
+                <div className="flex flex-col justify-center items-center gap-1 min-w-0 flex-1 h-46">
+                  <h2 className="w-full text-heading-1 font-bold text-text-primary break-words">
                     {fullName}
                   </h2>
 
-                  <p className="w-full text-body-sm font-medium text-text-primary truncate">
+                  <p className="w-full text-body-sm font-medium text-text-primary break-all">
                     {user.email}
                   </p>
 
@@ -119,90 +183,40 @@ const AccountProfile = () => {
               </div>
             </div>
 
-            {/* ================= STATISTICS ================= */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-1 w-full">
-              {/* Item Reports */}
-              <div className="box-border flex flex-row justify-center items-center gap-6 w-full h-15.5 border border-border rounded">
-                <Flag
-                  size={24}
-                  strokeWidth={2}
-                  className="text-text-primary shrink-0"
-                />
+            {/* ================= STATISTICS (WIREFRAME 2x2 DESIGN) ================= */}
+            <div className="grid grid-cols-2 gap-4 w-full max-w-145 mx-auto">
+              {statCards.map(({ label, value, icon: Icon, iconClass }) => (
+                <div
+                  key={label}
+                  className="flex flex-col border border-border rounded-xl overflow-hidden bg-white shadow-sm"
+                >
+                  {/* Card Header Section */}
+                  <div className="flex items-center justify-center gap-2.5 bg-neutral-50 border-b border-border py-2.5 px-4">
+                    <Icon
+                      size={20}
+                      strokeWidth={2}
+                      className={`text-primary-dark shrink-0 ${iconClass}`}
+                    />
+                    <span className="text-body-md font-medium text-text-primary whitespace-nowrap">
+                      {label}
+                    </span>
+                  </div>
 
-                <div className="flex flex-col items-center gap-2">
-                  <span className="text-heading-3 font-semibold text-text-primary">
-                    {itemReportsCount}
-                  </span>
-
-                  <span className="text-body-sm text-text-primary whitespace-nowrap">
-                    Item Reports
-                  </span>
+                  {/* Card Value Section */}
+                  <div className="flex items-center justify-center py-5">
+                    <span className="text-3xl font-bold text-text-primary">
+                      {value}
+                    </span>
+                  </div>
                 </div>
-              </div>
-
-              {/* Items Found */}
-              <div className="box-border flex flex-row justify-center items-center gap-6 w-full h-15.5 border border-border rounded">
-                <SearchAlert
-                  size={24}
-                  strokeWidth={2}
-                  className="text-text-primary shrink-0"
-                />
-
-                <div className="flex flex-col items-center gap-2">
-                  <span className="text-heading-3 font-semibold text-text-primary">
-                    {itemsFoundCount}
-                  </span>
-
-                  <span className="text-body-sm text-text-primary whitespace-nowrap">
-                    Items Found
-                  </span>
-                </div>
-              </div>
-
-              {/* Claims Submitted */}
-              <div className="box-border flex flex-row justify-center items-center gap-4 w-full h-15.5 border border-border rounded">
-                <SearchCheck
-                  size={24}
-                  strokeWidth={2}
-                  className="text-text-primary shrink-0"
-                />
-
-                <div className="flex flex-col justify-center items-center gap-2">
-                  <span className="text-heading-3 font-semibold text-text-primary">
-                    {claimsSubmittedCount}
-                  </span>
-
-                  <span className="text-body-sm text-text-primary whitespace-nowrap">
-                    Claims Submitted
-                  </span>
-                </div>
-              </div>
-
-              {/* Items Returned */}
-              <div className="box-border flex flex-row justify-center items-center gap-4 w-full h-15.5 border border-border rounded">
-                <CornerDownLeft
-                  size={24}
-                  strokeWidth={2}
-                  className="text-text-primary rotate-180 shrink-0"
-                />
-
-                <div className="flex flex-col items-center gap-2">
-                  <span className="text-heading-3 font-semibold text-text-primary">
-                    {itemsReturnedCount}
-                  </span>
-
-                  <span className="text-body-sm text-text-primary whitespace-nowrap">
-                    Items Returned
-                  </span>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
 
           {/* ================= LOWER CONTENT ================= */}
           <div className="flex flex-col justify-center items-center gap-7.75 w-full">
             {/* ================= ABOUT ME ================= */}
-            <div className="box-border flex flex-col justify-center items-center gap-3 w-full max-w-165 min-h-29.75 px-6 border border-border rounded-lg">
+            <div className="box-border flex flex-col justify-center items-center gap-3 w-full max-w-165 min-h-29.75 px-6 border border-border rounded-lg py-4">
               <h3 className="w-full max-w-118.75 text-heading-3 font-semibold text-text-primary">
                 About Me
               </h3>
@@ -219,62 +233,58 @@ const AccountProfile = () => {
               </h3>
 
               <div className="flex flex-col justify-center items-start gap-6 w-full max-w-114.75">
-                {/* Full Name */}
-                <div className="flex flex-row items-center gap-14 w-full">
-                  <div className="flex flex-row items-center gap-3 w-36.5 shrink-0">
-                    <UserRound
-                      size={20}
-                      strokeWidth={2}
-                      className="text-primary-dark"
-                    />
-
-                    <span className="text-body-md font-medium text-text-primary">
-                      Full Name
-                    </span>
-                  </div>
-
-                  <span className="text-body-lg text-text-primary">
+                <InfoRow icon={UserRound} label="Full Name">
+                  <span className="min-w-0 break-words text-body-lg text-text-primary">
                     {fullName}
                   </span>
-                </div>
+                </InfoRow>
 
-                {/* Email */}
-                <div className="flex flex-row items-center gap-14 w-full">
-                  <div className="flex flex-row items-center gap-3 w-36.5 shrink-0">
-                    <Mail
-                      size={20}
-                      strokeWidth={2}
-                      className="text-primary-dark"
-                    />
-
-                    <span className="text-body-md font-medium text-text-primary whitespace-nowrap">
-                      Email Address
-                    </span>
-                  </div>
-
-                  <span className="text-body-lg text-text-primary break-all">
+                <InfoRow icon={Mail} label="Email Address">
+                  <span className="min-w-0 break-all text-body-lg text-text-primary">
                     {user.email}
                   </span>
-                </div>
+                </InfoRow>
 
-                {/* Phone */}
-                <div className="flex flex-row items-center gap-14 w-full">
-                  <div className="flex flex-row items-center gap-3 w-36.5 shrink-0">
-                    <Phone
-                      size={20}
-                      strokeWidth={2}
-                      className="text-primary-dark"
-                    />
-
-                    <span className="text-body-md font-medium text-text-primary whitespace-nowrap">
-                      Phone Number
+                <InfoRow icon={Phone} label="Phone Number">
+                  {user.phone ? (
+                    <span className="min-w-0 break-all text-body-lg text-text-primary">
+                      {user.phone}
                     </span>
-                  </div>
+                  ) : (
+                    <AddLink />
+                  )}
+                </InfoRow>
 
-                  <span className="text-body-lg text-text-primary">
-                    {user.phone || "N/A"}
-                  </span>
-                </div>
+                <InfoRow icon={Briefcase} label="Profession">
+                  {user.profession ? (
+                    <span className="min-w-0 break-words text-body-lg text-text-primary">
+                      {formatProfession(user.profession)}
+                    </span>
+                  ) : (
+                    <AddLink />
+                  )}
+                </InfoRow>
+
+                <InfoRow icon={Link2} label="Social Media">
+                  {user.socialMedia ? (
+                    isHttpUrl(user.socialMedia) ? (
+                      <a
+                        href={user.socialMedia}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="min-w-0 break-all text-body-lg text-primary-dark hover:underline"
+                      >
+                        {user.socialMedia}
+                      </a>
+                    ) : (
+                      <span className="min-w-0 break-all text-body-lg text-text-primary">
+                        {user.socialMedia}
+                      </span>
+                    )
+                  ) : (
+                    <AddLink />
+                  )}
+                </InfoRow>
               </div>
             </div>
 

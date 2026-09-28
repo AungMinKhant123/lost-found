@@ -339,9 +339,11 @@
       "phone": "123456789",
       "password": "qwertyuiop",
       "confirmPassword": "qwertyuiop",
-      "profession": "Student",
+      "profession": "STUDENT",
       "agreeTerms": true,
-      "id": "2"
+      "id": "2",
+      "socialMedia": "",
+      "aboutMe": ""
     },
     {
       "firstName": "Ash",
@@ -477,6 +479,17 @@
       "email": "bruce@example.com",
       "password": "admin1234",
       "role": "admin"
+    },
+    {
+      "firstName": "Delta",
+      "lastName": "User",
+      "email": "delta@gmail.com",
+      "password": "12345678",
+      "id": "nVtf2sTKHyw",
+      "phone": "123456789",
+      "socialMedia": "",
+      "aboutMe": "Hi I am delta. I am here to test account deletion",
+      "profession": "TEACHER"
     }
   ],
   "claims": [
