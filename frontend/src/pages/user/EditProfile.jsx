@@ -3,6 +3,22 @@ import { Link, useNavigate } from "react-router";
 
 import { useProfile, useUpdateProfile } from "../../hooks/useProfile";
 
+// Digits only, 7-15 long: no letters, spaces, dashes or "+" signs.
+const PHONE_PATTERN = /^\d{7,15}$/;
+
+// Social media must be a real web link.
+function isValidHttpUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+const inputBase =
+  "box-border w-full h-10 px-4 bg-background border rounded-lg outline-none text-center text-body-sm font-medium text-text-secondary focus:border-primary-dark focus:ring-1 focus:ring-primary-dark";
+
 export default function EditProfile() {
   const navigate = useNavigate();
 
@@ -35,13 +51,17 @@ export default function EditProfile() {
     about: "",
   });
 
-  // Preview URL for displaying the selected image
+  // Preview URL for a newly selected image
   const [profileImage, setProfileImage] = useState(null);
 
   // Actual File object that will be sent to the backend
   const [profileImageFile, setProfileImageFile] = useState(null);
 
+  // Server/general error banner
   const [error, setError] = useState("");
+
+  // Per-field validation messages, e.g. { phone: "..." }
+  const [fieldErrors, setFieldErrors] = useState({});
 
   // ==================================================
   // LOAD USER INTO FORM
@@ -72,8 +92,11 @@ export default function EditProfile() {
       [name]: value,
     }));
 
-    if (error) {
-      setError("");
+    if (error) setError("");
+
+    // Clear a field's own message as soon as the user edits it.
+    if (fieldErrors[name]) {
+      setFieldErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
@@ -86,7 +109,6 @@ export default function EditProfile() {
 
     if (!file) return;
 
-    // Client-side validation
     const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
 
     if (!allowedTypes.includes(file.type)) {
@@ -100,16 +122,38 @@ export default function EditProfile() {
       return;
     }
 
-    // Store the actual File object
     setProfileImageFile(file);
+    setProfileImage(URL.createObjectURL(file));
 
-    // Create preview
-    const imageUrl = URL.createObjectURL(file);
-    setProfileImage(imageUrl);
+    if (error) setError("");
+  };
 
-    if (error) {
-      setError("");
+  // ==================================================
+  // VALIDATION
+  // ==================================================
+
+  const validate = () => {
+    const errors = {};
+
+    if (!formData.fullName.trim()) {
+      errors.fullName = "Full name cannot be empty.";
     }
+
+    // Phone, social media and profession are optional (signup doesn't ask
+    // for them) — but if a value IS entered, it has to be valid.
+    const phone = formData.phone.trim();
+    if (phone && !PHONE_PATTERN.test(phone)) {
+      errors.phone =
+        "Phone number can only contain digits (7-15 digits, no letters, spaces or symbols).";
+    }
+
+    const socialMedia = formData.socialMedia.trim();
+    if (socialMedia && !isValidHttpUrl(socialMedia)) {
+      errors.socialMedia =
+        "Enter a valid link starting with http:// or https://";
+    }
+
+    return errors;
   };
 
   // ==================================================
@@ -124,54 +168,33 @@ export default function EditProfile() {
       return;
     }
 
+    const errors = validate();
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
     try {
       setError("");
 
-      // ----------------------------------------------
-      // Basic validation
-      // ----------------------------------------------
-
-      const fullName = formData.fullName.trim();
-
-      if (!fullName) {
-        setError("Full name cannot be empty.");
-        return;
-      }
-
-      if (!formData.profession) {
-        setError("Please select your profession.");
-        return;
-      }
-
-      // ----------------------------------------------
-      // Create multipart FormData
-      // ----------------------------------------------
-
+      // Same multipart FormData shape the backend already expects.
       const data = new FormData();
 
-      data.append("fullName", fullName);
+      data.append("fullName", formData.fullName.trim());
       data.append("phone", formData.phone.trim());
       data.append("socialMedia", formData.socialMedia.trim());
-      data.append("profession", formData.profession);
       data.append("aboutMe", formData.about.trim());
 
-      // Only append the image when the user selected
-      // a new one.
+      // profession is an enum on the backend, so only send it when one
+      // is actually selected (an empty string isn't a valid value).
+      if (formData.profession) {
+        data.append("profession", formData.profession);
+      }
+
+      // Only send the image when the user picked a new one.
       if (profileImageFile) {
         data.append("profileImage", profileImageFile);
       }
 
-      // ----------------------------------------------
-      // Send to backend
-      // ----------------------------------------------
-
       await updateProfileMutation.mutateAsync(data);
-
-      console.log("Profile updated successfully");
-
-      // ----------------------------------------------
-      // Return to account/profile page
-      // ----------------------------------------------
 
       navigate("/account");
     } catch (err) {
@@ -218,6 +241,10 @@ export default function EditProfile() {
     );
   }
 
+  // Show the newly selected photo, otherwise the saved one, otherwise
+  // the grey placeholder.
+  const photoSrc = profileImage || user?.profileUrl;
+
   // ==================================================
   // MAIN UI
   // ==================================================
@@ -244,11 +271,11 @@ export default function EditProfile() {
           {/* ================= PROFILE PHOTO ================= */}
 
           <div className="flex flex-row items-center gap-3 w-full h-46">
-            {profileImage ? (
+            {photoSrc ? (
               <img
-                src={profileImage}
+                src={photoSrc}
                 alt="Profile"
-                className="w-45.5[184px] rounded-full object-cover shrink-0"
+                className="w-45.5 h-46 rounded-full object-cover shrink-0"
               />
             ) : (
               <div className="w-45.5 h-46 bg-neutral-300 rounded-full shrink-0" />
@@ -289,13 +316,19 @@ export default function EditProfile() {
                 type="text"
                 value={formData.fullName}
                 onChange={handleChange}
-                required
                 maxLength={100}
-                className="box-border w-full h-10 px-4 bg-background border border-border rounded-lg outline-none text-center text-body-sm font-medium text-text-secondary focus:border-primary-dark focus:ring-1 focus:ring-primary-dark"
+                className={`${inputBase} ${
+                  fieldErrors.fullName ? "border-error" : "border-border"
+                }`}
               />
+              {fieldErrors.fullName && (
+                <p className="text-error text-label-sm">
+                  {fieldErrors.fullName}
+                </p>
+              )}
             </div>
 
-            {/* Email */}
+            {/* Email (read-only) */}
 
             <div className="flex flex-col items-start gap-2.5 w-full">
               <label
@@ -312,7 +345,7 @@ export default function EditProfile() {
                 value={formData.email}
                 readOnly
                 maxLength={254}
-                className="box-border w-full h-10 px-4 bg-background border border-border rounded-lg outline-none text-center text-body-sm font-medium text-text-secondary focus:border-primary-dark focus:ring-1 focus:ring-primary-dark"
+                className={`${inputBase} border-border`}
               />
             </div>
 
@@ -323,19 +356,28 @@ export default function EditProfile() {
                 htmlFor="phone"
                 className="text-body-md font-medium text-text-primary"
               >
-                Phone Number <span className="text-error">*</span>
+                Phone Number{" "}
+                <span className="font-normal text-text-secondary">
+                  (optional)
+                </span>
               </label>
 
               <input
                 id="phone"
                 name="phone"
                 type="tel"
+                inputMode="numeric"
                 value={formData.phone}
                 onChange={handleChange}
-                required
-                maxLength={20}
-                className="box-border w-full h-10 px-4 bg-background border border-border rounded-lg outline-none text-center text-body-sm font-medium text-text-secondary focus:border-primary-dark focus:ring-1 focus:ring-primary-dark"
+                maxLength={15}
+                placeholder="e.g. 0812345678"
+                className={`${inputBase} ${
+                  fieldErrors.phone ? "border-error" : "border-border"
+                }`}
               />
+              {fieldErrors.phone && (
+                <p className="text-error text-label-sm">{fieldErrors.phone}</p>
+              )}
             </div>
 
             {/* Social Media */}
@@ -345,7 +387,10 @@ export default function EditProfile() {
                 htmlFor="socialMedia"
                 className="text-body-md font-medium text-text-primary"
               >
-                Social Media <span className="text-error">*</span>
+                Social Media{" "}
+                <span className="font-normal text-text-secondary">
+                  (optional)
+                </span>
               </label>
 
               <input
@@ -354,10 +399,17 @@ export default function EditProfile() {
                 type="text"
                 value={formData.socialMedia}
                 onChange={handleChange}
-                required
                 maxLength={254}
-                className="box-border w-full h-10 px-4 bg-background border border-border rounded-lg outline-none text-center text-body-sm font-medium text-text-secondary focus:border-primary-dark focus:ring-1 focus:ring-primary-dark"
+                placeholder="https://www.facebook.com/your.name"
+                className={`${inputBase} ${
+                  fieldErrors.socialMedia ? "border-error" : "border-border"
+                }`}
               />
+              {fieldErrors.socialMedia && (
+                <p className="text-error text-label-sm">
+                  {fieldErrors.socialMedia}
+                </p>
+              )}
             </div>
 
             {/* Profession */}
@@ -367,7 +419,10 @@ export default function EditProfile() {
                 htmlFor="profession"
                 className="text-body-md font-medium text-text-primary"
               >
-                Profession <span className="text-error">*</span>
+                Profession{" "}
+                <span className="font-normal text-text-secondary">
+                  (optional)
+                </span>
               </label>
 
               <select
@@ -375,8 +430,7 @@ export default function EditProfile() {
                 name="profession"
                 value={formData.profession}
                 onChange={handleChange}
-                required
-                className="box-border w-full h-10 px-4 bg-background border border-border rounded-lg outline-none text-center text-body-sm font-medium text-text-secondary focus:border-primary-dark focus:ring-1 focus:ring-primary-dark"
+                className={`${inputBase} border-border`}
               >
                 <option value="" disabled>
                   Select profession

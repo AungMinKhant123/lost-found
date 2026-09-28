@@ -1,20 +1,24 @@
 import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router";
+import { useLogout } from "../../hooks/useLogout";
 
 const Logout = () => {
   const navigate = useNavigate();
+  const performLogout = useLogout();
 
   const handleCancel = () => {
     navigate("/account/settings");
   };
 
   const handleLogout = () => {
-    // Remove logged-in user information
-    localStorage.removeItem("currentUserId");
-    localStorage.removeItem("user");
+    // Clears the auth store + cached profile (and tells the backend,
+    // best-effort). The old code only removed two localStorage keys that
+    // nothing reads anymore, so you were never actually logged out.
+    performLogout();
 
-    // Redirect to Home page
-    navigate("/");
+    // Same destination as the navbar's Log Out, so logging out behaves
+    // the same everywhere in the app.
+    navigate("/login");
   };
 
   return (

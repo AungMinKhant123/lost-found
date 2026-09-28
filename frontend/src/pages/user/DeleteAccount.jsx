@@ -1,23 +1,50 @@
+import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { useNavigate } from "react-router";
+import toast from "react-hot-toast";
+import { useAuthStore } from "../../store/authStore";
+import { useLogout } from "../../hooks/useLogout";
+import { deleteUserAccount, isRealBackendUserId } from "../../services/api";
 
 const DeleteAccount = () => {
   const navigate = useNavigate();
+  const performLogout = useLogout();
+  const user = useAuthStore((state) => state.user);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleCancel = () => {
     navigate("/account/settings");
   };
 
-  const handleDeleteAccount = () => {
-     
-    console.log("Delete account requested");
+  const handleDeleteAccount = async () => {
+    // There is no delete-account endpoint on the real backend that we
+    // know of yet, so we can't (and shouldn't) guess one. Until it
+    // exists, deletion only works for json-server (mock) accounts.
+    // Real backend accounts get a clear message instead of a silent no-op.
+    const isMockAccount = user?.id && !isRealBackendUserId(user.id);
 
-    // Remove logged-in user information
-    localStorage.removeItem("currentUserId");
-    localStorage.removeItem("user");
+    if (!isMockAccount) {
+      toast.error(
+        "Deleting this account isn't available yet — it needs the backend's delete-account endpoint.",
+      );
+      return;
+    }
 
-    // Go to login page
-    navigate("/login");
+    setIsDeleting(true);
+    try {
+      // Removes the user, their posts, and all related claims.
+      await deleteUserAccount(user.id);
+
+      // Then log out exactly like the normal logout does.
+      performLogout();
+
+      toast.success("Your account has been deleted.");
+      navigate("/login");
+    } catch (err) {
+      console.error("Delete account failed:", err);
+      toast.error("Couldn't delete your account. Please try again.");
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -142,6 +169,7 @@ const DeleteAccount = () => {
                 <button
                   type="button"
                   onClick={handleDeleteAccount}
+                  disabled={isDeleting}
                   className="
                 box-border
                 flex
@@ -162,7 +190,7 @@ const DeleteAccount = () => {
                 hover:bg-[#B91C1C]
               "
                 >
-                  Delete Account
+                  {isDeleting ? "Deleting..." : "Delete Account"}
                 </button>
               </div>
             </div>
