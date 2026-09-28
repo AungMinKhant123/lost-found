@@ -30,7 +30,7 @@
       "date": "2026-09-06",
       "resolved": false,
       "userId": "1",
-      "category": "Bags",
+      "category": "Other",
       "color": "Black"
     },
     {
@@ -64,7 +64,7 @@
       "resolved": false,
       "userId": "1",
       "category": "Electronics",
-      "color": "Grey"
+      "color": "Other"
     },
     {
       "id": "7",
@@ -74,7 +74,7 @@
       "date": "2026-09-06",
       "resolved": false,
       "userId": "1",
-      "category": "Bags",
+      "category": "Other",
       "color": "Brown"
     },
     {
@@ -123,8 +123,8 @@
       "date": "2026-08-08",
       "resolved": false,
       "userId": "10",
-      "category": "Bags",
-      "color": "Grey",
+      "category": "Other",
+      "color": "Other",
       "postedBy": {
         "name": "Marcus Tan",
         "phone": "+66 35 456 1287",
@@ -171,7 +171,7 @@
       "date": "2026-09-15",
       "resolved": false,
       "userId": "1",
-      "category": "Documents",
+      "category": "Other",
       "color": "Red"
     },
     {
@@ -196,7 +196,7 @@
       "title": "Grey Cap",
       "status": "lost",
       "category": "Clothing",
-      "color": "Grey",
+      "color": "Other",
       "location": "Library",
       "date": "2026-09-20",
       "description": "It has a cute cat sticker and a green slime sticker pasted on the front.",
@@ -211,7 +211,7 @@
     {
       "title": "Blue Diary",
       "status": "found",
-      "category": "Documents",
+      "category": "Other",
       "color": "Blue",
       "location": "Library",
       "date": "2026-09-20",
@@ -228,7 +228,7 @@
       "title": "HP Laptop",
       "status": "lost",
       "category": "Electronics",
-      "color": "Grey",
+      "color": "Other",
       "location": "Library",
       "date": "2026-09-20",
       "description": "I has a small dent on the right top corner.",
@@ -265,6 +265,23 @@
       "date": "2026-09-21",
       "resolved": true,
       "userId": "1"
+    },
+    {
+      "title": "dasdasd",
+      "status": "lost",
+      "category": "Clothing",
+      "color": "Other",
+      "location": "dadw",
+      "date": "2026-09-21",
+      "description": "dawdadadaw",
+      "resolved": false,
+      "userId": "2",
+      "postedBy": {
+        "name": "Ashfaq Ifthicar",
+        "email": "ash@gmail.com"
+      },
+      "id": "fc5ReyLJB_0",
+      "createdAt": "2026-09-21T03:09:23.011Z"
     },
     {
       "title": "testing",
@@ -910,6 +927,85 @@
       "message": "Has my name printed in the backside.",
       "claimedAt": "2026-09-27T12:10:19.754Z",
       "id": "9FyWDL1uZME"
+    }
+  ],
+  "colours": [
+    {
+      "id": "5",
+      "name": "Red",
+      "color": "#FF0000"
+    },
+    {
+      "id": "7",
+      "name": "Blue",
+      "color": "#0000FF"
+    },
+    {
+      "id": "10",
+      "name": "Purple",
+      "color": "#800080"
+    },
+    {
+      "name": "Pink",
+      "color": "#ff40ff",
+      "id": "nSxj4_CjDWk"
+    },
+    {
+      "name": "Green",
+      "color": "#96d35f",
+      "id": "lEwiZrZpXAc"
+    }
+  ],
+  "categories": [
+    {
+      "name": "Electronics",
+      "id": "1"
+    },
+    {
+      "id": "3",
+      "name": "Clothing"
+    },
+    {
+      "id": "5",
+      "name": "Accessories"
+    },
+    {
+      "id": "9",
+      "name": "Other"
+    },
+    {
+      "name": "Documents",
+      "id": "kXlM3f7kR-I"
+    },
+    {
+      "name": "Bags",
+      "id": "_JncDIVC7CU"
+    },
+    {
+      "name": "Phone",
+      "id": "Al5JHvxsO4o"
+    }
+  ],
+  "locations": [
+    {
+      "id": "1",
+      "name": "Library"
+    },
+    {
+      "id": "2",
+      "name": "Cafeteria"
+    },
+    {
+      "id": "3",
+      "name": "Main Building"
+    },
+    {
+      "id": "4",
+      "name": "Computer Lab"
+    },
+    {
+      "id": "5",
+      "name": "Sports Hall"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
