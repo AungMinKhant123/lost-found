@@ -5,6 +5,7 @@ import {
   getItemsByCategory,
   getRecentActivity,
 } from "../../services/api";
+import AdminSelect from "../../components/admin/AdminSelect";
 
 function formatTimeAgo(isoString) {
   const diffMs = Date.now() - new Date(isoString).getTime();
@@ -50,7 +51,7 @@ const Dashboard = () => {
   const maxCategoryCount = Math.max(...Object.values(categories), 1);
 
   return (
-    <div className="px-10 py-5">
+    <div className="px-10 py-3">
       {/* Header + search */}
       <div className="flex items-center justify-between gap-6">
         <div>
@@ -120,17 +121,18 @@ const Dashboard = () => {
             <h2 className="text-heading-3 font-bold text-text-primary">
               Items by category
             </h2>
-            <select
+            <AdminSelect
               value={categoryPeriod}
-              onChange={(e) => setCategoryPeriod(e.target.value)}
-              className="border border-border rounded-lg px-3 py-1.5 text-body-sm"
-            >
-              <option value="all">All Time</option>
-              <option value="year">This Year</option>
-              <option value="month">This Month</option>
-              <option value="week">This Week</option>
-              <option value="day">Today</option>
-            </select>
+              onChange={setCategoryPeriod}
+              className="w-36"
+              options={[
+                { value: "all", label: "All Time" },
+                { value: "year", label: "This Year" },
+                { value: "month", label: "This Month" },
+                { value: "week", label: "This Week" },
+                { value: "day", label: "Today" },
+              ]}
+            />
           </div>
           <p className="text-body-sm text-primary mt-1">
             Share of total listings, all-time

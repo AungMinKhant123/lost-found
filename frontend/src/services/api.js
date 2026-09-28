@@ -542,3 +542,32 @@ export const updateItemColorCategory = async (id, item) => {
 ========================================================= */
 
 export default API;
+// TEMPORARY, DEV-ONLY FALLBACK: reshapes our json-server mock items to
+// match the real backend's item shape (imageUrl, type: "LOST"/"FOUND",
+// status: "RESOLVED"/"OPEN", createdAt) — used only when the real
+// /public/latest-items endpoint is unreachable, so Home.jsx can render
+// either source without needing to know which one it got.
+export async function getLatestItemsMock(limit = 6) {
+  const items = await getRecentItems(limit); // already sorted newest-first
+
+  return items.map((item) => ({
+    id: item.id,
+    title: item.title,
+    location: item.location,
+    type: item.status === "lost" ? "LOST" : "FOUND",
+    status: item.resolved ? "RESOLVED" : "OPEN",
+    createdAt: item.createdAt || item.date,
+    imageUrl: null, // our mock data has no real images
+  }));
+}
+
+// Deletes an item AND all claims associated with it - matches the admin
+// "Delete this listing?" confirmation copy, which explicitly says
+// deleting removes the listing's claim history too, not just the item.
+export async function deleteItem(itemId) {
+  const claims = await getClaimsForItem(itemId);
+  await Promise.all(
+    claims.map((claim) => request(`/claims/${claim.id}`, { method: "DELETE" })),
+  );
+  return request(`/items/${itemId}`, { method: "DELETE" });
+}

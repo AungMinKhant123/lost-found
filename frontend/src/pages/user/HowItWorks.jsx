@@ -14,28 +14,28 @@ const STEPS = [
     description: "Report a lost or found item with details and location.",
     className: "left-[95px] top-[80px]",
     photo:
-      "https://res.cloudinary.com/d5tnusci/image/upload/v1789923340/howdoesitwork1_luaqcu.jpg",
+      "https://res.cloudinary.com/d5tnusci/image/upload/v1790405409/howdoesitwork1_luaqcu-removebg-preview_pvvhao.png",
   },
   {
     title: "Search",
     description: "Browse or search items in your area.",
     className: "right-[90px] top-[650px]",
     photo:
-      "https://res.cloudinary.com/d5tnusci/image/upload/v1789923340/howdoesitwork2_rqrkbk.jpg",
+      "https://res.cloudinary.com/d5tnusci/image/upload/v1790405524/howdoesitwork2_rqrkbk-removebg-preview_z2pqbw.png",
   },
   {
     title: "Connect",
     description: "Contact the poster and arrange to return it.",
     className: "right-[425px] top-[1250px]",
     photo:
-      "https://res.cloudinary.com/d5tnusci/image/upload/v1789923340/howdoesitwork3_qobbo5.jpg",
+      "https://res.cloudinary.com/d5tnusci/image/upload/v1790405611/howdoesitwork3_qobbo5-removebg-preview_ez65x2.png",
   },
   {
     title: "Reunite",
     description: "Get your item back and make someone's day.",
     className: "left-[180px] top-[1800px]",
     photo:
-      "https://res.cloudinary.com/d5tnusci/image/upload/v1789923340/howdoesitwork4_cesaqi.jpg",
+      "https://res.cloudinary.com/d5tnusci/image/upload/v1790406979/Untitled_design-removebg-preview_ogny5t.png",
   },
 ];
 

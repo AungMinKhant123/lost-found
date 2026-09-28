@@ -29,6 +29,18 @@ const ItemDetailsModal = ({ item, onClose }) => {
   const [currentUserId, setCurrentUserId] = useState(null);
 
   console.log("ItemDetailsModal rendered, view =", view);
+  // added for  fixing bug by chat
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      console.log("🚨 BROWSER IS RELOADING");
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated) {

@@ -180,7 +180,7 @@
       "status": "found",
       "location": "Library",
       "date": "2026-09-12",
-      "resolved": false,
+      "resolved": true,
       "userId": "2"
     },
     {
@@ -299,6 +299,23 @@
       },
       "id": "SbA5DchRyRU",
       "createdAt": "2026-09-21T03:33:22.205Z"
+    },
+    {
+      "title": " Samsung S24 Ultra+",
+      "status": "lost",
+      "category": "Electronics",
+      "color": "Black",
+      "location": "Library",
+      "date": "2026-09-27",
+      "description": "Help me find my phone!!. I think i dropped it near the Library. The phone has a dent on the top-right side.",
+      "resolved": false,
+      "userId": "2",
+      "postedBy": {
+        "name": "Ashfaq Ifthicar",
+        "email": "ash@gmail.com"
+      },
+      "id": "It8vSeJUq8w",
+      "createdAt": "2026-09-27T12:14:32.390Z"
     }
   ],
   "users": [
@@ -450,6 +467,14 @@
       "firstName": "Nero",
       "lastName": "Chrono",
       "email": "nero.chrono@example.com",
+      "password": "admin1234",
+      "role": "admin"
+    },
+    {
+      "id": "14",
+      "firstName": "Bruce",
+      "lastName": "Lee",
+      "email": "bruce@example.com",
       "password": "admin1234",
       "role": "admin"
     }
@@ -822,6 +847,86 @@
       "message": "hi",
       "claimedAt": "2026-09-25T15:39:49.467Z",
       "id": "90lJU2Av7Gs"
+    },
+    {
+      "itemId": "aIziyNV_EuM",
+      "userId": "2",
+      "status": "pending",
+      "message": "dwadwdsada",
+      "claimedAt": "2026-09-26T08:48:01.037Z",
+      "id": "Qqqzo830vxk"
+    },
+    {
+      "itemId": "aIziyNV_EuM",
+      "userId": "2",
+      "status": "pending",
+      "message": "testing final",
+      "claimedAt": "2026-09-26T09:03:52.382Z",
+      "id": "uBpAxx9cEjs"
+    },
+    {
+      "itemId": "2",
+      "userId": "2",
+      "status": "pending",
+      "message": "testing",
+      "claimedAt": "2026-09-26T09:04:44.888Z",
+      "id": "GH9Ip58LfUY"
+    },
+    {
+      "itemId": "5",
+      "userId": "2",
+      "status": "pending",
+      "message": "testing",
+      "claimedAt": "2026-09-26T09:05:09.217Z",
+      "id": "opow4e_ylLc"
+    },
+    {
+      "itemId": "5",
+      "userId": "2",
+      "status": "pending",
+      "message": "tsting",
+      "claimedAt": "2026-09-26T09:05:26.574Z",
+      "id": "E-h8POUWthM"
+    },
+    {
+      "itemId": "aIziyNV_EuM",
+      "userId": "2",
+      "status": "pending",
+      "message": "testing",
+      "claimedAt": "2026-09-26T09:09:13.768Z",
+      "id": "yaJQEfTVMI4"
+    },
+    {
+      "itemId": "13",
+      "userId": "1",
+      "status": "pending",
+      "message": "I believe this item is mine so give it to me.",
+      "claimedAt": "2026-09-27T03:45:57.402Z",
+      "id": "cpzuqKWtgA0"
+    },
+    {
+      "itemId": "aIziyNV_EuM",
+      "userId": "2",
+      "status": "pending",
+      "message": "test",
+      "claimedAt": "2026-09-26T18:03:58.308Z",
+      "id": "GCl-cF7jnjI"
+    },
+    {
+      "itemId": "6",
+      "userId": "2",
+      "status": "pending",
+      "message": "Testing hope it works!!!",
+      "claimedAt": "2026-09-26T18:08:00.445Z",
+      "id": "euhj9lPosyg"
+    },
+    {
+      "itemId": "15",
+      "userId": "1",
+      "status": "accepted",
+      "message": "Has my name printed in the backside.",
+      "claimedAt": "2026-09-27T12:10:19.754Z",
+      "id": "9FyWDL1uZME"
     }
   ],
   "colours": [

@@ -13,12 +13,17 @@ const AdminLayout = () => {
   }, [authUserId]);
 
   return (
+    // h-screen + overflow-hidden on the OUTER container is what prevents
+    // the whole page (including the sidebar) from ever scrolling.
     <div className="flex h-screen overflow-hidden bg-background-subtle">
       <AdminSidebar
         name={admin ? `${admin.firstName} ${admin.lastName}` : "Admin"}
         role="Admin"
       />
-      <main className="flex-1">
+      {/* overflow-y-auto + h-full on just the content area is what lets
+          THIS scroll independently, while the sidebar (a separate flex
+          sibling) stays completely fixed regardless of content height. */}
+      <main className="flex-1 h-full overflow-hidden">
         <Outlet />
       </main>
     </div>
