@@ -5,7 +5,7 @@ export const SignupRequestBodySchema = Type.Object({
   firstName: Type.String(),
   lastName: Type.String(),
   email: Type.String({ format: "email" }),
-  password: Type.String({ minLength: 8 })
+  password: Type.String({ minLength: 8 }),
 });
 
 export type SignupRequestBody = Static<typeof SignupRequestBodySchema>;

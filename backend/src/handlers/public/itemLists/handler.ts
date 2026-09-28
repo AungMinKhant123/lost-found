@@ -1,8 +1,8 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
 import type { ItemListsRequestQuery } from "./requestQuery.js";
-
 import type { ItemListsResponseBody } from "./responseBody.js";
+
 import { prisma } from "../../../lib/prisma.js";
 
 export async function itemListsHandler(
@@ -23,17 +23,46 @@ export async function itemListsHandler(
     limit: limitParam,
   } = query;
 
+  /*
+   * --------------------------------------------------
+   * Pagination
+   * --------------------------------------------------
+   */
+
   const page = Math.max(Number(pageParam) || 1, 1);
+
   const limit = Math.min(Math.max(Number(limitParam) || 9, 1), 100);
 
   const skip = (page - 1) * limit;
 
+  /*
+   * --------------------------------------------------
+   * Filters
+   * --------------------------------------------------
+   */
+
   const where = {
     ...(search && {
-      title: {
-        contains: search,
-        mode: "insensitive" as const,
-      },
+      OR: [
+        {
+          title: {
+            contains: search,
+            mode: "insensitive" as const,
+          },
+        },
+        {
+          description: {
+            contains: search,
+            mode: "insensitive" as const,
+          },
+        },
+        {
+          location: {
+            contains: search,
+            mode: "insensitive" as const,
+          },
+        },
+      ],
     }),
 
     ...(type && {
@@ -58,8 +87,8 @@ export async function itemListsHandler(
         name: {
           equals: color,
           mode: "insensitive" as const,
-        }
-      }
+        },
+      },
     }),
 
     ...((fromDate || toDate) && {
@@ -70,10 +99,16 @@ export async function itemListsHandler(
 
         ...(toDate && {
           lte: new Date(toDate),
-        })
-      }
-    })
+        }),
+      },
+    }),
   };
+
+  /*
+   * --------------------------------------------------
+   * Database queries
+   * --------------------------------------------------
+   */
 
   const [total, items] = await Promise.all([
     prisma.item.count({
@@ -86,10 +121,41 @@ export async function itemListsHandler(
       skip,
       take: limit,
 
-      include: {
-        category: true,
-        color: true,
-        images: true,
+      select: {
+        id: true,
+
+        title: true,
+
+        description: true,
+
+        type: true,
+
+        status: true,
+
+        location: true,
+
+        dateLostOrFound: true,
+
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+
+        color: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+
+        images: {
+          select: {
+            id: true,
+            objectKey: true,
+          },
+        },
       },
 
       orderBy: {
@@ -98,15 +164,75 @@ export async function itemListsHandler(
     }),
   ]);
 
+  /*
+   * --------------------------------------------------
+   * Convert MinIO objectKey → imageUrl
+   * --------------------------------------------------
+   */
+
+  const data = await Promise.all(
+    items.map(async (item) => {
+      const images = await Promise.all(
+        item.images.map(async (image) => {
+          const imageUrl = await request.server.minio.presignedGetObject(
+            process.env.MINIO_BUCKET!,
+            image.objectKey,
+            60 * 60,
+          );
+
+          return {
+            id: image.id,
+            imageUrl,
+          };
+        }),
+      );
+
+      return {
+        id: item.id,
+
+        title: item.title,
+
+        description: item.description,
+
+        type: item.type,
+
+        status: item.status,
+
+        location: item.location,
+
+        dateLostOrFound: item.dateLostOrFound.toISOString(),
+
+        category: item.category,
+
+        color: item.color,
+
+        images,
+      };
+    }),
+  );
+
+  /*
+   * --------------------------------------------------
+   * Pagination
+   * --------------------------------------------------
+   */
+
   const totalPages = Math.ceil(total / limit);
 
+  /*
+   * --------------------------------------------------
+   * Response
+   * --------------------------------------------------
+   */
+
   return reply.send({
-    data: items,
+    data,
+
     pagination: {
       page,
       limit,
       total,
-      totalPages,      
+      totalPages,
     },
   });
 }
