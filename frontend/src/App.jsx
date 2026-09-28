@@ -77,7 +77,14 @@ const App = () => {
           </Route>
           <Route path="*" element={<NotFound />} />
         </Route>
-        <Route path="/admin" element={<AdminLayout />}>
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminLayout />
+            </AdminRoute>
+          }
+        >
           <Route index element={<Dashboard />} />
           <Route path="listings" element={<ManageListings />} />
           <Route path="attributes" element={<ManageAttributes />} />

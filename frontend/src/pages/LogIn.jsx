@@ -155,7 +155,7 @@ const Login = () => {
   return (
     <>
       <UserHeader />
-      <div className="min-h-screen bg-[#F8FAFC] mx-auto px-10 py-12">
+      <div className="min-h-screen bg-[#F8FAFC] mx-auto px-10 py-12 pt-35">
         {/* =====================================================
           MAIN CONTAINER
       ===================================================== */}
@@ -489,7 +489,6 @@ const Login = () => {
                 h-80
                 w-[90%]
                 max-w-full 
-                rounded-lg bg-neutral-300
               "
               />
             </div>
@@ -518,7 +517,6 @@ const Login = () => {
               items-center
               justify-center
               gap-2
-              bg-white
               lg:h-226.25
             "
             >
