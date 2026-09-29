@@ -29,13 +29,13 @@ export const ItemListsRequestQuerySchema = Type.Object({
 
   fromDate: Type.Optional(
     Type.String({
-      format: "date-time",
+      format: "date",
     }),
   ),
 
   toDate: Type.Optional(
     Type.String({
-      format: "date-time",
+      format: "date",
     }),
   ),
 

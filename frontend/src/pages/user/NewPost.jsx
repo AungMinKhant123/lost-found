@@ -1,515 +1,1062 @@
-import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router";
-import toast from "react-hot-toast";
-import { Upload, ChevronDown, Calendar, X, FileCheck } from "lucide-react";
-import { getCurrentUser, createItemWithSequentialId } from "../../services/api";
+import { useEffect, useRef, useState } from "react";
+
+import {
+  ArrowLeft,
+  Calendar,
+  Check,
+  ChevronDown,
+  ImagePlus,
+  MapPin,
+  Palette,
+  Tag,
+  Upload,
+  User,
+  X,
+} from "lucide-react";
+import { toast } from "react-hot-toast";
+
+import { getCurrentUser } from "../../services/api";
 import { useAttributes } from "../../hooks/useAttributes";
-import { getCategoryIcon } from "../../utils/categoryIcons";
+import { useCreateItem } from "../../hooks/useItems";
+import { useNavigate } from "react-router";
 
-const NewPost = () => {
-  const { categories, colours } = useAttributes();
-
+export default function NewPost() {
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
+
+  const {
+    categories,
+    colors,
+    loading: attributesLoading,
+    error: attributesError,
+  } = useAttributes();
+
+  const createItemMutation = useCreateItem();
 
   const [formData, setFormData] = useState({
-    status: "lost",
+    type: "LOST",
     title: "",
-    category: "",
+    categoryId: "",
     location: "",
-    color: "",
-    date: "",
+    colorId: "",
+    dateLostOrFound: "",
     description: "",
     contactName: "",
     contactEmail: "",
   });
 
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [images, setImages] = useState([]);
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [categoryOpen, setCategoryOpen] = useState(false);
+  const [colorOpen, setColorOpen] = useState(false);
 
-  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
-  const [isColorOpen, setIsColorOpen] = useState(false);
-  const categoryRef = useRef(null);
-  const colorRef = useRef(null);
+  // --------------------------------------------------
+  // Validation state
+  // --------------------------------------------------
 
-  const [imagePreviews, setImagePreviews] = useState([]);
+  const [errors, setErrors] = useState({});
 
-  useEffect(() => {
-    getCurrentUser().then((user) => {
-      setFormData((prev) => ({
-        ...prev,
-        contactName: `${user.firstName} ${user.lastName}`,
-        contactEmail: user.email,
-      }));
-    });
-  }, []);
+  // --------------------------------------------------
+  // Load current authenticated user
+  // --------------------------------------------------
 
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (categoryRef.current && !categoryRef.current.contains(e.target)) {
-        setIsCategoryOpen(false);
-      }
-      if (colorRef.current && !colorRef.current.contains(e.target)) {
-        setIsColorOpen(false);
+    let mounted = true;
+
+    const loadUser = async () => {
+      try {
+        const user = await getCurrentUser();
+
+        if (!mounted || !user) {
+          return;
+        }
+
+        setFormData((prev) => ({
+          ...prev,
+          contactName: `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim(),
+          contactEmail: user.email ?? "",
+        }));
+      } catch (error) {
+        console.error("Failed to load current user:", error);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+    loadUser();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  // --------------------------------------------------
+  // Cleanup preview URLs when component unmounts
+  // --------------------------------------------------
+
+  useEffect(() => {
+    return () => {
+      images.forEach((image) => {
+        URL.revokeObjectURL(image.url);
+      });
+    };
+  }, [images]);
+
+  // --------------------------------------------------
+  // Handle normal input changes
+  // --------------------------------------------------
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // Clear field error when user starts correcting it
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
   };
 
-  const handleFileSelect = (files) => {
-    const fileArray = Array.from(files);
-    const newPreviews = fileArray.map((file) => ({
-      id: `${file.name}-${file.size}-${Date.now()}`,
+  // --------------------------------------------------
+  // Select item type
+  // --------------------------------------------------
+
+  const handleTypeChange = (type) => {
+    setFormData((prev) => ({
+      ...prev,
+      type,
+    }));
+  };
+
+  // --------------------------------------------------
+  // Select category
+  // Store ID, display name
+  // --------------------------------------------------
+
+  const handleCategorySelect = (category) => {
+    setFormData((prev) => ({
+      ...prev,
+      categoryId: category.id,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      categoryId: "",
+    }));
+
+    setCategoryOpen(false);
+  };
+
+  // --------------------------------------------------
+  // Select color
+  // Store ID, display name
+  // --------------------------------------------------
+
+  const handleColorSelect = (color) => {
+    setFormData((prev) => ({
+      ...prev,
+      colorId: color.id,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      colorId: "",
+    }));
+
+    setColorOpen(false);
+  };
+
+  // --------------------------------------------------
+  // Image selection
+  // --------------------------------------------------
+
+  const handleImageChange = (event) => {
+    const selectedFiles = Array.from(event.target.files ?? []);
+
+    if (selectedFiles.length === 0) {
+      return;
+    }
+
+    const remainingSlots = 5 - images.length;
+
+    if (remainingSlots <= 0) {
+      toast.error("You can upload up to 5 images.");
+      event.target.value = "";
+      return;
+    }
+
+    const filesToAdd = selectedFiles.slice(0, remainingSlots);
+
+    if (selectedFiles.length > remainingSlots) {
+      toast.error(`You can upload up to 5 images.`);
+    }
+
+    const newImages = filesToAdd.map((file) => ({
+      id: `${file.name}-${file.size}-${Date.now()}-${Math.random()}`,
+      file,
       url: URL.createObjectURL(file),
     }));
-    setImagePreviews((prev) => [...prev, ...newPreviews]);
+
+    setImages((prev) => [...prev, ...newImages]);
+
+    // Allow selecting the same file again later
+    event.target.value = "";
   };
 
-  const handleRemoveImage = (id) => {
-    setImagePreviews((prev) => prev.filter((preview) => preview.id !== id));
+  // --------------------------------------------------
+  // Remove image
+  // --------------------------------------------------
+
+  const handleRemoveImage = (imageId) => {
+    setImages((prev) => {
+      const imageToRemove = prev.find((image) => image.id === imageId);
+
+      if (imageToRemove) {
+        URL.revokeObjectURL(imageToRemove.url);
+      }
+
+      return prev.filter((image) => image.id !== imageId);
+    });
   };
 
-  const handleDrop = (e) => {
-    e.preventDefault();
-    handleFileSelect(e.dataTransfer.files);
-  };
+  // --------------------------------------------------
+  // Validation
+  // --------------------------------------------------
 
-  const validate = () => {
+  const validateForm = () => {
     const newErrors = {};
-    if (!formData.title.trim()) newErrors.title = "Item title is required.";
-    if (!formData.category) newErrors.category = "Please choose a category.";
-    if (!formData.location.trim()) newErrors.location = "Location is required.";
-    if (!formData.date) newErrors.date = "Please select a date.";
-    if (!formData.description.trim())
-      newErrors.description = "Please add a description.";
-    return newErrors;
+
+    if (!formData.title.trim()) {
+      newErrors.title = "Please enter an item title.";
+    }
+
+    if (!formData.categoryId) {
+      newErrors.categoryId = "Please choose a category.";
+    }
+
+    if (!formData.location.trim()) {
+      newErrors.location = "Please enter the location.";
+    }
+
+    if (!formData.colorId) {
+      newErrors.colorId = "Please choose a color.";
+    }
+
+    if (!formData.dateLostOrFound) {
+      newErrors.dateLostOrFound = "Please select a date.";
+    }
+
+    if (!formData.description.trim()) {
+      newErrors.description = "Please describe the item.";
+    }
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
   };
 
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    const validationErrors = validate();
-    setErrors(validationErrors);
-    if (Object.keys(validationErrors).length > 0) return;
+  // --------------------------------------------------
+  // Open confirmation modal
+  // --------------------------------------------------
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    if (!validateForm()) {
+      toast.error("Please complete all required fields.");
+      return;
+    }
+
     setShowConfirmModal(true);
   };
 
-  const handleConfirmSubmit = async () => {
-    setIsSubmitting(true);
-    try {
-      const user = await getCurrentUser();
+  // --------------------------------------------------
+  // Submit to backend
+  // --------------------------------------------------
 
-      await createItemWithSequentialId({
-        title: formData.title,
-        status: formData.status,
-        category: formData.category,
-        color: formData.color,
-        location: formData.location,
-        date: formData.date,
-        description: formData.description,
-        resolved: false,
-        userId: user.id,
-        postedBy: {
-          name: formData.contactName,
-          email: formData.contactEmail,
-        },
+  const handleConfirmSubmit = async () => {
+    if (createItemMutation.isPending) {
+      return;
+    }
+
+    try {
+      const data = new FormData();
+
+      data.append("type", formData.type);
+      data.append("title", formData.title.trim());
+      data.append("categoryId", formData.categoryId);
+      data.append("location", formData.location.trim());
+      data.append("colorId", formData.colorId);
+      data.append("dateLostOrFound", formData.dateLostOrFound);
+      data.append("description", formData.description.trim());
+
+      // Add every selected image using the same field name.
+      //
+      // Backend:
+      // request.parts()
+      //   -> part.type === "file"
+      //   -> part.fieldname === "images"
+      //
+      images.forEach((image) => {
+        data.append("images", image.file);
       });
 
-      toast.success("Your post has been listed.");
-      navigate("/account/posts");
-    } catch (err) {
-      toast.error("Failed to create post. Please try again.");
+      await createItemMutation.mutateAsync(data);
+
+      toast.success(
+        formData.type === "LOST"
+          ? "Lost item posted successfully!"
+          : "Found item posted successfully!",
+      );
+
       setShowConfirmModal(false);
-    } finally {
-      setIsSubmitting(false);
+
+      navigate("/account/posts");
+    } catch (error) {
+      console.error("Failed to create item:", error);
+
+      const message =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        "Failed to create item. Please try again.";
+
+      toast.error(message);
     }
   };
 
-  return (
-    <div className="max-w-2xl border border-border rounded-lg p-8 relative">
-      <h1 className="text-heading-1 font-bold text-primary-dark">
-        Create New Post
-      </h1>
-      <p className="text-body-sm text-text-secondary mt-2">
-        Fill out the details below to publish your lost or found item. Giving
-        accurate descriptions increases recovery success!
-      </p>
+  // --------------------------------------------------
+  // Selected category / color for display
+  // --------------------------------------------------
 
-      <form onSubmit={handleFormSubmit} className="mt-6 space-y-5" noValidate>
-        {/* Lost/Found toggle */}
-        <div>
-          <label className="text-body-md font-medium text-text-primary">
-            What type of post is this?
-          </label>
-          <div className="flex border border-border rounded-lg overflow-hidden mt-2">
-            <button
-              type="button"
-              onClick={() =>
-                setFormData((prev) => ({ ...prev, status: "lost" }))
-              }
-              className={`flex-1 py-2.5 text-body-md font-medium transition-colors ${
-                formData.status === "lost"
-                  ? "bg-primary text-text-inverse"
-                  : "bg-background text-text-primary hover:bg-background-subtle"
-              }`}
-            >
-              Lost Item
-            </button>
-            <button
-              type="button"
-              onClick={() =>
-                setFormData((prev) => ({ ...prev, status: "found" }))
-              }
-              className={`flex-1 py-2.5 text-body-md font-medium transition-colors ${
-                formData.status === "found"
-                  ? "bg-primary text-text-inverse"
-                  : "bg-background text-text-primary hover:bg-background-subtle"
-              }`}
-            >
-              Found Item
-            </button>
-          </div>
-        </div>
+  const selectedCategory = categories.find(
+    (category) => category.id === formData.categoryId,
+  );
 
-        {/* Item Title */}
-        <div>
-          <label className="text-body-md font-medium text-text-primary">
-            Item Title
-          </label>
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            placeholder="e.g., iPhone 13 Pro with blue leather case"
-            className="w-full border border-border rounded-lg px-3 py-2.5 mt-1 text-body-md focus:outline-none focus:ring-2 focus:ring-primary"
-          />
-          {errors.title && (
-            <p className="text-error text-label-sm mt-1">{errors.title}</p>
-          )}
-        </div>
+  const selectedColor = colors.find((color) => color.id === formData.colorId);
 
-        {/* Category */}
-        <div>
-          <label className="text-body-md font-medium text-text-primary">
-            Category
-          </label>
-          <div className="relative mt-1" ref={categoryRef}>
-            <button
-              type="button"
-              onClick={() => setIsCategoryOpen((v) => !v)}
-              className="w-full flex items-center justify-between border border-border rounded-lg px-3 py-2.5 text-body-md text-left focus:outline-none focus:ring-2 focus:ring-primary"
-            >
-              <span
-                className={
-                  formData.category
-                    ? "text-text-primary"
-                    : "text-text-secondary"
-                }
-              >
-                {formData.category || "Choose your Item Category"}
-              </span>
-              <ChevronDown
-                size={18}
-                className={`text-text-secondary transition-transform ${
-                  isCategoryOpen ? "rotate-180" : ""
-                }`}
-              />
-            </button>
-            {isCategoryOpen && (
-              <ul className="absolute z-10 w-full mt-1 max-h-[308px] overflow-y-auto admin-scrollbar border border-border rounded-lg bg-surface shadow-lg">
-                {categories.map((category) => {
-                  const Icon = getCategoryIcon(category.icon);
-                  return (
-                    <li key={category.id}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setFormData((prev) => ({
-                            ...prev,
-                            category: category.name,
-                          }));
-                          setIsCategoryOpen(false);
-                        }}
-                        className="w-full flex items-center gap-2 text-left px-3 py-2.5 text-body-md text-text-primary hover:bg-primary hover:text-text-inverse"
-                      >
-                        <Icon size={16} />
-                        {category.name}
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
-          {errors.category && (
-            <p className="text-error text-label-sm mt-1">{errors.category}</p>
-          )}
-        </div>
+  // --------------------------------------------------
+  // Loading / attribute error
+  // --------------------------------------------------
 
-        {/* Location */}
-        <div>
-          <label className="text-body-md font-medium text-text-primary">
-            Location
-          </label>
-          <input
-            type="text"
-            name="location"
-            value={formData.location}
-            onChange={handleChange}
-            placeholder="eg. school entrance"
-            className="w-full border border-border rounded-lg px-3 py-2.5 mt-1 text-body-md focus:outline-none focus:ring-2 focus:ring-primary"
-          />
-          {errors.location && (
-            <p className="text-error text-label-sm mt-1">{errors.location}</p>
-          )}
-        </div>
+  if (attributesLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    );
+  }
 
-        {/* Colour */}
-        <div>
-          <label className="text-body-md font-medium text-text-primary">
-            Colour
-          </label>
-          <div className="relative mt-1" ref={colorRef}>
-            <button
-              type="button"
-              onClick={() => setIsColorOpen((v) => !v)}
-              className="w-full flex items-center justify-between border border-border rounded-lg px-3 py-2.5 text-body-md text-left focus:outline-none focus:ring-2 focus:ring-primary"
-            >
-              <span
-                className={
-                  formData.color ? "text-text-primary" : "text-text-secondary"
-                }
-              >
-                {formData.color || "Colour"}
-              </span>
-              <ChevronDown
-                size={18}
-                className={`text-text-secondary transition-transform ${
-                  isColorOpen ? "rotate-180" : ""
-                }`}
-              />
-            </button>
-            {isColorOpen && (
-              <ul className="absolute z-10 w-full mt-1 max-h-[308px] overflow-y-auto admin-scrollbar border border-border rounded-lg bg-surface shadow-lg">
-                {colours.map((colour) => {
-                  const isOther = colour.name.toLowerCase() === "other";
+  if (attributesError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">
+            Failed to load categories and colors.
+          </p>
 
-                  return (
-                    <li key={colour.id}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setFormData((prev) => ({
-                            ...prev,
-                            color: colour.name,
-                          }));
-                          setIsColorOpen(false);
-                        }}
-                        className="w-full flex items-center gap-2 text-left px-3 py-2.5 text-body-md text-text-primary hover:bg-primary hover:text-text-inverse"
-                      >
-                        <span
-                          className="w-4 h-4 rounded-full border border-border shrink-0"
-                          style={{
-                            background: isOther
-                              ? "conic-gradient(from 180deg, #ef4444, #f97316, #eab308, #10b981, #3b82f6, #8b5cf6, #ef4444)"
-                              : colour.hex,
-                          }}
-                        />
-                        {colour.name}
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
-        </div>
-
-        {/* Date Lost/Found */}
-        <div>
-          <label className="text-body-md font-medium text-text-primary">
-            Date Lost/Found
-          </label>
-          <div className="relative mt-1">
-            <input
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              className="w-full border border-border rounded-lg pl-3 pr-10 py-2.5 text-body-md focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-            <Calendar
-              size={18}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none"
-            />
-          </div>
-          {errors.date && (
-            <p className="text-error text-label-sm mt-1">{errors.date}</p>
-          )}
-        </div>
-
-        {/* Description */}
-        <div>
-          <label className="text-body-md font-medium text-text-primary">
-            Detailed Description
-          </label>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            rows={4}
-            placeholder="Please share distinguishing features, unique stickers, wear & tear, or specific settings where the item was last spotted..."
-            className="w-full border border-border rounded-lg px-3 py-2.5 mt-1 text-body-md resize-none focus:outline-none focus:ring-2 focus:ring-primary"
-          />
-          {errors.description && (
-            <p className="text-error text-label-sm mt-1">
-              {errors.description}
-            </p>
-          )}
-        </div>
-
-        {/* Upload Images */}
-        <div>
-          <label className="text-body-md font-medium text-text-primary">
-            Upload Images
-          </label>
-          <div
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={handleDrop}
-            className="border-2 border-dashed border-border rounded-lg p-8 mt-1 flex flex-col items-center text-center"
-          >
-            <div className="w-10 h-10 rounded-full bg-background-subtle flex items-center justify-center">
-              <Upload size={18} className="text-text-secondary" />
-            </div>
-            <p className="text-body-md text-text-primary mt-3">
-              Drag and drop your files here, or{" "}
-              <label className="text-primary underline cursor-pointer">
-                browse
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png"
-                  multiple
-                  onChange={(e) => handleFileSelect(e.target.files)}
-                  className="hidden"
-                />
-              </label>
-            </p>
-            <p className="text-body-sm text-text-secondary mt-1">
-              Supports JPG, PNG up to 10MB each
-            </p>
-          </div>
-
-          {imagePreviews.length > 0 && (
-            <div className="flex gap-3 flex-wrap mt-3">
-              {imagePreviews.map((preview) => (
-                <div key={preview.id} className="relative w-20 h-20">
-                  <img
-                    src={preview.url}
-                    alt="Preview"
-                    className="w-full h-full rounded-lg object-cover border border-border"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveImage(preview.id)}
-                    className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-error text-white flex items-center justify-center hover:bg-error/90"
-                  >
-                    <X size={12} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Contact Information */}
-        <div>
-          <h3 className="text-heading-3 font-bold text-primary-dark">
-            Contact Information
-          </h3>
-          <div className="grid grid-cols-2 gap-4 mt-3">
-            <div>
-              <label className="text-body-sm font-medium text-text-primary">
-                Your Name
-              </label>
-              <input
-                type="text"
-                name="contactName"
-                value={formData.contactName}
-                onChange={handleChange}
-                className="w-full border border-border rounded-lg px-3 py-2.5 mt-1 text-body-md focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-            </div>
-            <div>
-              <label className="text-body-sm font-medium text-text-primary">
-                Email Address
-              </label>
-              <input
-                type="email"
-                name="contactEmail"
-                value={formData.contactEmail}
-                onChange={handleChange}
-                className="w-full border border-border rounded-lg px-3 py-2.5 mt-1 text-body-md focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Buttons */}
-        <div className="flex justify-center gap-4 pt-2">
           <button
             type="button"
-            onClick={() => navigate("/account/posts")}
-            className="border border-border rounded-lg px-8 py-2.5 text-body-md text-text-primary hover:bg-background-subtle transition-colors"
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 rounded-lg bg-black text-white"
           >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="bg-primary hover:bg-primary-dark text-text-inverse rounded-lg px-8 py-2.5 text-body-md font-medium transition-colors"
-          >
-            Submit Post
+            Try Again
           </button>
         </div>
-      </form>
+      </div>
+    );
+  }
 
-      {/* Confirmation modal */}
-      {showConfirmModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-background rounded-lg p-8 max-w-md w-full mx-4">
-            <div className="flex flex-col items-center text-center">
-              <FileCheck size={32} className="text-primary" />
-              <h2 className="text-heading-1 font-bold text-text-primary mt-3">
-                Confirm Your Post
-              </h2>
-              <p className="text-body-md text-text-secondary mt-2">
-                Is the information you submitted accurate? You can review it
-                once more before it goes live.
-              </p>
+  // --------------------------------------------------
+  // Render
+  // --------------------------------------------------
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* --------------------------------------------- */}
+      {/* Header                                        */}
+      {/* --------------------------------------------- */}
+
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition"
+          >
+            <ArrowLeft size={20} />
+            <span>Back</span>
+          </button>
+        </div>
+      </div>
+
+      {/* --------------------------------------------- */}
+      {/* Main content                                  */}
+      {/* --------------------------------------------- */}
+
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">
+            Create a New Post
+          </h1>
+
+          <p className="mt-2 text-gray-600">
+            Report a lost or found item and help reconnect it with its owner.
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            {/* ----------------------------------------- */}
+            {/* Lost / Found                               */}
+            {/* ----------------------------------------- */}
+
+            <div className="p-6 border-b border-gray-200">
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Post Type
+              </label>
+
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => handleTypeChange("LOST")}
+                  className={`p-4 rounded-xl border-2 text-left transition ${
+                    formData.type === "LOST"
+                      ? "border-red-500 bg-red-50"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                        formData.type === "LOST"
+                          ? "bg-red-100 text-red-600"
+                          : "bg-gray-100 text-gray-500"
+                      }`}
+                    >
+                      <MapPin size={20} />
+                    </div>
+
+                    <div>
+                      <p className="font-semibold text-gray-900">Lost</p>
+                      <p className="text-sm text-gray-500">I lost this item</p>
+                    </div>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleTypeChange("FOUND")}
+                  className={`p-4 rounded-xl border-2 text-left transition ${
+                    formData.type === "FOUND"
+                      ? "border-green-500 bg-green-50"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                        formData.type === "FOUND"
+                          ? "bg-green-100 text-green-600"
+                          : "bg-gray-100 text-gray-500"
+                      }`}
+                    >
+                      <Check size={20} />
+                    </div>
+
+                    <div>
+                      <p className="font-semibold text-gray-900">Found</p>
+                      <p className="text-sm text-gray-500">I found this item</p>
+                    </div>
+                  </div>
+                </button>
+              </div>
             </div>
 
-            <div className="flex justify-center gap-4 mt-8">
+            {/* ----------------------------------------- */}
+            {/* Form fields                                */}
+            {/* ----------------------------------------- */}
+
+            <div className="p-6 space-y-6">
+              {/* Title */}
+
+              <div>
+                <label
+                  htmlFor="title"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Item Title <span className="text-red-500">*</span>
+                </label>
+
+                <input
+                  id="title"
+                  name="title"
+                  type="text"
+                  value={formData.title}
+                  onChange={handleChange}
+                  placeholder="e.g. Black iPhone 15"
+                  className={`w-full px-4 py-3 rounded-xl border ${
+                    errors.title ? "border-red-500" : "border-gray-300"
+                  } focus:outline-none focus:ring-2 focus:ring-black/10`}
+                />
+
+                {errors.title && (
+                  <p className="mt-1 text-sm text-red-500">{errors.title}</p>
+                )}
+              </div>
+
+              {/* Category + Color */}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Category */}
+
+                <div className="relative">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Category <span className="text-red-500">*</span>
+                  </label>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCategoryOpen((prev) => !prev);
+                      setColorOpen(false);
+                    }}
+                    className={`w-full px-4 py-3 rounded-xl border ${
+                      errors.categoryId ? "border-red-500" : "border-gray-300"
+                    } flex items-center justify-between text-left bg-white`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Tag size={18} className="text-gray-500" />
+
+                      <span
+                        className={
+                          selectedCategory ? "text-gray-900" : "text-gray-400"
+                        }
+                      >
+                        {selectedCategory?.name || "Choose your Item Category"}
+                      </span>
+                    </div>
+
+                    <ChevronDown
+                      size={18}
+                      className={`transition-transform ${
+                        categoryOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+
+                  {categoryOpen && (
+                    <div className="absolute z-30 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                      {categories.length === 0 ? (
+                        <div className="px-4 py-3 text-sm text-gray-500">
+                          No categories available.
+                        </div>
+                      ) : (
+                        categories.map((category) => (
+                          <button
+                            key={category.id}
+                            type="button"
+                            onClick={() => handleCategorySelect(category)}
+                            className={`w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center gap-3 ${
+                              formData.categoryId === category.id
+                                ? "bg-gray-50"
+                                : ""
+                            }`}
+                          >
+                            <Tag size={16} className="text-gray-500" />
+
+                            <span>{category.name}</span>
+
+                            {formData.categoryId === category.id && (
+                              <Check size={16} className="ml-auto" />
+                            )}
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  )}
+
+                  {errors.categoryId && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.categoryId}
+                    </p>
+                  )}
+                </div>
+
+                {/* Color */}
+
+                <div className="relative">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Color <span className="text-red-500">*</span>
+                  </label>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setColorOpen((prev) => !prev);
+                      setCategoryOpen(false);
+                    }}
+                    className={`w-full px-4 py-3 rounded-xl border ${
+                      errors.colorId ? "border-red-500" : "border-gray-300"
+                    } flex items-center justify-between text-left bg-white`}
+                  >
+                    <div className="flex items-center gap-3">
+                      {selectedColor ? (
+                        <span
+                          className="w-5 h-5 rounded-full border border-gray-300"
+                          style={{
+                            backgroundColor: selectedColor.hexCode,
+                          }}
+                        />
+                      ) : (
+                        <Palette size={18} className="text-gray-500" />
+                      )}
+
+                      <span
+                        className={
+                          selectedColor ? "text-gray-900" : "text-gray-400"
+                        }
+                      >
+                        {selectedColor?.name || "Choose a color"}
+                      </span>
+                    </div>
+
+                    <ChevronDown
+                      size={18}
+                      className={`transition-transform ${
+                        colorOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+
+                  {colorOpen && (
+                    <div className="absolute z-30 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                      {colors.length === 0 ? (
+                        <div className="px-4 py-3 text-sm text-gray-500">
+                          No colors available.
+                        </div>
+                      ) : (
+                        colors.map((color) => (
+                          <button
+                            key={color.id}
+                            type="button"
+                            onClick={() => handleColorSelect(color)}
+                            className={`w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center gap-3 ${
+                              formData.colorId === color.id ? "bg-gray-50" : ""
+                            }`}
+                          >
+                            <span
+                              className="w-5 h-5 rounded-full border border-gray-300"
+                              style={{
+                                backgroundColor: color.hexCode,
+                              }}
+                            />
+
+                            <span>{color.name}</span>
+
+                            {formData.colorId === color.id && (
+                              <Check size={16} className="ml-auto" />
+                            )}
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  )}
+
+                  {errors.colorId && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.colorId}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Location + Date */}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Location */}
+
+                <div>
+                  <label
+                    htmlFor="location"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Location <span className="text-red-500">*</span>
+                  </label>
+
+                  <div className="relative">
+                    <MapPin
+                      size={18}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                    />
+
+                    <input
+                      id="location"
+                      name="location"
+                      type="text"
+                      value={formData.location}
+                      onChange={handleChange}
+                      placeholder="e.g. Library, Building A"
+                      className={`w-full pl-11 pr-4 py-3 rounded-xl border ${
+                        errors.location ? "border-red-500" : "border-gray-300"
+                      } focus:outline-none focus:ring-2 focus:ring-black/10`}
+                    />
+                  </div>
+
+                  {errors.location && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.location}
+                    </p>
+                  )}
+                </div>
+
+                {/* Date */}
+
+                <div>
+                  <label
+                    htmlFor="dateLostOrFound"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Date {formData.type === "LOST" ? "Lost" : "Found"}{" "}
+                    <span className="text-red-500">*</span>
+                  </label>
+
+                  <div className="relative">
+                    <Calendar
+                      size={18}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                    />
+
+                    <input
+                      id="dateLostOrFound"
+                      name="dateLostOrFound"
+                      type="date"
+                      value={formData.dateLostOrFound}
+                      onChange={handleChange}
+                      className={`w-full pl-11 pr-4 py-3 rounded-xl border ${
+                        errors.dateLostOrFound
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      } focus:outline-none focus:ring-2 focus:ring-black/10`}
+                    />
+                  </div>
+
+                  {errors.dateLostOrFound && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.dateLostOrFound}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Description */}
+
+              <div>
+                <label
+                  htmlFor="description"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Description <span className="text-red-500">*</span>
+                </label>
+
+                <textarea
+                  id="description"
+                  name="description"
+                  rows={5}
+                  value={formData.description}
+                  onChange={handleChange}
+                  placeholder="Describe the item, where it was lost/found, identifying marks, etc."
+                  className={`w-full px-4 py-3 rounded-xl border ${
+                    errors.description ? "border-red-500" : "border-gray-300"
+                  } resize-none focus:outline-none focus:ring-2 focus:ring-black/10`}
+                />
+
+                {errors.description && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.description}
+                  </p>
+                )}
+              </div>
+
+              {/* --------------------------------------- */}
+              {/* Images                                   */}
+              {/* --------------------------------------- */}
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Images
+                </label>
+
+                <p className="text-sm text-gray-500 mb-3">
+                  Add up to 5 images of the item.
+                </p>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                  {images.map((image) => (
+                    <div
+                      key={image.id}
+                      className="relative aspect-square rounded-xl overflow-hidden border border-gray-200 bg-gray-100"
+                    >
+                      <img
+                        src={image.url}
+                        alt="Item preview"
+                        className="w-full h-full object-cover"
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage(image.id)}
+                        className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-black transition"
+                        aria-label="Remove image"
+                      >
+                        <X size={15} />
+                      </button>
+                    </div>
+                  ))}
+
+                  {images.length < 5 && (
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="aspect-square rounded-xl border-2 border-dashed border-gray-300 hover:border-gray-400 hover:bg-gray-50 flex flex-col items-center justify-center gap-2 text-gray-500 transition"
+                    >
+                      <ImagePlus size={24} />
+
+                      <span className="text-sm">Add image</span>
+                    </button>
+                  )}
+                </div>
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  multiple
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+              </div>
+
+              {/* --------------------------------------- */}
+              {/* Contact information                      */}
+              {/* --------------------------------------- */}
+
+              <div className="pt-2 border-t border-gray-200">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                  Contact Information
+                </h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Name */}
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Name
+                    </label>
+
+                    <div className="relative">
+                      <User
+                        size={18}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                      />
+
+                      <input
+                        type="text"
+                        value={formData.contactName}
+                        readOnly
+                        className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-600"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Email */}
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email
+                    </label>
+
+                    <input
+                      type="email"
+                      value={formData.contactEmail}
+                      readOnly
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-600"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ----------------------------------------- */}
+            {/* Footer / Submit                            */}
+            {/* ----------------------------------------- */}
+
+            <div className="px-6 py-5 bg-gray-50 border-t border-gray-200 flex flex-col sm:flex-row justify-end gap-3">
               <button
                 type="button"
-                onClick={() => setShowConfirmModal(false)}
-                disabled={isSubmitting}
-                className="border border-border rounded-lg px-6 py-2.5 text-body-md text-text-primary hover:bg-background-subtle transition-colors disabled:opacity-50"
+                onClick={() => navigate(-1)}
+                className="px-5 py-3 rounded-xl border border-gray-300 bg-white text-gray-700 font-medium hover:bg-gray-50 transition"
               >
                 Cancel
               </button>
+
+              <button
+                type="submit"
+                disabled={createItemMutation.isPending}
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-black text-white font-medium hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              >
+                <Upload size={18} />
+
+                {createItemMutation.isPending ? "Posting..." : "Create Post"}
+              </button>
+            </div>
+          </div>
+        </form>
+      </main>
+
+      {/* --------------------------------------------- */}
+      {/* Confirmation Modal                             */}
+      {/* --------------------------------------------- */}
+
+      {showConfirmModal && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-4"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              setShowConfirmModal(false);
+            }
+          }}
+        >
+          <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl overflow-hidden">
+            {/* Modal header */}
+
+            <div className="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-gray-900">
+                Confirm Your Post
+              </h2>
+
+              <button
+                type="button"
+                onClick={() => setShowConfirmModal(false)}
+                disabled={createItemMutation.isPending}
+                className="w-9 h-9 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-500"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Modal body */}
+
+            <div className="p-6 space-y-5">
+              <div>
+                <p className="text-sm text-gray-500">Post type</p>
+
+                <p className="font-medium text-gray-900 mt-1">
+                  {formData.type === "LOST" ? "Lost" : "Found"}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-500">Item</p>
+
+                <p className="font-medium text-gray-900 mt-1">
+                  {formData.title}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-500">Category</p>
+
+                  <p className="font-medium text-gray-900 mt-1">
+                    {selectedCategory?.name || "-"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-sm text-gray-500">Color</p>
+
+                  <div className="flex items-center gap-2 mt-1">
+                    {selectedColor && (
+                      <span
+                        className="w-4 h-4 rounded-full border border-gray-300"
+                        style={{
+                          backgroundColor: selectedColor.hexCode,
+                        }}
+                      />
+                    )}
+
+                    <p className="font-medium text-gray-900">
+                      {selectedColor?.name || "-"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-500">Location</p>
+
+                <p className="font-medium text-gray-900 mt-1">
+                  {formData.location}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-500">Date</p>
+
+                <p className="font-medium text-gray-900 mt-1">
+                  {formData.dateLostOrFound}
+                </p>
+              </div>
+
+              {images.length > 0 && (
+                <div>
+                  <p className="text-sm text-gray-500 mb-2">Images</p>
+
+                  <div className="flex gap-2 overflow-x-auto">
+                    {images.map((image) => (
+                      <img
+                        key={image.id}
+                        src={image.url}
+                        alt="Item preview"
+                        className="w-16 h-16 rounded-lg object-cover border border-gray-200"
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="p-4 rounded-xl bg-gray-50">
+                <p className="text-sm text-gray-600">
+                  Once you confirm, your post will be submitted and linked to
+                  your account.
+                </p>
+              </div>
+            </div>
+
+            {/* Modal footer */}
+
+            <div className="px-6 py-5 bg-gray-50 border-t border-gray-200 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setShowConfirmModal(false)}
+                disabled={createItemMutation.isPending}
+                className="px-5 py-3 rounded-xl border border-gray-300 bg-white text-gray-700 font-medium hover:bg-gray-50 disabled:opacity-50 transition"
+              >
+                Go Back
+              </button>
+
               <button
                 type="button"
                 onClick={handleConfirmSubmit}
-                disabled={isSubmitting}
-                className="bg-primary hover:bg-primary-dark text-text-inverse rounded-lg px-6 py-2.5 text-body-md transition-colors disabled:opacity-50"
+                disabled={createItemMutation.isPending}
+                className="px-6 py-3 rounded-xl bg-black text-white font-medium hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition"
               >
-                {isSubmitting ? "Submitting..." : "Confirm"}
+                {createItemMutation.isPending
+                  ? "Submitting..."
+                  : "Confirm & Post"}
               </button>
             </div>
           </div>
@@ -517,6 +1064,4 @@ const NewPost = () => {
       )}
     </div>
   );
-};
-
-export default NewPost;
+}

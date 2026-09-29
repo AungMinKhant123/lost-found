@@ -5,10 +5,10 @@ export default fp(async (fastify) => {
   await fastify.register(multipart, {
     limits: {
       fileSize: 5 * 1024 * 1024,
-      files: 1,
+      files: 5,
     },
   });
 });
 
 // fileSize: 5 MB maximum
-// files: 1 file maximum
+// files: 5 files maximum

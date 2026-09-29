@@ -1,34 +1,23 @@
-import { useEffect, useState } from "react";
-import { getCategories, getColours } from "../services/api";
+import { useQuery } from "@tanstack/react-query";
+import { getCategories, getColors } from "../api/publicApi";
 
-// Loads the admin-managed categories and colours so every page that
-// shows them (New Post, Item List, Manage Listings) reads the same live
-// list instead of its own hard-coded copy. It fetches on mount, so after
-// an admin adds, renames or deletes a value, the next time one of those
-// pages opens it shows the change.
 export function useAttributes() {
-  const [categories, setCategories] = useState([]);
-  const [colours, setColours] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const categoriesQuery = useQuery({
+    queryKey: ["categories"],
+    queryFn: getCategories,
+  });
 
-  useEffect(() => {
-    let cancelled = false;
+  const colorsQuery = useQuery({
+    queryKey: ["colors"],
+    queryFn: getColors,
+  });
 
-    Promise.all([getCategories(), getColours()])
-      .then(([categoryData, colourData]) => {
-        if (cancelled) return;
-        setCategories(categoryData);
-        setColours(colourData);
-      })
-      .catch((err) => console.error("Failed to load categories/colours:", err))
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
+  return {
+    categories: categoriesQuery.data ?? [],
+    colors: colorsQuery.data ?? [],
 
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    loading: categoriesQuery.isLoading || colorsQuery.isLoading,
 
-  return { categories, colours, loading };
+    error: categoriesQuery.error || colorsQuery.error,
+  };
 }

@@ -5,6 +5,12 @@ import type { ItemListsResponseBody } from "./responseBody.js";
 
 import { prisma } from "../../../lib/prisma.js";
 
+function startOfNextDay(date: string): Date {
+  const nextDay = new Date(`${date}T00:00:00.000Z`);
+  nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+  return nextDay;
+}
+
 export async function itemListsHandler(
   request: FastifyRequest,
   reply: FastifyReply,
@@ -23,23 +29,11 @@ export async function itemListsHandler(
     limit: limitParam,
   } = query;
 
-  /*
-   * --------------------------------------------------
-   * Pagination
-   * --------------------------------------------------
-   */
-
   const page = Math.max(Number(pageParam) || 1, 1);
 
   const limit = Math.min(Math.max(Number(limitParam) || 9, 1), 100);
 
   const skip = (page - 1) * limit;
-
-  /*
-   * --------------------------------------------------
-   * Filters
-   * --------------------------------------------------
-   */
 
   const where = {
     ...(search && {
@@ -94,21 +88,15 @@ export async function itemListsHandler(
     ...((fromDate || toDate) && {
       dateLostOrFound: {
         ...(fromDate && {
-          gte: new Date(fromDate),
+          gte: new Date(`${fromDate}T00:00:00.000Z`),
         }),
 
         ...(toDate && {
-          lte: new Date(toDate),
+          lt: startOfNextDay(toDate),
         }),
       },
     }),
   };
-
-  /*
-   * --------------------------------------------------
-   * Database queries
-   * --------------------------------------------------
-   */
 
   const [total, items] = await Promise.all([
     prisma.item.count({
@@ -164,12 +152,6 @@ export async function itemListsHandler(
     }),
   ]);
 
-  /*
-   * --------------------------------------------------
-   * Convert MinIO objectKey → imageUrl
-   * --------------------------------------------------
-   */
-
   const data = await Promise.all(
     items.map(async (item) => {
       const images = await Promise.all(
@@ -211,19 +193,7 @@ export async function itemListsHandler(
     }),
   );
 
-  /*
-   * --------------------------------------------------
-   * Pagination
-   * --------------------------------------------------
-   */
-
   const totalPages = Math.ceil(total / limit);
-
-  /*
-   * --------------------------------------------------
-   * Response
-   * --------------------------------------------------
-   */
 
   return reply.send({
     data,
