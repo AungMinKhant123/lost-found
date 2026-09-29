@@ -368,6 +368,23 @@
       "id": "dvunX51qq0g",
       "createdAt": "2026-09-28T17:40:32.172Z",
       "updatedAt": "2026-09-28T17:42:19.532Z"
+    },
+    {
+      "title": "Iphone 13 Pro Max",
+      "status": "found",
+      "category": "Electronics",
+      "color": "Blue",
+      "location": "Canteen",
+      "date": "2026-09-29",
+      "description": "I found it under the desk which is right next to the Fridge.",
+      "resolved": false,
+      "userId": "2",
+      "postedBy": {
+        "name": "Ashfaq Ifthicar",
+        "email": "ash@gmail.com"
+      },
+      "id": "hVMb7aSCriI",
+      "createdAt": "2026-09-29T11:26:24.129Z"
     }
   ],
   "users": [
@@ -377,12 +394,12 @@
       "lastName": "Linn",
       "email": "myolwin400400@gmail.com",
       "phone": "0945609416",
-      "profession": "Student",
+      "profession": "STUDENT",
       "socialMedia": "https://www.facebook.com/david.lin",
       "password": "abcd1234!",
       "confirmPassword": "abcd1234!",
       "agreeTerms": true,
-      "aboutMe": "I am a UI/UX designer"
+      "aboutMe": "I am a UI/UX designer !!!"
     },
     {
       "firstName": "Ashfaq",
@@ -557,14 +574,6 @@
       "status": "declined",
       "message": "These are my earbuds - I can recognize the small scratch on the charging case.",
       "claimedAt": "2026-08-05T14:20:00"
-    },
-    {
-      "id": "4",
-      "itemId": "13",
-      "userId": "1",
-      "status": "pending",
-      "message": "I lost my umbrella here yesterday afternoon.",
-      "claimedAt": "2026-08-09T09:15:00"
     },
     {
       "id": "5",
@@ -1062,6 +1071,11 @@
       "name": "Pink",
       "hex": "#ff1af7",
       "id": "wGCGGYoeDUM"
+    },
+    {
+      "name": "Purple",
+      "hex": "#8b5cf6",
+      "id": "M9xmOSw10P0"
     }
   ],
   "locations": [
