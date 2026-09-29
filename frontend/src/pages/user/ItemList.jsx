@@ -653,7 +653,7 @@ const ItemList = () => {
                       {/* ========================================
                             IMAGE
                         ======================================== */}
-                      <div className="pt-4 px-4">
+                      <div className="pt-4 px-4 rounded-lg">
                         {item.images?.length > 0 ? (
                           <img
                             src={item.images[0].imageUrl}
