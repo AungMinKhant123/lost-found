@@ -14,6 +14,7 @@ export async function getCategoriesHandler(
     select: {
       id: true,
       name: true,
+      icon: true,
     },
   });
 

@@ -12,19 +12,28 @@ const ItemColorSchema = Type.Object({
 
 const ItemImageSchema = Type.Object({
   id: Type.String(),
-  objectKey: Type.String(),
+  imageUrl: Type.String(),
 });
 
 const ItemSchema = Type.Object({
   id: Type.String(),
+
   title: Type.String(),
+
   description: Type.Union([Type.String(), Type.Null()]),
-  type: Type.String(),
-  status: Type.String(),
+
+  type: Type.Union([Type.Literal("LOST"), Type.Literal("FOUND")]),
+
+  status: Type.Union([Type.Literal("OPEN"), Type.Literal("RESOLVED")]),
+
   location: Type.String(),
-  dateLostOrFound: Type.String(),
+
+  dateLostOrFound: Type.String({
+    format: "date-time",
+  }),
 
   category: ItemCategorySchema,
+
   color: ItemColorSchema,
 
   images: Type.Array(ItemImageSchema),

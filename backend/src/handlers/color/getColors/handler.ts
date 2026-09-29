@@ -14,6 +14,7 @@ export async function getColorHandler(
     select: {
       id: true,
       name: true,
+      hexCode: true,
     },
   });
 
