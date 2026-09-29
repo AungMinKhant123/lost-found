@@ -75,7 +75,11 @@ const ItemDetailsModal = ({ item, onClose }) => {
       setView("claimSuccess");
     } catch (err) {
       console.log("createClaim FAILED:", err);
-      toast.error("Failed to submit claim. Please try again.");
+      toast.error(
+        err.friendly
+          ? err.message
+          : "Failed to submit claim. Please try again.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -161,7 +165,15 @@ const ItemDetailsModal = ({ item, onClose }) => {
                 - Own item -> no button at all
                 - Guest -> prompt to log in
                 - Logged-in, someone else's item -> real Claim button */}
-            {!isOwnItem && (
+
+            {item.resolved && (
+              <p className="text-center text-body-sm text-text-secondary mt-6">
+                This item has been resolved, so it can't be claimed anymore.
+                Contact admin if any disputes.
+              </p>
+            )}
+
+            {!isOwnItem && !item.resolved && (
               <div className="flex justify-center mt-6">
                 {isAuthenticated ? (
                   <button

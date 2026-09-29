@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router";
+import { ChevronDown } from "lucide-react";
 
 import { useProfile, useUpdateProfile } from "../../hooks/useProfile";
 
@@ -17,7 +18,13 @@ function isValidHttpUrl(value) {
 }
 
 const inputBase =
-  "box-border w-full h-10 px-4 bg-background border rounded-lg outline-none text-center text-body-sm font-medium text-text-secondary focus:border-primary-dark focus:ring-1 focus:ring-primary-dark";
+  "box-border w-full h-10 px-4 bg-background border rounded-lg outline-none text-left text-body-sm font-medium text-text-primary focus:border-primary-dark focus:ring-1 focus:ring-primary-dark";
+
+const PROFESSION_OPTIONS = [
+  { label: "Student", value: "STUDENT" },
+  { label: "Teacher", value: "TEACHER" },
+  { label: "Worker", value: "WORKER" },
+];
 
 export default function EditProfile() {
   const navigate = useNavigate();
@@ -51,6 +58,10 @@ export default function EditProfile() {
     about: "",
   });
 
+  // Custom Dropdown state & ref
+  const [isProfessionOpen, setIsProfessionOpen] = useState(false);
+  const professionRef = useRef(null);
+
   // Preview URL for a newly selected image
   const [profileImage, setProfileImage] = useState(null);
 
@@ -79,6 +90,20 @@ export default function EditProfile() {
       about: user.aboutMe || "",
     });
   }, [user]);
+
+  // ==================================================
+  // CLICK OUTSIDE HANDLER FOR DROPDOWN
+  // ==================================================
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (professionRef.current && !professionRef.current.contains(e.target)) {
+        setIsProfessionOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // ==================================================
   // INPUT CHANGE
@@ -139,8 +164,6 @@ export default function EditProfile() {
       errors.fullName = "Full name cannot be empty.";
     }
 
-    // Phone, social media and profession are optional (signup doesn't ask
-    // for them) — but if a value IS entered, it has to be valid.
     const phone = formData.phone.trim();
     if (phone && !PHONE_PATTERN.test(phone)) {
       errors.phone =
@@ -175,7 +198,6 @@ export default function EditProfile() {
     try {
       setError("");
 
-      // Same multipart FormData shape the backend already expects.
       const data = new FormData();
 
       data.append("fullName", formData.fullName.trim());
@@ -183,13 +205,10 @@ export default function EditProfile() {
       data.append("socialMedia", formData.socialMedia.trim());
       data.append("aboutMe", formData.about.trim());
 
-      // profession is an enum on the backend, so only send it when one
-      // is actually selected (an empty string isn't a valid value).
       if (formData.profession) {
         data.append("profession", formData.profession);
       }
 
-      // Only send the image when the user picked a new one.
       if (profileImageFile) {
         data.append("profileImage", profileImageFile);
       }
@@ -241,9 +260,11 @@ export default function EditProfile() {
     );
   }
 
-  // Show the newly selected photo, otherwise the saved one, otherwise
-  // the grey placeholder.
   const photoSrc = profileImage || user?.profileUrl;
+
+  const selectedProfessionLabel = PROFESSION_OPTIONS.find(
+    (opt) => opt.value === formData.profession,
+  )?.label;
 
   // ==================================================
   // MAIN UI
@@ -412,34 +433,62 @@ export default function EditProfile() {
               )}
             </div>
 
-            {/* Profession */}
+            {/* Custom Profession Dropdown */}
 
             <div className="flex flex-col items-start gap-2.5 w-full">
-              <label
-                htmlFor="profession"
-                className="text-body-md font-medium text-text-primary"
-              >
+              <label className="text-body-md font-medium text-text-primary">
                 Profession{" "}
                 <span className="font-normal text-text-secondary">
                   (optional)
                 </span>
               </label>
 
-              <select
-                id="profession"
-                name="profession"
-                value={formData.profession}
-                onChange={handleChange}
-                className={`${inputBase} border-border`}
-              >
-                <option value="" disabled>
-                  Select profession
-                </option>
+              <div className="relative w-full" ref={professionRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsProfessionOpen((v) => !v)}
+                  className="w-full flex items-center justify-between border border-border rounded-lg px-4 h-10 text-body-sm font-medium text-left focus:outline-none focus:border-primary-dark focus:ring-1 focus:ring-primary-dark bg-background"
+                >
+                  <span
+                    className={
+                      formData.profession
+                        ? "text-text-primary"
+                        : "text-text-secondary"
+                    }
+                  >
+                    {selectedProfessionLabel || "Select profession"}
+                  </span>
+                  <ChevronDown
+                    size={18}
+                    className={`text-text-secondary transition-transform ${
+                      isProfessionOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
 
-                <option value="STUDENT">Student</option>
-                <option value="TEACHER">Teacher</option>
-                <option value="WORKER">Worker</option>
-              </select>
+                {isProfessionOpen && (
+                  <ul className="absolute z-10 w-full mt-1 max-h-[308px] overflow-y-auto custom-scrollbar border border-border rounded-lg bg-surface shadow-lg">
+                    {PROFESSION_OPTIONS.map((opt) => (
+                      <li key={opt.value}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              profession: opt.value,
+                            }));
+                            setIsProfessionOpen(false);
+                            if (error) setError("");
+                          }}
+                          className="w-full text-left px-3 py-2.5 text-body-md text-text-primary hover:bg-primary hover:text-text-inverse transition-colors"
+                        >
+                          {opt.label}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </div>
 
             {/* About Me */}

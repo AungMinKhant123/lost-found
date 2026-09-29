@@ -333,6 +333,41 @@
       },
       "id": "9WgfPB-bZFE",
       "createdAt": "2026-09-28T10:58:14.992Z"
+    },
+    {
+      "title": "ASUS Keyboard",
+      "status": "lost",
+      "category": "Electronics",
+      "color": "Black",
+      "location": "IT Lab",
+      "date": "2026-09-28",
+      "description": "The keysboard's brand is ASUS. And it has a missing number 8.",
+      "resolved": false,
+      "userId": "1",
+      "postedBy": {
+        "name": "David Linn",
+        "email": "myolwin400400@gmail.com"
+      },
+      "id": "qo_1I0iWcN4",
+      "createdAt": "2026-09-28T16:47:56.599Z"
+    },
+    {
+      "title": "Wrist Watch",
+      "status": "lost",
+      "category": "Accessories",
+      "color": "Brown",
+      "location": "Dressing Room",
+      "date": "2026-09-28",
+      "description": "It's a watch which has a leather strip. Also it has a small crack on the glass.",
+      "resolved": false,
+      "userId": "1",
+      "postedBy": {
+        "name": "David Linn",
+        "email": "myolwin400400@gmail.com"
+      },
+      "id": "dvunX51qq0g",
+      "createdAt": "2026-09-28T17:40:32.172Z",
+      "updatedAt": "2026-09-28T17:42:19.532Z"
     }
   ],
   "users": [
@@ -596,14 +631,6 @@
       "claimedAt": "2026-09-21T12:00:00"
     },
     {
-      "itemId": "aIziyNV_EuM",
-      "userId": "2",
-      "status": "pending",
-      "message": "It has stickers related to anime called Dragon Ball Z in the backside.",
-      "claimedAt": "2026-09-23T02:38:32.696Z",
-      "id": "_pB_1CDM7IU"
-    },
-    {
       "itemId": "7",
       "userId": "2",
       "status": "pending",
@@ -814,7 +841,7 @@
     {
       "itemId": "6",
       "userId": "2",
-      "status": "pending",
+      "status": "declined",
       "message": "dwdawdw",
       "claimedAt": "2026-09-24T02:55:27.638Z",
       "id": "xCUzeddPM7k"
