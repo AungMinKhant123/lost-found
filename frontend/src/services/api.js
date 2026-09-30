@@ -459,19 +459,19 @@ export async function getRecentActivity(limit = 12) {
 // status: "RESOLVED"/"OPEN", createdAt) — used only when the real
 // /public/latest-items endpoint is unreachable, so Home.jsx can render
 // either source without needing to know which one it got.
-export async function getLatestItemsMock(limit = 6) {
-  const items = await getRecentItems(limit); // already sorted newest-first
+// export async function getLatestItemsMock(limit = 6) {
+//   const items = await getRecentItems(limit); // already sorted newest-first
 
-  return items.map((item) => ({
-    id: item.id,
-    title: item.title,
-    location: item.location,
-    type: item.status === "lost" ? "LOST" : "FOUND",
-    status: item.resolved ? "RESOLVED" : "OPEN",
-    createdAt: item.createdAt || item.date,
-    imageUrl: null, // our mock data has no real images
-  }));
-}
+//   return items.map((item) => ({
+//     id: item.id,
+//     title: item.title,
+//     location: item.location,
+//     type: item.status === "lost" ? "LOST" : "FOUND",
+//     status: item.resolved ? "RESOLVED" : "OPEN",
+//     createdAt: item.createdAt || item.date,
+//     imageUrl: null, // our mock data has no real images
+//   }));
+// }
 
 // Deletes an item AND all claims associated with it - matches the admin
 // "Delete this listing?" confirmation copy, which explicitly says
@@ -811,4 +811,119 @@ export async function cancelClaim(claimId) {
   }
 
   return request(`/claims/${claimId}`, { method: "DELETE" });
+}
+
+// ===== Fallbacks for the real backend's public item endpoints =====
+//
+// The real API and our json-server mock use different field names for
+// the same things (type "LOST"/"FOUND" vs status "lost"/"found", a
+// nested category/color OBJECT vs a plain string, dateLostOrFound vs
+// date...). These helpers reshape our mock data to match the REAL
+// shape, so every page that already expects the real shape (Item List,
+// Home, New Post) works identically no matter which source answered.
+
+function toBackendShapedItem(mockItem) {
+  return {
+    id: mockItem.id,
+    title: mockItem.title,
+    location: mockItem.location,
+    description: mockItem.description || "",
+    type: mockItem.status === "lost" ? "LOST" : "FOUND",
+    status: mockItem.resolved ? "RESOLVED" : "OPEN",
+    dateLostOrFound: mockItem.date,
+    category: mockItem.category
+      ? { id: mockItem.category, name: mockItem.category }
+      : null,
+    color: mockItem.color ? { id: mockItem.color, name: mockItem.color } : null,
+    images: [],
+    userId: mockItem.userId,
+    createdAt: mockItem.createdAt,
+  };
+}
+
+// Fallback for GET /public/items?limit=6 (Home's "Recently Reported").
+export async function getLatestItemsMock(limit = 6) {
+  const items = await getRecentItems(limit);
+  return items.map(toBackendShapedItem);
+}
+
+// Fallback for GET /public/items (Item List: search, filter, paginate).
+// Applies the same filters the real endpoint accepts, then paginates,
+// returning the same { data, pagination } envelope.
+export async function getItemsMockPaginated(params = {}) {
+  const allItems = (await getItems()).map(toBackendShapedItem);
+
+  const filtered = allItems.filter((item) => {
+    if (params.search) {
+      const q = params.search.toLowerCase();
+      if (!item.title.toLowerCase().includes(q)) return false;
+    }
+    if (params.type && item.type !== params.type) return false;
+    if (params.status && item.status !== params.status) return false;
+    if (params.category && item.category?.name !== params.category) {
+      return false;
+    }
+    if (params.color && item.color?.name !== params.color) return false;
+    if (params.fromDate && item.dateLostOrFound < params.fromDate) {
+      return false;
+    }
+    if (params.toDate && item.dateLostOrFound > params.toDate) return false;
+    return true;
+  });
+
+  const page = params.page || 1;
+  const limit = params.limit || 9;
+  const start = (page - 1) * limit;
+
+  return {
+    data: filtered.slice(start, start + limit),
+    pagination: {
+      page,
+      limit,
+      total: filtered.length,
+      totalPages: Math.max(1, Math.ceil(filtered.length / limit)),
+    },
+  };
+}
+
+// Fallback for POST /item/createNewPost. Reads the SAME FormData
+// New Post already builds (type, title, categoryId, location, colorId,
+// dateLostOrFound, description). categoryId/colorId only resolve
+// correctly if the dropdown was ALSO populated from mock data (i.e. the
+// real backend was already down when the form loaded) — if the real
+// backend answered the categories/colors call but then failed on
+// submit, these ids won't match our mock collections, and we say so
+// rather than silently creating the wrong item.
+// json-server can't store files, so any selected images are skipped.
+export async function createItemMockFromFormData(formData) {
+  const [categories, colours, user] = await Promise.all([
+    getCategories(),
+    getColours(),
+    getCurrentUser(),
+  ]);
+
+  const category = categories.find((c) => c.id === formData.get("categoryId"));
+  const colour = colours.find((c) => c.id === formData.get("colorId"));
+
+  if (!category || !colour) {
+    throw friendlyError(
+      "Couldn't match the selected category/colour to local test data — try reselecting them and submitting again.",
+    );
+  }
+
+  return createItemWithSequentialId({
+    title: String(formData.get("title") || "").trim(),
+    status: String(formData.get("type") || "LOST").toLowerCase(),
+    category: category.name,
+    color: colour.name,
+    location: String(formData.get("location") || "").trim(),
+    date: String(formData.get("dateLostOrFound") || ""),
+    description: String(formData.get("description") || "").trim(),
+    resolved: false,
+    userId: user.id,
+    postedBy: {
+      name: `${user.firstName} ${user.lastName}`,
+      email: user.email,
+    },
+  });
 }

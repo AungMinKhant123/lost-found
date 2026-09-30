@@ -17,11 +17,50 @@ function capitalize(word) {
   return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
+// Item List/Home now hand this component items in the REAL backend's
+// shape (type: "LOST", category: { name }, dateLostOrFound, status:
+// "OPEN"/"RESOLVED") — different from the flat shape My Posts/My Claims
+// still use (status: "lost", category: "Bags", date, resolved). This
+// normalizes either one into the single flat shape the rest of this
+// component already expects, so nothing below this line needs to change.
+function normalizeItem(raw) {
+  const isRealShape = "type" in raw || "dateLostOrFound" in raw;
+
+  if (!isRealShape) {
+    return {
+      id: raw.id,
+      title: raw.title,
+      location: raw.location,
+      description: raw.description || "",
+      status: raw.status,
+      resolved: Boolean(raw.resolved),
+      date: raw.date,
+      category: raw.category || "",
+      color: raw.color || "",
+      userId: raw.userId,
+    };
+  }
+
+  return {
+    id: raw.id,
+    title: raw.title,
+    location: raw.location,
+    description: raw.description || "",
+    status: raw.type === "LOST" ? "lost" : "found",
+    resolved: raw.status === "RESOLVED",
+    date: raw.dateLostOrFound,
+    category: raw.category?.name || "",
+    color: raw.color?.name || "",
+    userId: raw.userId,
+  };
+}
+
 // Shows an item's full details in a modal, with a "Claim" flow built in.
 // "view" toggles between the details screen and the claim submission
 // form, both inside the same modal shell rather than stacking a second
 // modal on top.
-const ItemDetailsModal = ({ item, onClose }) => {
+const ItemDetailsModal = ({ item: rawItem, onClose }) => {
+  const item = normalizeItem(rawItem);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [view, setView] = useState("details"); // 'details' | 'claimForm' | 'claimSuccess'
   const [message, setMessage] = useState("");

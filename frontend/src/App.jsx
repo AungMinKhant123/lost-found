@@ -31,7 +31,7 @@ import EditPost from "./pages/user/EditPost";
 
 import ManageListings from "./pages/admin/ManageListings";
 import ManageAttributes from "./pages/admin/ManageAttributes";
-import AdminProfile from "./pages/admin/AdminProfile";
+
 import AdminRoute from "./components/AdminRoute";
 
 const App = () => {
@@ -90,7 +90,6 @@ const App = () => {
           <Route index element={<Dashboard />} />
           <Route path="listings" element={<ManageListings />} />
           <Route path="attributes" element={<ManageAttributes />} />
-          <Route path="profile" element={<AdminProfile />} />
         </Route>
         <Route path="/login" element={<LogIn />} />
       </Routes>
