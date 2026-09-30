@@ -1,55 +1,28 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
-import {
-  Search,
-  MapPin,
-  ChevronDown,
-  Smartphone,
-  ShoppingBag,
-  Shirt,
-  Watch,
-  Key,
-  FileText,
-  MoreHorizontal,
-  Calendar,
-  X,
-} from "lucide-react";
-import { getItems } from "../../services/api";
+import { Search, MapPin, ChevronDown, X } from "lucide-react";
+
 import DecorativeBackground from "../../components/DecorativeBackground/DecorativeBackground";
 import ItemDetailsModal from "../../components/ItemDetailsModal";
 
-// Item type radio options — single select.
+import { getCategoryIcon } from "../../utils/categoryIcons";
+import { useItems } from "../../hooks/useItems";
+import { useAttributes } from "../../hooks/useAttributes";
+
+// Backend values:
+// type   = LOST | FOUND
+// status = OPEN | RESOLVED
 const ITEM_TYPES = [
   { label: "All Items", value: "all" },
-  { label: "Lost Items", value: "lost" },
-  { label: "Found Items", value: "found" },
-  { label: "Resolved", value: "resolved" },
+  { label: "Lost Items", value: "LOST" },
+  { label: "Found Items", value: "FOUND" },
+  { label: "Resolved", value: "RESOLVED" },
 ];
 
-// Category checkboxes — multi-select, each paired with a lucide icon.
-const CATEGORIES = [
-  { label: "Electronics", icon: Smartphone },
-  { label: "Bags", icon: ShoppingBag },
-  { label: "Clothing", icon: Shirt },
-  { label: "Accessories", icon: Watch },
-  { label: "Keys", icon: Key },
-  { label: "Documents", icon: FileText },
-  { label: "Other", icon: MoreHorizontal },
-];
-
-// Color swatches — multi-select. Hex values are just for the visual dot;
-// filtering matches against the "name", which must match each item's
-// "color" field in db.json exactly.
-const COLORS = [
-  { name: "Black", hex: "#1F2933" },
-  { name: "Brown", hex: "#8B5E3C" },
-  { name: "Grey", hex: "#9CA3AF" },
-  { name: "Silver", hex: "#C0C0C0" },
-  { name: "Blue", hex: "#2F80ED" },
-  { name: "Red", hex: "#EB5757" },
-];
+const ITEMS_PER_PAGE = 9;
 
 function formatDate(isoDate) {
+  if (!isoDate) return "";
+
   return new Date(isoDate).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
@@ -58,36 +31,38 @@ function formatDate(isoDate) {
 }
 
 const ItemList = () => {
-  // All items fetched once from json-server; filtering happens entirely
-  // in JavaScript against this array (same approach used elsewhere in
-  // the app, since json-server's own query filtering wasn't reliable).
-  const [allItems, setAllItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // ============================================================
+  // SEARCH
+  // ============================================================
 
-  const [selectedItem, setSelectedItem] = useState(null);
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 9;
-
-  // The search bar's own text, applied immediately (not staged like the
-  // sidebar filters below) — typing and hitting Search/Enter updates
-  // results right away.
+  // What the user is currently typing.
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Search value actually sent to the backend.
   const [activeSearch, setActiveSearch] = useState("");
 
-  // ===== STAGED FILTERS =====
-  // The sidebar uses a "stage, then Apply" pattern, matching the
-  // wireframe's "Applied Filters" / "Cancel" buttons: changing a
-  // checkbox/radio/date only updates the PENDING state below. Nothing
-  // actually filters the results until "Applied Filters" is clicked,
-  // which copies pending -> applied. "Cancel" discards pending changes
-  // by resetting it back to whatever's currently applied.
+  // ============================================================
+  // PAGINATION
+  // ============================================================
+
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // ============================================================
+  // PENDING FILTERS
+  // ============================================================
+  // These are changed in the sidebar but are NOT sent to the
+  // backend until "Apply Filters" is clicked.
+
   const [pendingType, setPendingType] = useState("all");
   const [pendingCategories, setPendingCategories] = useState([]);
   const [pendingColors, setPendingColors] = useState([]);
   const [pendingDateFrom, setPendingDateFrom] = useState("");
   const [pendingDateTo, setPendingDateTo] = useState("");
+
+  // ============================================================
+  // APPLIED FILTERS
+  // ============================================================
+  // These are the filters actually sent to GET /items.
 
   const [appliedType, setAppliedType] = useState("all");
   const [appliedCategories, setAppliedCategories] = useState([]);
@@ -95,14 +70,153 @@ const ItemList = () => {
   const [appliedDateFrom, setAppliedDateFrom] = useState("");
   const [appliedDateTo, setAppliedDateTo] = useState("");
 
+  // ============================================================
+  // UI STATE
+  // ============================================================
+
+  const [selectedItem, setSelectedItem] = useState(null);
   const [isColorsExpanded, setIsColorsExpanded] = useState(true);
 
-  useEffect(() => {
-    getItems()
-      .then((data) => setAllItems(data))
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
+  // ============================================================
+  // ATTRIBUTES
+  // ============================================================
+  //
+  // useAttributes() loads:
+  //
+  // GET /categories
+  // GET /colors
+  //
+  // through TanStack Query.
+
+  const { categories, colors } = useAttributes();
+
+  // ============================================================
+  // BUILD API QUERY
+  // ============================================================
+  //
+  // These parameters are sent to:
+  //
+  // GET /items
+  //
+  // Example:
+  //
+  // /items?search=wallet&type=LOST&page=1&limit=9
+
+  const queryParams = {
+    // ----------------------------------------------------------
+    // Search
+    // ----------------------------------------------------------
+
+    ...(activeSearch && {
+      search: activeSearch,
+    }),
+
+    // ----------------------------------------------------------
+    // Type
+    // ----------------------------------------------------------
+    //
+    // "all"       -> don't send type
+    // "LOST"      -> type=LOST
+    // "FOUND"     -> type=FOUND
+    // "RESOLVED"  -> handled through status below
+
+    ...(appliedType !== "all" &&
+      appliedType !== "RESOLVED" && {
+        type: appliedType,
+      }),
+
+    // ----------------------------------------------------------
+    // Status
+    // ----------------------------------------------------------
+
+    ...(appliedType === "RESOLVED" && {
+      status: "RESOLVED",
+    }),
+
+    // ----------------------------------------------------------
+    // Category
+    // ----------------------------------------------------------
+    //
+    // Current backend accepts ONE category.
+    //
+    // Therefore if the user selects:
+    //
+    // ["Electronics", "Bags"]
+    //
+    // only "Electronics" is currently sent.
+
+    ...(appliedCategories.length > 0 && {
+      category: appliedCategories[0],
+    }),
+
+    // ----------------------------------------------------------
+    // Color
+    // ----------------------------------------------------------
+    //
+    // Current backend accepts ONE color.
+    //
+    // Therefore only the first selected color is sent.
+
+    ...(appliedColors.length > 0 && {
+      color: appliedColors[0],
+    }),
+
+    // ----------------------------------------------------------
+    // Date range
+    // ----------------------------------------------------------
+
+    ...(appliedDateFrom && {
+      fromDate: appliedDateFrom,
+    }),
+
+    ...(appliedDateTo && {
+      toDate: appliedDateTo,
+    }),
+
+    // ----------------------------------------------------------
+    // Pagination
+    // ----------------------------------------------------------
+
+    page: currentPage,
+    limit: ITEMS_PER_PAGE,
+  };
+
+  // ============================================================
+  // TANSTACK QUERY
+  // ============================================================
+
+  const { data, isLoading, isError, error } = useItems(queryParams);
+
+  // ============================================================
+  // BACKEND RESPONSE
+  // ============================================================
+  //
+  // {
+  //   data: [...],
+  //   pagination: {
+  //     page,
+  //     limit,
+  //     total,
+  //     totalPages
+  //   }
+  // }
+
+  const items = data?.data ?? [];
+  const pagination = data?.pagination;
+
+  const totalItems = pagination?.total ?? 0;
+  const totalPages = pagination?.totalPages ?? 0;
+
+  // ============================================================
+  // RESET PAGE WHEN FILTERS CHANGE
+  // ============================================================
+  //
+  // Example:
+  //
+  // User is on page 4.
+  // User searches "wallet".
+  //
+  // We need to return to page 1.
 
   useEffect(() => {
     setCurrentPage(1);
@@ -115,33 +229,49 @@ const ItemList = () => {
     appliedDateTo,
   ]);
 
-  // Toggles one category in/out of the PENDING selection (multi-select).
-  const toggleCategory = (label) => {
-    setPendingCategories((prev) =>
-      prev.includes(label) ? prev.filter((c) => c !== label) : [...prev, label],
+  // ============================================================
+  // CATEGORY TOGGLE
+  // ============================================================
+
+  const toggleCategory = (name) => {
+    setPendingCategories((previousCategories) =>
+      previousCategories.includes(name)
+        ? previousCategories.filter((category) => category !== name)
+        : [...previousCategories, name],
     );
   };
 
-  // Toggles one color in/out of the PENDING selection (multi-select).
+  // ============================================================
+  // COLOR TOGGLE
+  // ============================================================
+
   const toggleColor = (name) => {
-    setPendingColors((prev) =>
-      prev.includes(name) ? prev.filter((c) => c !== name) : [...prev, name],
+    setPendingColors((previousColors) =>
+      previousColors.includes(name)
+        ? previousColors.filter((color) => color !== name)
+        : [...previousColors, name],
     );
   };
 
-  // "Applied Filters" button: commits every pending value to applied,
-  // which is what the actual filtering logic below reads from.
+  // ============================================================
+  // APPLY FILTERS
+  // ============================================================
+
   const handleApplyFilters = () => {
     setAppliedType(pendingType);
     setAppliedCategories(pendingCategories);
     setAppliedColors(pendingColors);
     setAppliedDateFrom(pendingDateFrom);
     setAppliedDateTo(pendingDateTo);
+
+    // Start from first page after applying filters.
+    setCurrentPage(1);
   };
 
-  // "Cancel" button: discards any unsaved pending changes by resetting
-  // pending back to whatever's currently applied (not to empty/defaults —
-  // that's what "Clear All" is for).
+  // ============================================================
+  // CANCEL FILTER CHANGES
+  // ============================================================
+
   const handleCancel = () => {
     setPendingType(appliedType);
     setPendingCategories(appliedCategories);
@@ -150,93 +280,79 @@ const ItemList = () => {
     setPendingDateTo(appliedDateTo);
   };
 
-  // "Clear All": resets everything (pending AND applied) back to
-  // defaults immediately — this one takes effect right away rather than
-  // needing a separate "Apply" click, since "clear everything" has no
-  // ambiguity to stage.
+  // ============================================================
+  // CLEAR ALL
+  // ============================================================
+
   const handleClearAll = () => {
+    // Pending filters
     setPendingType("all");
     setPendingCategories([]);
     setPendingColors([]);
     setPendingDateFrom("");
     setPendingDateTo("");
+
+    // Applied filters
     setAppliedType("all");
     setAppliedCategories([]);
     setAppliedColors([]);
     setAppliedDateFrom("");
     setAppliedDateTo("");
+
+    // Search
+    setSearchQuery("");
+    setActiveSearch("");
+
+    // Pagination
+    setCurrentPage(1);
   };
 
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    setActiveSearch(searchQuery.trim().toLowerCase());
+  // ============================================================
+  // SEARCH
+  // ============================================================
+
+  const handleSearchSubmit = (event) => {
+    event.preventDefault();
+
+    setActiveSearch(searchQuery.trim());
+    setCurrentPage(1);
   };
 
-  // The actual filtering: combines the search bar's activeSearch with
-  // every APPLIED (not pending) filter. An empty categories/colors array
-  // means "no restriction on this field" — i.e. don't filter by it at all.
-  const filteredItems = allItems.filter((item) => {
-    if (activeSearch && !item.title.toLowerCase().includes(activeSearch)) {
-      return false;
-    }
-
-    if (appliedType === "resolved" && !item.resolved) return false;
-    if (
-      (appliedType === "lost" || appliedType === "found") &&
-      (item.status !== appliedType || item.resolved)
-    ) {
-      return false;
-    }
-
-    if (
-      appliedCategories.length > 0 &&
-      !appliedCategories.includes(item.category)
-    ) {
-      return false;
-    }
-
-    if (appliedColors.length > 0 && !appliedColors.includes(item.color)) {
-      return false;
-    }
-
-    if (appliedDateFrom && item.date < appliedDateFrom) return false;
-    if (appliedDateTo && item.date > appliedDateTo) return false;
-
-    return true;
-  });
-
-  const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
-  const paginatedItems = filteredItems.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE,
-  );
+  // ============================================================
+  // RENDER
+  // ============================================================
 
   return (
     <div className="relative w-full">
       <DecorativeBackground variant="itemList" />
 
       <div className="relative z-10">
-        {/* ================= HERO ================= */}
-        {/* NOTE: wireframe has organic purple shapes behind this section —
-          deferred per team decision, same as Home and How It Works. */}
+        {/* ======================================================
+            HERO
+        ====================================================== */}
+
         <section className="max-w-[1280px] mx-auto px-10 py-16">
           <div className="grid grid-cols-2 gap-10 items-center">
             <div>
               <p className="text-body-lg font-semibold text-text-primary tracking-wide">
                 LOST &amp; FOUND COMMUNITY
               </p>
+
               <h1 className="text-display-lg font-bold text-primary-dark mt-2">
                 Find what
-                <br /> you're looking for.
+                <br />
+                you're looking for.
               </h1>
+
               <p className="text-body-lg text-text-secondary mt-4 max-w-md">
                 Browse recently reported lost and found items. Search, filter,
                 and discover a possible match in just a few clicks.
               </p>
             </div>
 
-            {/* Illustration placeholder — swap for the real box/items image later */}
-            <div className="w-full h-80 rounded-xl  flex items-center justify-center text-text-secondary text-body-sm">
+            {/* Illustration */}
+
+            <div className="w-full h-80 rounded-xl flex items-center justify-center text-text-secondary text-body-sm">
               <img
                 src="https://res.cloudinary.com/d5tnusci/image/upload/v1789924308/itemlists_f7kjjr.png"
                 alt=""
@@ -245,7 +361,10 @@ const ItemList = () => {
             </div>
           </div>
 
-          {/* Search bar */}
+          {/* ====================================================
+              SEARCH
+          ==================================================== */}
+
           <form
             onSubmit={handleSearchSubmit}
             className="flex justify-center gap-4 mt-10"
@@ -255,22 +374,22 @@ const ItemList = () => {
                 size={18}
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary"
               />
+
               <input
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="(Search for items eg. wallets,backpacks..)"
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="Search for items eg. wallets, backpacks..."
                 className="w-full border border-border rounded-lg pl-11 pr-10 py-3 text-body-md focus:outline-none focus:ring-2 focus:ring-primary"
               />
-              {/* Clear button — only shows once a search is actually active.
-        Resets both the input text AND the applied search filter, so
-        results immediately return to their unfiltered state. */}
+
               {activeSearch && (
                 <button
                   type="button"
                   onClick={() => {
                     setSearchQuery("");
                     setActiveSearch("");
+                    setCurrentPage(1);
                   }}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-primary"
                 >
@@ -278,6 +397,7 @@ const ItemList = () => {
                 </button>
               )}
             </div>
+
             <button
               type="submit"
               className="bg-primary hover:bg-primary-dark text-text-inverse rounded-lg px-8 py-3 text-body-md font-medium transition-colors"
@@ -287,15 +407,22 @@ const ItemList = () => {
           </form>
         </section>
 
-        {/* ================= FILTERS + RESULTS ================= */}
+        {/* ======================================================
+            FILTERS + RESULTS
+        ====================================================== */}
+
         <section className="max-w-[1280px] mx-auto px-10 pb-16">
           <div className="grid grid-cols-[280px_1fr] gap-10 items-start">
-            {/* ===== FILTER SIDEBAR ===== */}
+            {/* ==================================================
+                FILTER SIDEBAR
+            ================================================== */}
+
             <div className="border border-border rounded-lg p-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-heading-3 font-bold text-text-primary">
                   Filters
                 </h2>
+
                 <button
                   type="button"
                   onClick={handleClearAll}
@@ -305,11 +432,15 @@ const ItemList = () => {
                 </button>
               </div>
 
-              {/* Item Types — single select radio group */}
+              {/* =================================================
+                  ITEM TYPES
+              ================================================= */}
+
               <div className="mt-6">
                 <h3 className="bg-background-subtle px-3 py-2 rounded text-label-md font-medium text-text-primary">
                   Item Types
                 </h3>
+
                 <div className="flex flex-col gap-3 mt-3 px-1">
                   {ITEM_TYPES.map((type) => (
                     <label
@@ -323,83 +454,115 @@ const ItemList = () => {
                         onChange={() => setPendingType(type.value)}
                         className="accent-primary"
                       />
+
                       {type.label}
                     </label>
                   ))}
                 </div>
               </div>
 
-              {/* Category — multi-select checkboxes with icons */}
+              {/* =================================================
+                  CATEGORY
+              ================================================= */}
+
               <div className="mt-6">
                 <h3 className="bg-background-subtle px-3 py-2 rounded text-label-md font-medium text-text-primary">
                   Category
                 </h3>
+
                 <div className="flex flex-col gap-3 mt-3 px-1">
-                  {CATEGORIES.map(({ label, icon: Icon }) => (
-                    <label
-                      key={label}
-                      className="flex items-center gap-2 text-body-md text-text-primary cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={pendingCategories.includes(label)}
-                        onChange={() => toggleCategory(label)}
-                        className="accent-primary"
-                      />
-                      <Icon size={16} className="text-text-secondary" />
-                      {label}
-                    </label>
-                  ))}
+                  {categories.map((category) => {
+                    const Icon = getCategoryIcon(category.icon);
+
+                    return (
+                      <label
+                        key={category.id}
+                        className="flex items-center gap-2 text-body-md text-text-primary cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={pendingCategories.includes(category.name)}
+                          onChange={() => toggleCategory(category.name)}
+                          className="accent-primary"
+                        />
+
+                        <Icon size={16} className="text-text-secondary" />
+
+                        {category.name}
+                      </label>
+                    );
+                  })}
                 </div>
               </div>
 
-              {/* Color — multi-select swatches */}
+              {/* =================================================
+                  COLOR
+              ================================================= */}
+
               <div className="mt-6">
                 <button
                   type="button"
-                  onClick={() => setIsColorsExpanded((v) => !v)}
+                  onClick={() => setIsColorsExpanded((value) => !value)}
                   className="w-full flex items-center justify-between bg-background-subtle px-3 py-2 rounded text-label-md font-medium text-text-primary"
                 >
                   Color
                   <ChevronDown
                     size={16}
-                    className={`transition-transform ${isColorsExpanded ? "rotate-180" : ""}`}
+                    className={`transition-transform ${
+                      isColorsExpanded ? "rotate-180" : ""
+                    }`}
                   />
                 </button>
+
                 {isColorsExpanded && (
                   <div className="flex flex-wrap gap-2 mt-3 px-1">
-                    {COLORS.map((color) => (
-                      <button
-                        key={color.name}
-                        type="button"
-                        title={color.name}
-                        onClick={() => toggleColor(color.name)}
-                        className={`w-7 h-7 rounded-full border-2 transition-all ${
-                          pendingColors.includes(color.name)
-                            ? "border-primary scale-110"
-                            : "border-border"
-                        }`}
-                        style={{ backgroundColor: color.hex }}
-                      />
-                    ))}
+                    {colors.map((color) => {
+                      const isOther = color.name.toLowerCase() === "other";
+
+                      return (
+                        <button
+                          key={color.id}
+                          type="button"
+                          title={color.name}
+                          onClick={() => toggleColor(color.name)}
+                          className={`w-7 h-7 rounded-full border-2 transition-all ${
+                            pendingColors.includes(color.name)
+                              ? "border-primary scale-110 ring-2 ring-primary/20"
+                              : "border-border hover:border-text-secondary"
+                          }`}
+                          style={{
+                            background: isOther
+                              ? "conic-gradient(from 180deg, #ef4444, #f97316, #eab308, #10b981, #3b82f6, #8b5cf6, #ef4444)"
+                              : color.hexCode,
+                          }}
+                        />
+                      );
+                    })}
                   </div>
                 )}
               </div>
 
-              {/* Expired Date — date range */}
+              {/* =================================================
+                  DATE
+              ================================================= */}
+
               <div className="mt-6">
                 <h3 className="bg-background-subtle px-3 py-2 rounded text-label-md font-medium text-text-primary">
-                  Expired Date
+                  Date Lost / Found
                 </h3>
+
                 <div className="px-1 mt-3">
                   <label className="text-body-sm text-text-secondary">
                     From
                   </label>
+
                   <div className="relative mt-1">
                     <input
                       type="date"
                       value={pendingDateFrom}
-                      onChange={(e) => setPendingDateFrom(e.target.value)}
+                      onChange={(event) =>
+                        setPendingDateFrom(event.target.value)
+                      }
                       className="w-full border border-border rounded-lg px-3 py-2 text-body-sm focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                   </div>
@@ -407,16 +570,21 @@ const ItemList = () => {
                   <label className="text-body-sm text-text-secondary mt-3 block">
                     To
                   </label>
+
                   <div className="relative mt-1">
                     <input
                       type="date"
                       value={pendingDateTo}
-                      onChange={(e) => setPendingDateTo(e.target.value)}
+                      onChange={(event) => setPendingDateTo(event.target.value)}
                       className="w-full border border-border rounded-lg px-3 py-2 text-body-sm focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                   </div>
                 </div>
               </div>
+
+              {/* =================================================
+                  APPLY
+              ================================================= */}
 
               <button
                 type="button"
@@ -425,6 +593,11 @@ const ItemList = () => {
               >
                 Apply Filters
               </button>
+
+              {/* =================================================
+                  CANCEL
+              ================================================= */}
+
               <button
                 type="button"
                 onClick={handleCancel}
@@ -434,59 +607,121 @@ const ItemList = () => {
               </button>
             </div>
 
-            {/* ===== RESULTS ===== */}
+            {/* ==================================================
+                RESULTS
+            ================================================== */}
+
             <div>
               <h2 className="text-heading-2 font-bold text-primary-dark">
-                {loading ? "Loading..." : `${filteredItems.length} items found`}
+                {isLoading ? "Loading..." : `${totalItems} items found`}
               </h2>
 
-              {error && (
-                <p className="text-error text-body-md mt-4">Error: {error}</p>
+              {/* =================================================
+                  ERROR
+              ================================================= */}
+
+              {isError && (
+                <p className="text-error text-body-md mt-4">
+                  Error:{" "}
+                  {error?.response?.data?.message ||
+                    error?.message ||
+                    "Failed to load items."}
+                </p>
               )}
 
-              {!loading && !error && filteredItems.length === 0 && (
+              {/* =================================================
+                  EMPTY
+              ================================================= */}
+
+              {!isLoading && !isError && items.length === 0 && (
                 <p className="text-body-md text-text-secondary mt-8">
                   No items match your filters. Try adjusting or clearing them.
                 </p>
               )}
 
-              {!loading && !error && filteredItems.length > 0 && (
+              {/* =================================================
+                  ITEM GRID
+              ================================================= */}
+
+              {!isLoading && !isError && items.length > 0 && (
                 <div className="grid grid-cols-3 gap-6 mt-6">
-                  {paginatedItems.map((item) => (
+                  {items.map((item) => (
                     <div
                       key={item.id}
                       className="border border-border rounded-lg overflow-hidden"
                     >
-                      {/* Image placeholder — swap for the real uploaded photo
-                        once the Report Item feature exists. */}
-                      <div className="w-full h-40 bg-neutral-100 flex items-center justify-center text-text-secondary text-body-sm">
-                        Image Placeholder
+                      {/* ========================================
+                            IMAGE
+                        ======================================== */}
+                      <div className="pt-4 px-4 rounded-lg">
+                        {item.images?.length > 0 ? (
+                          <img
+                            src={item.images[0].imageUrl}
+                            alt={item.title}
+                            className="w-full h-40 object-cover rounded-lg"
+                          />
+                        ) : (
+                          <div className="w-full h-40 bg-neutral-100 flex items-center justify-center text-text-secondary text-body-sm rounded-lg">
+                            No image
+                          </div>
+                        )}
                       </div>
 
                       <div className="p-4">
+                        {/* ======================================
+                              LOST / FOUND
+                          ====================================== */}
+
                         <span
                           className={`inline-block px-2 py-0.5 rounded text-label-sm font-medium ${
-                            item.status === "lost"
+                            item.type === "LOST"
                               ? "bg-error/10 text-error"
                               : "bg-success/10 text-success"
                           }`}
                         >
-                          {item.status === "lost" ? "Lost" : "Found"}
+                          {item.type === "LOST" ? "Lost" : "Found"}
                         </span>
+
+                        {/* ======================================
+                              TITLE
+                          ====================================== */}
 
                         <h3 className="text-heading-3 font-bold text-text-primary mt-2 truncate">
                           {item.title}
                         </h3>
 
+                        {/* ======================================
+                              LOCATION
+                          ====================================== */}
+
                         <div className="flex items-center gap-1 text-body-sm text-text-secondary mt-1">
                           <MapPin size={14} />
+
                           {item.location}
                         </div>
 
+                        {/* ======================================
+                              DATE + STATUS
+                          ====================================== */}
+
                         <p className="text-body-sm text-text-secondary mt-1">
-                          {formatDate(item.date)} ·{" "}
-                          {item.resolved ? "Resolved" : "Searching"}
+                          {formatDate(item.dateLostOrFound)} ·{" "}
+                          {item.status === "RESOLVED"
+                            ? "Resolved"
+                            : "Searching"}
                         </p>
+
+                        {/* ======================================
+                              CATEGORY
+                          ====================================== */}
+
+                        <p className="text-body-sm text-text-secondary mt-1">
+                          {item.category?.name}
+                        </p>
+
+                        {/* ======================================
+                              MORE DETAILS
+                          ====================================== */}
 
                         <button
                           type="button"
@@ -500,38 +735,50 @@ const ItemList = () => {
                   ))}
                 </div>
               )}
+
+              {/* ==================================================
+                  PAGINATION
+              ================================================== */}
+
               {totalPages > 1 && (
                 <div className="flex items-center justify-center gap-2 mt-8">
+                  {/* Previous */}
+
                   <button
                     type="button"
                     disabled={currentPage === 1}
-                    onClick={() => setCurrentPage((p) => p - 1)}
+                    onClick={() => setCurrentPage((page) => page - 1)}
                     className="border border-border rounded-lg px-4 py-2 text-body-md text-text-primary hover:bg-background-subtle disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                   >
                     Previous
                   </button>
 
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                    (page) => (
-                      <button
-                        key={page}
-                        type="button"
-                        onClick={() => setCurrentPage(page)}
-                        className={`w-10 h-10 rounded-lg text-body-md font-medium transition-colors ${
-                          currentPage === page
-                            ? "bg-primary text-text-inverse"
-                            : "border border-border text-text-primary hover:bg-background-subtle"
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    ),
-                  )}
+                  {/* Page numbers */}
+
+                  {Array.from(
+                    { length: totalPages },
+                    (_, index) => index + 1,
+                  ).map((page) => (
+                    <button
+                      key={page}
+                      type="button"
+                      onClick={() => setCurrentPage(page)}
+                      className={`w-10 h-10 rounded-lg text-body-md font-medium transition-colors ${
+                        currentPage === page
+                          ? "bg-primary text-text-inverse"
+                          : "border border-border text-text-primary hover:bg-background-subtle"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+
+                  {/* Next */}
 
                   <button
                     type="button"
                     disabled={currentPage === totalPages}
-                    onClick={() => setCurrentPage((p) => p + 1)}
+                    onClick={() => setCurrentPage((page) => page + 1)}
                     className="border border-border rounded-lg px-4 py-2 text-body-md text-text-primary hover:bg-background-subtle disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                   >
                     Next
@@ -542,6 +789,11 @@ const ItemList = () => {
           </div>
         </section>
       </div>
+
+      {/* ========================================================
+          DETAILS MODAL
+      ======================================================== */}
+
       {selectedItem && (
         <ItemDetailsModal
           item={selectedItem}

@@ -9,7 +9,6 @@ const navItems = [
     icon: SlidersHorizontal,
     to: "/admin/attributes",
   },
-  { label: "Profile/Account", icon: UserCog, to: "/admin/profile" },
 ];
 
 const AdminSidebar = ({ name = "Admin", role = "Admin" }) => {

@@ -3,38 +3,73 @@ import { PrismaClient } from "./../../src/generated/client";
 export async function seedCategories(prisma: PrismaClient, users: any[]) {
   const admin = users[0];
 
-  const categoryNames = [
-    "Electronics",
-    "Documents",
-    "Clothing",
-    "Bags",
-    "Accessories",
-    "Keys",
-    "Books",
-    "Wallets",
-    "Jewelry",
-    "Other",
+  const categories = [
+    {
+      name: "Electronics",
+      icon: "smartphone",
+    },
+    {
+      name: "Documents",
+      icon: "file-text",
+    },
+    {
+      name: "Clothing",
+      icon: "shirt",
+    },
+    {
+      name: "Bags",
+      icon: "shopping-bag",
+    },
+    {
+      name: "Accessories",
+      icon: "watch",
+    },
+    {
+      name: "Keys",
+      icon: "key",
+    },
+    {
+      name: "Books",
+      icon: "book",
+    },
+    {
+      name: "Wallets",
+      icon: "wallet",
+    },
+    {
+      name: "Jewelry",
+      icon: "gift",
+    },
+    {
+      name: "Other",
+      icon: "tag",
+    },
   ];
 
-  const categories = [];
+  const seededCategories = [];
 
-  for (const name of categoryNames) {
+  for (const categoryData of categories) {
     const category = await prisma.category.upsert({
       where: {
-        name,
+        name: categoryData.name,
       },
-      update: {},
+
+      update: {
+        icon: categoryData.icon,
+      },
+
       create: {
-        name,
+        name: categoryData.name,
+        icon: categoryData.icon,
         createdById: admin.id,
         updatedById: admin.id,
       },
     });
 
-    categories.push(category);
+    seededCategories.push(category);
   }
 
   console.log("✅ Categories seeded: 10");
 
-  return categories;
+  return seededCategories;
 }

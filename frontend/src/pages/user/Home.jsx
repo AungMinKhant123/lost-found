@@ -172,10 +172,11 @@ const Home = () => {
                   key={item.id}
                   className="border border-border rounded-lg overflow-hidden"
                 >
+                  {/* Image */}
                   <div className="w-full h-40 bg-neutral-100 overflow-hidden flex items-center justify-center">
-                    {item.imageUrl ? (
+                    {item.images?.[0]?.imageUrl ? (
                       <img
-                        src={item.imageUrl}
+                        src={item.images[0].imageUrl}
                         alt={item.title}
                         className="w-full h-full object-cover"
                       />
@@ -186,6 +187,7 @@ const Home = () => {
                     )}
                   </div>
 
+                  {/* Content */}
                   <div className="p-4">
                     <h3 className="text-heading-3 font-bold text-text-primary">
                       {item.title}
@@ -198,7 +200,7 @@ const Home = () => {
 
                     <p className="text-body-sm text-text-secondary mt-1">
                       {item.type === "LOST" ? "Lost" : "Found"} ·{" "}
-                      {formatDate(item.createdAt)}
+                      {formatDate(item.dateLostOrFound)}
                     </p>
 
                     <p className="text-body-sm text-text-secondary mt-1">

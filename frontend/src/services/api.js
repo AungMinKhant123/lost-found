@@ -288,7 +288,36 @@ export async function createItemWithSequentialId(data) {
 // createItemWithSequentialId, since json-server doesn't reliably
 // respect a client-supplied id.
 export async function createClaim(data) {
-  const existingClaims = await getClaims();
+  // These rules live here (not only in the UI), so they hold no matter
+  // which screen submits a claim.
+  if (!data.userId) {
+    throw friendlyError("Please log in again before submitting a claim.");
+  }
+
+  const [targetItem, existingClaims] = await Promise.all([
+    getItemById(data.itemId),
+    getClaims(),
+  ]);
+
+  if (targetItem.resolved) {
+    throw friendlyError(
+      "This item is already resolved, so it can't be claimed.",
+    );
+  }
+
+  if (targetItem.userId === data.userId) {
+    throw friendlyError("You can't claim your own post.");
+  }
+
+  const hasPendingClaim = existingClaims.some(
+    (claim) =>
+      claim.itemId === data.itemId &&
+      claim.userId === data.userId &&
+      claim.status === "pending",
+  );
+  if (hasPendingClaim) {
+    throw friendlyError("You already have a pending claim on this item.");
+  }
 
   const highestId = existingClaims.reduce((max, claim) => {
     const numericId = parseInt(claim.id, 10);
@@ -425,138 +454,24 @@ export async function getRecentActivity(limit = 12) {
     .slice(0, limit);
 }
 
-import axios from "axios";
-
-const API = axios.create({
-  baseURL: "http://localhost:3001",
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
-// Get all colours
-export const getColours = async () => {
-  const response = await API.get("/colours");
-  return response.data;
-};
-
-// Get one colour
-export const getColour = async (id) => {
-  const response = await API.get(`/colours/${id}`);
-  return response.data;
-};
-
-// Add colour
-export const createColour = async (colour) => {
-  const response = await API.post("/colours", colour);
-  return response.data;
-};
-
-// Update colour
-export const updateColour = async (id, colour) => {
-  const response = await API.put(`/colours/${id}`, colour);
-  return response.data;
-};
-
-// Delete colour
-export const deleteColour = async (id) => {
-  const response = await API.delete(`/colours/${id}`);
-  return response.data;
-};
-
-// Get all categories
-export const getCategories = async () => {
-  const response = await API.get("/categories");
-  return response.data;
-};
-
-// Get one category
-export const getCategory = async (id) => {
-  const response = await API.get(`/categories/${id}`);
-  return response.data;
-};
-
-// Add category
-export const createCategory = async (category) => {
-  const response = await API.post("/categories", category);
-  return response.data;
-};
-
-// Update category
-export const updateCategory = async (id, category) => {
-  const response = await API.put(`/categories/${id}`, category);
-  return response.data;
-};
-
-// Delete category
-export const deleteCategory = async (id) => {
-  const response = await API.delete(`/categories/${id}`);
-  return response.data;
-};
-
-// Get all locations
-export const getLocations = async () => {
-  const response = await API.get("/locations");
-  return response.data;
-};
-
-// Get one location
-export const getLocation = async (id) => {
-  const response = await API.get(`/locations/${id}`);
-  return response.data;
-};
-
-// Add location
-export const createLocation = async (location) => {
-  const response = await API.post("/locations", location);
-  return response.data;
-};
-
-// Update location
-export const updateLocation = async (id, location) => {
-  const response = await API.put(`/locations/${id}`, location);
-  return response.data;
-};
-
-// Delete location
-export const deleteLocation = async (id) => {
-  const response = await API.delete(`/locations/${id}`);
-  return response.data;
-};
-
-export const getItemsColorCategory = async () => {
-  const response = await API.get("/items");
-  return response.data;
-};
-
-export const updateItemColorCategory = async (id, item) => {
-  const response = await API.put(`/items/${id}`, item);
-  return response.data;
-};
-
-/* =========================================================
-   DEFAULT EXPORT
-========================================================= */
-
-export default API;
 // TEMPORARY, DEV-ONLY FALLBACK: reshapes our json-server mock items to
 // match the real backend's item shape (imageUrl, type: "LOST"/"FOUND",
 // status: "RESOLVED"/"OPEN", createdAt) — used only when the real
 // /public/latest-items endpoint is unreachable, so Home.jsx can render
 // either source without needing to know which one it got.
-export async function getLatestItemsMock(limit = 6) {
-  const items = await getRecentItems(limit); // already sorted newest-first
+// export async function getLatestItemsMock(limit = 6) {
+//   const items = await getRecentItems(limit); // already sorted newest-first
 
-  return items.map((item) => ({
-    id: item.id,
-    title: item.title,
-    location: item.location,
-    type: item.status === "lost" ? "LOST" : "FOUND",
-    status: item.resolved ? "RESOLVED" : "OPEN",
-    createdAt: item.createdAt || item.date,
-    imageUrl: null, // our mock data has no real images
-  }));
-}
+//   return items.map((item) => ({
+//     id: item.id,
+//     title: item.title,
+//     location: item.location,
+//     type: item.status === "lost" ? "LOST" : "FOUND",
+//     status: item.resolved ? "RESOLVED" : "OPEN",
+//     createdAt: item.createdAt || item.date,
+//     imageUrl: null, // our mock data has no real images
+//   }));
+// }
 
 // Deletes an item AND all claims associated with it - matches the admin
 // "Delete this listing?" confirmation copy, which explicitly says
@@ -680,4 +595,335 @@ export async function deleteUserAccount(userId) {
   );
 
   return request(`/users/${userId}`, { method: "DELETE" });
+}
+
+// ===== Attributes: categories & colours (json-server mock) =====
+//
+// Items store the attribute NAME (item.category = "Bags",
+// item.color = "Black"), not an id. So renaming or deleting a value must
+// also update every item that uses it — the helpers below do that.
+
+// The value deleted items get moved to. It always has to exist, so it
+// can't be deleted or renamed.
+export const FALLBACK_ATTRIBUTE = "Other";
+
+export function sameAttributeName(a, b) {
+  return (
+    String(a ?? "")
+      .trim()
+      .toLowerCase() ===
+    String(b ?? "")
+      .trim()
+      .toLowerCase()
+  );
+}
+
+export function isFallbackAttribute(name) {
+  return sameAttributeName(name, FALLBACK_ATTRIBUTE);
+}
+
+// Keeps "Other" at the bottom of every list, wherever it's shown.
+function sortFallbackLast(list) {
+  return [...list].sort(
+    (a, b) =>
+      Number(isFallbackAttribute(a.name)) - Number(isFallbackAttribute(b.name)),
+  );
+}
+
+export async function getCategories() {
+  return sortFallbackLast(await request("/categories"));
+}
+
+export async function getColours() {
+  return sortFallbackLast(await request("/colours"));
+}
+
+async function createAttribute(collection, data) {
+  const name = data.name.trim();
+  const existing = await request(`/${collection}`);
+
+  if (existing.some((entry) => sameAttributeName(entry.name, name))) {
+    throw new Error(`"${name}" already exists.`);
+  }
+
+  return request(`/${collection}`, {
+    method: "POST",
+    body: JSON.stringify({ ...data, name }),
+  });
+}
+
+async function updateAttribute(collection, itemField, id, data) {
+  const name = data.name.trim();
+  const existing = await request(`/${collection}`);
+  const current = existing.find((entry) => entry.id === id);
+
+  if (!current) throw new Error("This value no longer exists.");
+
+  if (
+    existing.some(
+      (entry) => entry.id !== id && sameAttributeName(entry.name, name),
+    )
+  ) {
+    throw new Error(`"${name}" already exists.`);
+  }
+
+  if (isFallbackAttribute(current.name) && !isFallbackAttribute(name)) {
+    throw new Error(
+      `"${FALLBACK_ATTRIBUTE}" is the fallback value and can't be renamed.`,
+    );
+  }
+
+  const updated = await request(`/${collection}/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify({ ...data, name }),
+  });
+
+  // Copy a rename onto every item still using the old name.
+  if (current.name !== name) {
+    const items = await request("/items");
+    await Promise.all(
+      items
+        .filter((item) => sameAttributeName(item[itemField], current.name))
+        .map((item) =>
+          request(`/items/${item.id}`, {
+            method: "PATCH",
+            body: JSON.stringify({ [itemField]: name }),
+          }),
+        ),
+    );
+  }
+
+  return updated;
+}
+
+async function deleteAttribute(collection, itemField, id) {
+  const existing = await request(`/${collection}`);
+  const current = existing.find((entry) => entry.id === id);
+
+  if (!current) throw new Error("This value no longer exists.");
+
+  if (isFallbackAttribute(current.name)) {
+    throw new Error(
+      `"${FALLBACK_ATTRIBUTE}" is the fallback value and can't be deleted.`,
+    );
+  }
+
+  // Move affected items to "Other" first, then delete — never the reverse,
+  // or a failure halfway would leave items pointing at a deleted value.
+  const items = await request("/items");
+  const affected = items.filter((item) =>
+    sameAttributeName(item[itemField], current.name),
+  );
+
+  await Promise.all(
+    affected.map((item) =>
+      request(`/items/${item.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ [itemField]: FALLBACK_ATTRIBUTE }),
+      }),
+    ),
+  );
+
+  await request(`/${collection}/${id}`, { method: "DELETE" });
+
+  return { reassigned: affected.length };
+}
+
+// Items use the American spelling ("color") for the field name.
+export const createCategory = (data) => createAttribute("categories", data);
+export const updateCategory = (id, data) =>
+  updateAttribute("categories", "category", id, data);
+export const deleteCategory = (id) =>
+  deleteAttribute("categories", "category", id);
+
+export const createColour = (data) => createAttribute("colours", data);
+export const updateColour = (id, data) =>
+  updateAttribute("colours", "color", id, data);
+export const deleteColour = (id) => deleteAttribute("colours", "color", id);
+
+// ===== Owner actions: edit/delete a post, cancel a claim =====
+
+// Errors raised on purpose by our own rules (as opposed to network or
+// server failures) carry a "friendly" flag, so the UI can show their
+// message directly instead of a generic "something went wrong".
+function friendlyError(message) {
+  const error = new Error(message);
+  error.friendly = true;
+  return error;
+}
+
+// Loads an item and makes sure the current user owns it.
+async function getOwnedItem(itemId) {
+  const item = await getItemById(itemId);
+
+  if (item.userId !== getMockUserId()) {
+    throw friendlyError("You can only change your own posts.");
+  }
+
+  return item;
+}
+
+// Saves edits to one of the user's own posts. Only these fields can
+// change: the post type (lost/found), contact details and owner are fixed.
+export async function updatePost(itemId, updates) {
+  const item = await getOwnedItem(itemId);
+
+  if (item.resolved) {
+    throw friendlyError("Resolved posts can't be edited.");
+  }
+
+  const editableFields = [
+    "title",
+    "category",
+    "color",
+    "location",
+    "date",
+    "description",
+  ];
+  const changes = {};
+  editableFields.forEach((field) => {
+    if (field in updates) changes[field] = updates[field];
+  });
+
+  return request(`/items/${itemId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ ...changes, updatedAt: new Date().toISOString() }),
+  });
+}
+
+// Deletes one of the user's own posts. deleteItem (from Manage Listings)
+// also removes every claim made on it.
+export async function deletePost(itemId) {
+  await getOwnedItem(itemId);
+  return deleteItem(itemId);
+}
+
+// Deletes one of the user's own claims, but only while it's still pending.
+export async function cancelClaim(claimId) {
+  const claim = await getClaimById(claimId);
+
+  if (claim.userId !== getMockUserId()) {
+    throw friendlyError("You can only delete your own claims.");
+  }
+
+  if (claim.status !== "pending") {
+    throw friendlyError("Only pending claims can be deleted.");
+  }
+
+  return request(`/claims/${claimId}`, { method: "DELETE" });
+}
+
+// ===== Fallbacks for the real backend's public item endpoints =====
+//
+// The real API and our json-server mock use different field names for
+// the same things (type "LOST"/"FOUND" vs status "lost"/"found", a
+// nested category/color OBJECT vs a plain string, dateLostOrFound vs
+// date...). These helpers reshape our mock data to match the REAL
+// shape, so every page that already expects the real shape (Item List,
+// Home, New Post) works identically no matter which source answered.
+
+function toBackendShapedItem(mockItem) {
+  return {
+    id: mockItem.id,
+    title: mockItem.title,
+    location: mockItem.location,
+    description: mockItem.description || "",
+    type: mockItem.status === "lost" ? "LOST" : "FOUND",
+    status: mockItem.resolved ? "RESOLVED" : "OPEN",
+    dateLostOrFound: mockItem.date,
+    category: mockItem.category
+      ? { id: mockItem.category, name: mockItem.category }
+      : null,
+    color: mockItem.color ? { id: mockItem.color, name: mockItem.color } : null,
+    images: [],
+    userId: mockItem.userId,
+    createdAt: mockItem.createdAt,
+  };
+}
+
+// Fallback for GET /public/items?limit=6 (Home's "Recently Reported").
+export async function getLatestItemsMock(limit = 6) {
+  const items = await getRecentItems(limit);
+  return items.map(toBackendShapedItem);
+}
+
+// Fallback for GET /public/items (Item List: search, filter, paginate).
+// Applies the same filters the real endpoint accepts, then paginates,
+// returning the same { data, pagination } envelope.
+export async function getItemsMockPaginated(params = {}) {
+  const allItems = (await getItems()).map(toBackendShapedItem);
+
+  const filtered = allItems.filter((item) => {
+    if (params.search) {
+      const q = params.search.toLowerCase();
+      if (!item.title.toLowerCase().includes(q)) return false;
+    }
+    if (params.type && item.type !== params.type) return false;
+    if (params.status && item.status !== params.status) return false;
+    if (params.category && item.category?.name !== params.category) {
+      return false;
+    }
+    if (params.color && item.color?.name !== params.color) return false;
+    if (params.fromDate && item.dateLostOrFound < params.fromDate) {
+      return false;
+    }
+    if (params.toDate && item.dateLostOrFound > params.toDate) return false;
+    return true;
+  });
+
+  const page = params.page || 1;
+  const limit = params.limit || 9;
+  const start = (page - 1) * limit;
+
+  return {
+    data: filtered.slice(start, start + limit),
+    pagination: {
+      page,
+      limit,
+      total: filtered.length,
+      totalPages: Math.max(1, Math.ceil(filtered.length / limit)),
+    },
+  };
+}
+
+// Fallback for POST /item/createNewPost. Reads the SAME FormData
+// New Post already builds (type, title, categoryId, location, colorId,
+// dateLostOrFound, description). categoryId/colorId only resolve
+// correctly if the dropdown was ALSO populated from mock data (i.e. the
+// real backend was already down when the form loaded) — if the real
+// backend answered the categories/colors call but then failed on
+// submit, these ids won't match our mock collections, and we say so
+// rather than silently creating the wrong item.
+// json-server can't store files, so any selected images are skipped.
+export async function createItemMockFromFormData(formData) {
+  const [categories, colours, user] = await Promise.all([
+    getCategories(),
+    getColours(),
+    getCurrentUser(),
+  ]);
+
+  const category = categories.find((c) => c.id === formData.get("categoryId"));
+  const colour = colours.find((c) => c.id === formData.get("colorId"));
+
+  if (!category || !colour) {
+    throw friendlyError(
+      "Couldn't match the selected category/colour to local test data — try reselecting them and submitting again.",
+    );
+  }
+
+  return createItemWithSequentialId({
+    title: String(formData.get("title") || "").trim(),
+    status: String(formData.get("type") || "LOST").toLowerCase(),
+    category: category.name,
+    color: colour.name,
+    location: String(formData.get("location") || "").trim(),
+    date: String(formData.get("dateLostOrFound") || ""),
+    description: String(formData.get("description") || "").trim(),
+    resolved: false,
+    userId: user.id,
+    postedBy: {
+      name: `${user.firstName} ${user.lastName}`,
+      email: user.email,
+    },
+  });
 }

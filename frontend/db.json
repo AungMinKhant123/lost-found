@@ -17,7 +17,7 @@
       "status": "found",
       "location": "Cafeteria",
       "date": "2026-09-06",
-      "resolved": false,
+      "resolved": true,
       "userId": "1",
       "category": "Other",
       "color": "Blue"
@@ -316,6 +316,75 @@
       },
       "id": "It8vSeJUq8w",
       "createdAt": "2026-09-27T12:14:32.390Z"
+    },
+    {
+      "title": "Nike Shoes",
+      "status": "found",
+      "category": "Clothing",
+      "color": "Pink",
+      "location": "Dressing Room",
+      "date": "2026-09-28",
+      "description": " Has a custom painted logo.",
+      "resolved": false,
+      "userId": "2",
+      "postedBy": {
+        "name": "Ashfaq Ifthicar",
+        "email": "ash@gmail.com"
+      },
+      "id": "9WgfPB-bZFE",
+      "createdAt": "2026-09-28T10:58:14.992Z"
+    },
+    {
+      "title": "ASUS Keyboard",
+      "status": "lost",
+      "category": "Electronics",
+      "color": "Black",
+      "location": "IT Lab",
+      "date": "2026-09-28",
+      "description": "The keysboard's brand is ASUS. And it has a missing number 8.",
+      "resolved": false,
+      "userId": "1",
+      "postedBy": {
+        "name": "David Linn",
+        "email": "myolwin400400@gmail.com"
+      },
+      "id": "qo_1I0iWcN4",
+      "createdAt": "2026-09-28T16:47:56.599Z"
+    },
+    {
+      "title": "Wrist Watch",
+      "status": "lost",
+      "category": "Accessories",
+      "color": "Brown",
+      "location": "Dressing Room",
+      "date": "2026-09-28",
+      "description": "It's a watch which has a leather strip. Also it has a small crack on the glass.",
+      "resolved": false,
+      "userId": "1",
+      "postedBy": {
+        "name": "David Linn",
+        "email": "myolwin400400@gmail.com"
+      },
+      "id": "dvunX51qq0g",
+      "createdAt": "2026-09-28T17:40:32.172Z",
+      "updatedAt": "2026-09-28T17:42:19.532Z"
+    },
+    {
+      "title": "Iphone 13 Pro Max",
+      "status": "found",
+      "category": "Electronics",
+      "color": "Blue",
+      "location": "Canteen",
+      "date": "2026-09-29",
+      "description": "I found it under the desk which is right next to the Fridge.",
+      "resolved": false,
+      "userId": "2",
+      "postedBy": {
+        "name": "Ashfaq Ifthicar",
+        "email": "ash@gmail.com"
+      },
+      "id": "hVMb7aSCriI",
+      "createdAt": "2026-09-29T11:26:24.129Z"
     }
   ],
   "users": [
@@ -325,12 +394,12 @@
       "lastName": "Linn",
       "email": "myolwin400400@gmail.com",
       "phone": "0945609416",
-      "profession": "Student",
+      "profession": "STUDENT",
       "socialMedia": "https://www.facebook.com/david.lin",
       "password": "abcd1234!",
       "confirmPassword": "abcd1234!",
       "agreeTerms": true,
-      "aboutMe": "I am a UI/UX designer"
+      "aboutMe": "I am a UI/UX designer !!!"
     },
     {
       "firstName": "Ashfaq",
@@ -343,7 +412,7 @@
       "agreeTerms": true,
       "id": "2",
       "socialMedia": "",
-      "aboutMe": ""
+      "aboutMe": "Hi I am Ashfaq. I am currently studying CS"
     },
     {
       "firstName": "Ash",
@@ -479,17 +548,6 @@
       "email": "bruce@example.com",
       "password": "admin1234",
       "role": "admin"
-    },
-    {
-      "firstName": "Delta",
-      "lastName": "User",
-      "email": "delta@gmail.com",
-      "password": "12345678",
-      "id": "nVtf2sTKHyw",
-      "phone": "123456789",
-      "socialMedia": "",
-      "aboutMe": "Hi I am delta. I am here to test account deletion",
-      "profession": "TEACHER"
     }
   ],
   "claims": [
@@ -516,14 +574,6 @@
       "status": "declined",
       "message": "These are my earbuds - I can recognize the small scratch on the charging case.",
       "claimedAt": "2026-08-05T14:20:00"
-    },
-    {
-      "id": "4",
-      "itemId": "13",
-      "userId": "1",
-      "status": "pending",
-      "message": "I lost my umbrella here yesterday afternoon.",
-      "claimedAt": "2026-08-09T09:15:00"
     },
     {
       "id": "5",
@@ -590,14 +640,6 @@
       "claimedAt": "2026-09-21T12:00:00"
     },
     {
-      "itemId": "aIziyNV_EuM",
-      "userId": "2",
-      "status": "pending",
-      "message": "It has stickers related to anime called Dragon Ball Z in the backside.",
-      "claimedAt": "2026-09-23T02:38:32.696Z",
-      "id": "_pB_1CDM7IU"
-    },
-    {
       "itemId": "7",
       "userId": "2",
       "status": "pending",
@@ -608,7 +650,7 @@
     {
       "itemId": "2",
       "userId": "2",
-      "status": "pending",
+      "status": "accepted",
       "message": "this item is mine i said so",
       "claimedAt": "2026-09-23T07:30:31.367Z",
       "id": "k5evWJnJIq8"
@@ -616,7 +658,7 @@
     {
       "itemId": "2",
       "userId": "2",
-      "status": "pending",
+      "status": "declined",
       "message": "i am testing this claim",
       "claimedAt": "2026-09-23T07:32:23.593Z",
       "id": "bxKz4rtlTjs"
@@ -808,7 +850,7 @@
     {
       "itemId": "6",
       "userId": "2",
-      "status": "pending",
+      "status": "declined",
       "message": "dwdawdw",
       "claimedAt": "2026-09-24T02:55:27.638Z",
       "id": "xCUzeddPM7k"
@@ -880,7 +922,7 @@
     {
       "itemId": "2",
       "userId": "2",
-      "status": "pending",
+      "status": "declined",
       "message": "testing",
       "claimedAt": "2026-09-26T09:04:44.888Z",
       "id": "GH9Ip58LfUY"
@@ -940,63 +982,108 @@
       "message": "Has my name printed in the backside.",
       "claimedAt": "2026-09-27T12:10:19.754Z",
       "id": "9FyWDL1uZME"
-    }
-  ],
-  "colours": [
-    {
-      "id": "5",
-      "name": "Red",
-      "color": "#FF0000"
     },
     {
-      "id": "7",
-      "name": "Blue",
-      "color": "#0000FF"
-    },
-    {
-      "id": "10",
-      "name": "Purple",
-      "color": "#800080"
-    },
-    {
-      "name": "Pink",
-      "color": "#ff40ff",
-      "id": "nSxj4_CjDWk"
-    },
-    {
-      "name": "Green",
-      "color": "#96d35f",
-      "id": "lEwiZrZpXAc"
+      "itemId": "hVMb7aSCriI",
+      "userId": "1",
+      "status": "pending",
+      "message": "this item is mine beacuse i said so",
+      "claimedAt": "2026-09-30T04:07:16.729Z",
+      "id": "-sN3t06jMFg"
     }
   ],
   "categories": [
     {
+      "id": "1",
       "name": "Electronics",
-      "id": "1"
+      "icon": "cable"
+    },
+    {
+      "id": "2",
+      "name": "Bags",
+      "icon": "handbag"
     },
     {
       "id": "3",
-      "name": "Clothing"
+      "name": "Clothing",
+      "icon": "shirt"
+    },
+    {
+      "id": "4",
+      "name": "Accessories",
+      "icon": "watch"
     },
     {
       "id": "5",
-      "name": "Accessories"
+      "name": "Keys",
+      "icon": "key"
+    },
+    {
+      "id": "6",
+      "name": "Documents",
+      "icon": "file-text"
+    },
+    {
+      "id": "7",
+      "name": "Other",
+      "icon": "package"
+    }
+  ],
+  "colours": [
+    {
+      "id": "1",
+      "name": "Black",
+      "hex": "#1F2933"
+    },
+    {
+      "id": "3",
+      "name": "White",
+      "hex": "#FFFFFF"
+    },
+    {
+      "id": "4",
+      "name": "Grey",
+      "hex": "#9CA3AF"
+    },
+    {
+      "id": "5",
+      "name": "Silver",
+      "hex": "#C0C0C0"
+    },
+    {
+      "id": "6",
+      "name": "Brown",
+      "hex": "#8B5E3C"
+    },
+    {
+      "id": "7",
+      "name": "Red",
+      "hex": "#EB5757"
+    },
+    {
+      "id": "8",
+      "name": "Blue",
+      "hex": "#2F80ED"
     },
     {
       "id": "9",
-      "name": "Other"
+      "name": "Green",
+      "hex": "#2E9B62"
     },
     {
-      "name": "Documents",
-      "id": "kXlM3f7kR-I"
+      "id": "10",
+      "name": "Other",
+      "hex": "#CBD5E1"
     },
     {
-      "name": "Bags",
-      "id": "_JncDIVC7CU"
+      "name": "Pink",
+      "hex": "#ff1af7",
+      "id": "wGCGGYoeDUM"
     },
     {
-      "name": "Phone",
-      "id": "Al5JHvxsO4o"
+      "name": "Purple",
+      "hex": "#8b5cf6",
+      "id": "M9xmOSw10P0"
     }
   ],
   "locations": [

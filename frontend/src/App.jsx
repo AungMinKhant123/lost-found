@@ -27,10 +27,11 @@ import AboutUs from "./pages/user/AboutUs";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NewPost from "./pages/user/NewPost";
 import ScrollToTop from "./components/ScrollToTop";
+import EditPost from "./pages/user/EditPost";
 
 import ManageListings from "./pages/admin/ManageListings";
 import ManageAttributes from "./pages/admin/ManageAttributes";
-import AdminProfile from "./pages/admin/AdminProfile";
+
 import AdminRoute from "./components/AdminRoute";
 
 const App = () => {
@@ -74,6 +75,7 @@ const App = () => {
               element={<AcceptedClaimView />}
             />
             <Route path="new-post" element={<NewPost />} />
+            <Route path="posts/:id/edit" element={<EditPost />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Route>
@@ -88,7 +90,6 @@ const App = () => {
           <Route index element={<Dashboard />} />
           <Route path="listings" element={<ManageListings />} />
           <Route path="attributes" element={<ManageAttributes />} />
-          <Route path="profile" element={<AdminProfile />} />
         </Route>
         <Route path="/login" element={<LogIn />} />
       </Routes>
