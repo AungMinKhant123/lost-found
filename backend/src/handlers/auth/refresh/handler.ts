@@ -20,7 +20,7 @@ export async function refreshHandler(
   const refreshToken = request.cookies[SYS_CONSTANTS.REFRESH_TOKEN_COOKIE];
 
   if (!refreshToken) {
-    throw new AppError("Refresh token is required", 401);
+    throw new AppError("Refresh token is required!", 401);
   }
 
   const tokenLookup = createRefreshTokenLookup(refreshToken);
@@ -32,7 +32,7 @@ export async function refreshHandler(
   });
 
   if (!storedRefreshToken) {
-    throw new AppError("Invalid refresh token", 401);
+    throw new AppError("Invalid refresh token!", 401);
   }
 
   const isValid = await verifyRefreshToken(
@@ -41,7 +41,7 @@ export async function refreshHandler(
   );
 
   if (!isValid) {
-    throw new AppError("Invalid refresh token", 401);
+    throw new AppError("Invalid refresh token!", 401);
   }
 
   if (storedRefreshToken.expiresAt <= new Date()) {
@@ -51,7 +51,7 @@ export async function refreshHandler(
       },
     });
 
-    throw new AppError("Refresh token has expired", 401);
+    throw new AppError("Refresh token has expired!", 401);
   }
 
   const user = await prisma.user.findUnique({
@@ -61,7 +61,7 @@ export async function refreshHandler(
   });
 
   if (!user) {
-    throw new AppError("User not found", 404);
+    throw new AppError("User not found!", 404);
   }
 
   const newAccessToken = await reply.jwtSign(
@@ -118,6 +118,6 @@ export async function refreshHandler(
   });
 
   return reply.send({
-    message: "Token refreshed successfully",
+    message: "Token refreshed successfully!",
   });
 }

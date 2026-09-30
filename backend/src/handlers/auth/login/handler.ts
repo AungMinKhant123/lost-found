@@ -76,7 +76,7 @@ export async function loginHandler(
   });
 
   return reply.send({
-    message: "Login successful",
+    message: "Login successful!",
     data: {
       user: {
         id: user.id,

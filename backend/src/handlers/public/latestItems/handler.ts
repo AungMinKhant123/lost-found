@@ -34,7 +34,7 @@ export async function latestItemsHandler(
   }));
 
   return reply.send({
-    message: "Latest items retrieved successfully",
+    message: "Latest items retrieved successfully!",
     data,
   });
 }
