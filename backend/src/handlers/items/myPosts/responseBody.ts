@@ -10,6 +10,8 @@ const MyPostItemSchema = Type.Object({
   dateLostOrFound: Type.String(),
   status: Type.Enum(ItemStatus),
 
+  pendingClaims: Type.Number(),
+
   category: Type.Object({
     id: Type.String({ format: "uuid" }),
     name: Type.String(),

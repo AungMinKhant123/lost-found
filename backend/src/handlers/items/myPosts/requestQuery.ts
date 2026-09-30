@@ -11,9 +11,15 @@ const ItemStatusQuerySchema  = Type.Unsafe<ItemStatus>({
   enum: ["OPEN", "RESOLVED"]
 })
 
+const PendingClaimsQuerySchema = Type.Unsafe<"true" | "false">({
+  type: "string",
+  enum: ["true", "false"],
+});
+
 export const MyPostsRequestQuerySchema = Type.Object({
   type: Type.Optional(ItemTypeQuerySchema),
   status: Type.Optional(ItemStatusQuerySchema),
+  pendingClaims: Type.Optional(PendingClaimsQuerySchema),
   page: Type.Optional(Type.String()),
   limit: Type.Optional(Type.String()),
 });

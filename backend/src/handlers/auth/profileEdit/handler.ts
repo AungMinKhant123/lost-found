@@ -186,12 +186,12 @@ export async function profileEditHandler(
         await request.server.minio.removeObject(bucketName, user.profileKey);
       } catch (error) {
         // Do not rollback the database update.
-        request.log.error(error, "Failed to delete old profile image");
+        request.log.error(error, "Failed to delete old profile image!");
       }
     }
 
     return reply.send({
-      message: "Profile updated successfully",
+      message: "Profile updated successfully!",
 
       ...(newProfileKey && {
         profileKey: newProfileKey,
@@ -206,7 +206,7 @@ export async function profileEditHandler(
       } catch (cleanupError) {
         request.log.error(
           cleanupError,
-          "Failed to clean up uploaded profile image",
+          "Failed to clean up uploaded profile image!",
         );
       }
     }

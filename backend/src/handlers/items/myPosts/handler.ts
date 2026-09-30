@@ -4,6 +4,7 @@ import type { MyPostsRequestQuery } from "./requestQuery.js";
 
 import type { MyPostsResponseBody } from "./responseBody.js";
 import { prisma } from "../../../lib/prisma.js";
+import { ClaimStatus } from "../../../generated/enums.js";
 
 export async function myPostsHandler(
   request: FastifyRequest,
@@ -22,39 +23,70 @@ export async function myPostsHandler(
   const skip = (page - 1) * limit;
 
   const where = {
-    userId,
+  userId,
 
-    ...(query.type && {
-        type: query.type
-    }),
+  ...(query.pendingClaims
+    ? {
+        claims: {
+          some: {
+            status: ClaimStatus.PENDING,
+            claimantId: {
+              not: userId,
+            },
+          },
+        },
+      }
+    : {
+        ...(query.type && {
+          type: query.type,
+        }),
 
-    ...(query.status && {
-        status: query.status
-    }),
-  };
+        ...(query.status && {
+          status: query.status,
+        }),
+      }),
+};
 
   const [total, items] = await Promise.all([
-    prisma.item.count({ where }),
+  prisma.item.count({ where }),
 
-    prisma.item.findMany({
-        where,
-        skip,
-        take: limit,
+  prisma.item.findMany({
+    where,
+    skip,
+    take: limit,
 
-        include: {
-            category: true,
-            color: true,
-            images: true,
+    include: {
+      category: true,
+      color: true,
+      images: true,
+
+      _count: {
+        select: {
+          claims: {
+            where: {
+              status: ClaimStatus.PENDING,
+              claimantId: {
+                not: userId,
+              },
+            },
+          },
         },
+      },
+    },
 
-        orderBy: {
-            createdAt: "desc",
-        }
-    })
-  ]);
+    orderBy: {
+      createdAt: "desc",
+    },
+  }),
+]);
+
+const formattedItems = items.map(({ _count, ...item}) => ({
+  ...item,
+  pendingClaims: _count.claims,
+}));
 
   return reply.send({
-    data: items,
+    data: formattedItems,
     pagination: {
         page,
         limit,
