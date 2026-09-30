@@ -17,7 +17,7 @@
       "status": "found",
       "location": "Cafeteria",
       "date": "2026-09-06",
-      "resolved": false,
+      "resolved": true,
       "userId": "1",
       "category": "Other",
       "color": "Blue"
@@ -650,7 +650,7 @@
     {
       "itemId": "2",
       "userId": "2",
-      "status": "pending",
+      "status": "accepted",
       "message": "this item is mine i said so",
       "claimedAt": "2026-09-23T07:30:31.367Z",
       "id": "k5evWJnJIq8"
@@ -658,7 +658,7 @@
     {
       "itemId": "2",
       "userId": "2",
-      "status": "pending",
+      "status": "declined",
       "message": "i am testing this claim",
       "claimedAt": "2026-09-23T07:32:23.593Z",
       "id": "bxKz4rtlTjs"
@@ -922,7 +922,7 @@
     {
       "itemId": "2",
       "userId": "2",
-      "status": "pending",
+      "status": "declined",
       "message": "testing",
       "claimedAt": "2026-09-26T09:04:44.888Z",
       "id": "GH9Ip58LfUY"
@@ -982,6 +982,14 @@
       "message": "Has my name printed in the backside.",
       "claimedAt": "2026-09-27T12:10:19.754Z",
       "id": "9FyWDL1uZME"
+    },
+    {
+      "itemId": "hVMb7aSCriI",
+      "userId": "1",
+      "status": "pending",
+      "message": "this item is mine beacuse i said so",
+      "claimedAt": "2026-09-30T04:07:16.729Z",
+      "id": "-sN3t06jMFg"
     }
   ],
   "categories": [
