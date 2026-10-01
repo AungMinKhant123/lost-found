@@ -12,6 +12,9 @@ import { createClaimHandler } from "../handlers/claims/createClaim/handler.js";
 import { GetItemClaimsSchema } from "../handlers/claims/getItemClaims/schema.js";
 import type { GetItemClaimsRequestParams } from "../handlers/claims/getItemClaims/requestParams.js";
 import { getItemClaimsHandler } from "../handlers/claims/getItemClaims/handler.js";
+import { GetAcceptedClaimContactSchema } from "../handlers/claims/getAcceptedClaimContact/schema.js";
+import type { GetAcceptedClaimContactRequestParams } from "../handlers/claims/getAcceptedClaimContact/requestParams.js";
+import { getAcceptedClaimContactHandler } from "../handlers/claims/getAcceptedClaimContact/handler.js";
 import { UpdateItemClaimStatusSchema } from "../handlers/claims/updateItemClaimStatus/schema.js";
 import type { UpdateItemClaimStatusRequestBody } from "../handlers/claims/updateItemClaimStatus/requestBody.js";
 import type { UpdateItemClaimStatusRequestParams } from "../handlers/claims/updateItemClaimStatus/requestParams.js";
@@ -24,6 +27,7 @@ import { MyClaimDetailsSchema } from "../handlers/items/myClaimViewDetail/schema
 import { myClaimDetailsHandler } from "../handlers/items/myClaimViewDetail/handler.js";
 import { MyPostViewDetailSchema } from "../handlers/items/myPostViewDetail/schema.js";
 import { myPostViewDetailHandler } from "../handlers/items/myPostViewDetail/handler.js";
+import type { MyPostViewDetailRequestParams } from "../handlers/items/myPostViewDetail/requestParams.js";
 
 export async function itemsRoutes(app: FastifyInstance) {
   app.get(
@@ -75,6 +79,14 @@ export async function itemsRoutes(app: FastifyInstance) {
     },
     getItemClaimsHandler,
   );
+  app.get<{ Params: GetAcceptedClaimContactRequestParams }>(
+    "/items/:itemId/claims/:claimId/contact",
+    {
+      preHandler: app.verifyUser,
+      schema: GetAcceptedClaimContactSchema,
+    },
+    getAcceptedClaimContactHandler,
+  );
   app.patch<{
     Params: UpdateItemClaimStatusRequestParams;
     Body: UpdateItemClaimStatusRequestBody;
@@ -114,7 +126,7 @@ export async function itemsRoutes(app: FastifyInstance) {
     myClaimDetailsHandler,
   );
 
-  app.get(
+  app.get<{ Params: MyPostViewDetailRequestParams }>(
     "/item/mypostviewdetail/:itemId",
     {
       preHandler: app.verifyUser,
