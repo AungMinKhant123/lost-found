@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
-import { getClaimById, getUserById } from "../../services/api";
+import { getAcceptedClaimContact } from "../../api/itemsApi";
 
 const AcceptedClaimView = () => {
   const { itemId, claimId } = useParams();
@@ -9,12 +9,11 @@ const AcceptedClaimView = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    getClaimById(claimId)
-      .then((claim) => getUserById(claim.userId))
-      .then((user) => setClaimant(user))
-      .catch((err) => setError(err.message))
+    getAcceptedClaimContact(itemId, claimId)
+      .then(setClaimant)
+      .catch((err) => setError(err.response?.data?.message ?? err.message))
       .finally(() => setLoading(false));
-  }, [claimId]);
+  }, [itemId, claimId]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -38,16 +37,21 @@ const AcceptedClaimView = () => {
         </h2>
 
         <div className="flex flex-col items-center mt-4">
-          {/* Avatar placeholder — swap for the real claimant photo later */}
-          <div className="w-16 h-16 rounded-full bg-neutral-300" />
+          {claimant.profileUrl ? (
+            <img
+              src={claimant.profileUrl}
+              alt={`${claimant.firstName} ${claimant.lastName}`}
+              className="w-16 h-16 rounded-full object-cover"
+            />
+          ) : (
+            <div className="w-16 h-16 rounded-full bg-neutral-300" />
+          )}
           <p className="text-heading-3 font-bold text-text-primary mt-2">
             {claimant.firstName} {claimant.lastName}
           </p>
           <p className="text-body-sm text-text-secondary">Claimant</p>
         </div>
 
-        {/* Phone Number: only shown if the claimant actually provided one.
-            Email is treated as always present (required at signup). */}
         {claimant.phone && (
           <div className="mt-6">
             <label className="text-body-md font-medium text-text-primary">

@@ -104,6 +104,36 @@ export async function getItemClaimsHandler(
     }),
   );
 
+  const claims = await Promise.all(
+    item.claims.map(async (claim) => {
+      let profileUrl: string | null = null;
+
+      if (claim.claimant.profileKey) {
+        profileUrl = await request.server.minio.presignedGetObject(
+          process.env.MINIO_BUCKET!,
+          claim.claimant.profileKey,
+          60 * 60,
+        );
+      }
+
+      return {
+        id: claim.id,
+        message: claim.message,
+        status: claim.status,
+        createdAt: claim.createdAt.toISOString(),
+        claimant: {
+          id: claim.claimant.id,
+          firstName: claim.claimant.firstName,
+          lastName: claim.claimant.lastName,
+          email: claim.claimant.email,
+          phone: claim.claimant.phone,
+          profileKey: claim.claimant.profileKey,
+          profileUrl,
+        },
+      };
+    }),
+  );
+
   return reply.send({
     item: {
       id: item.id,
@@ -118,20 +148,6 @@ export async function getItemClaimsHandler(
       images,
     },
 
-    claims: item.claims.map((claim) => ({
-      id: claim.id,
-      message: claim.message,
-      status: claim.status,
-      createdAt: claim.createdAt.toISOString(),
-
-      claimant: {
-        id: claim.claimant.id,
-        firstName: claim.claimant.firstName,
-        lastName: claim.claimant.lastName,
-        email: claim.claimant.email,
-        phone: claim.claimant.phone,
-        profileKey: claim.claimant.profileKey,
-      },
-    })),
+    claims,
   });
 }

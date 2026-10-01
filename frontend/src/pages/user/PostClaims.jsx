@@ -126,7 +126,15 @@ const PostClaims = () => {
       {/* Item summary */}
       <div className="flex items-center gap-4 mt-6">
         <div className="w-24 h-24 rounded-lg bg-neutral-100 flex items-center justify-center text-text-secondary text-label-sm shrink-0">
-          Image
+          {item.images?.[0]?.imageUrl ? (
+            <img
+              src={item.images[0].imageUrl}
+              alt={item.title}
+              className="w-full h-full rounded-lg object-cover"
+            />
+          ) : (
+            "Image"
+          )}
         </div>
 
         <div>
@@ -156,7 +164,15 @@ const PostClaims = () => {
           <div key={claim.id} className="border border-border rounded-lg p-6">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-14 h-14 rounded-full bg-neutral-300 shrink-0" />
+                {claim.claimant.profileUrl ? (
+                  <img
+                    src={claim.claimant.profileUrl}
+                    alt={`${claim.claimant.firstName} ${claim.claimant.lastName}`}
+                    className="w-14 h-14 rounded-full object-cover shrink-0"
+                  />
+                ) : (
+                  <div className="w-14 h-14 rounded-full bg-neutral-300 shrink-0" />
+                )}
                 <div>
                   <p className="text-heading-3 font-bold text-text-primary">
                     {claim.claimant.firstName} {claim.claimant.lastName}

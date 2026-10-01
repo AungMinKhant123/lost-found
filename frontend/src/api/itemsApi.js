@@ -41,6 +41,12 @@ export const getMyItemClaims = async (itemId) => {
   return response.data;
 };
 
+export const getAcceptedClaimContact = async (itemId, claimId) => {
+  const response = await api.get(`/items/${itemId}/claims/${claimId}/contact`);
+
+  return response.data.data;
+};
+
 export const updateItemClaimStatus = async (itemId, claimId, status) => {
   const response = await api.patch(`/items/${itemId}/claims/${claimId}`, {
     status: status.toUpperCase(),

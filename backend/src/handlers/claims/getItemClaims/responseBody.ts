@@ -23,6 +23,7 @@ const ClaimantSchema = Type.Object({
   email: Type.String(),
   phone: Type.Union([Type.String(), Type.Null()]),
   profileKey: Type.Union([Type.String(), Type.Null()]),
+  profileUrl: Type.Union([Type.String(), Type.Null()]),
 });
 
 const ClaimSchema = Type.Object({
