@@ -16,6 +16,14 @@ import { UpdateItemClaimStatusSchema } from "../handlers/claims/updateItemClaimS
 import type { UpdateItemClaimStatusRequestBody } from "../handlers/claims/updateItemClaimStatus/requestBody.js";
 import type { UpdateItemClaimStatusRequestParams } from "../handlers/claims/updateItemClaimStatus/requestParams.js";
 import { updateItemClaimStatusHandler } from "../handlers/claims/updateItemClaimStatus/handler.js";
+import { myClaimCancelHandler } from "../handlers/items/myClaimCancel/handler.js";
+import { MyClaimCancelSchema } from "../handlers/items/myClaimCancel/schema.js";
+import { MyPostDeleteSchema } from "../handlers/items/myPostDelete/schema.js";
+import { myPostDeleteHandler } from "../handlers/items/myPostDelete/handler.js";
+import { MyClaimDetailsSchema } from "../handlers/items/myClaimViewDetail/schema.js";
+import { myClaimDetailsHandler } from "../handlers/items/myClaimViewDetail/handler.js";
+import { MyPostViewDetailSchema } from "../handlers/items/myPostViewDetail/schema.js";
+import { myPostViewDetailHandler } from "../handlers/items/myPostViewDetail/handler.js";
 
 export async function itemsRoutes(app: FastifyInstance) {
   app.get(
@@ -78,7 +86,6 @@ export async function itemsRoutes(app: FastifyInstance) {
     },
     updateItemClaimStatusHandler,
   );
-}
 
   app.delete(
     "/item/cancelclaims/:claimId",
@@ -114,5 +121,5 @@ export async function itemsRoutes(app: FastifyInstance) {
       schema: MyPostViewDetailSchema,
     },
     myPostViewDetailHandler,
-  )
-};
+  );
+}

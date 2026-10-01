@@ -60,14 +60,18 @@ export async function updateItemClaimStatusHandler(
     }
 
     if (status === "ACCEPTED") {
+      const resolvedItem = await transaction.item.updateMany({
+        where: { id: itemId, status: "OPEN" },
+        data: { status: "RESOLVED" },
+      });
+
+      if (resolvedItem.count === 0) {
+        throw new AppError("This item has already been resolved.", 409);
+      }
+
       await transaction.claim.updateMany({
         where: { itemId, id: { not: claimId }, status: "PENDING" },
         data: { status: "DECLINED" },
-      });
-
-      await transaction.item.update({
-        where: { id: itemId },
-        data: { status: "RESOLVED" },
       });
     }
 
