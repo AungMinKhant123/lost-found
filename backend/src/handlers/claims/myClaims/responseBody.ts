@@ -1,5 +1,5 @@
 import { Type, type Static } from "@sinclair/typebox";
-import { ClaimStatus, ItemType } from "../../../generated/enums.js";
+import { ClaimStatus, ItemStatus, ItemType } from "../../../generated/enums.js";
 
 const MyClaimItemSchema = Type.Object({
   id: Type.String({ format: "uuid" }),
@@ -9,6 +9,7 @@ const MyClaimItemSchema = Type.Object({
   item: Type.Object({
     id: Type.String({ format: "uuid" }),
     type: Type.Enum(ItemType),
+    status: Type.Enum(ItemStatus),
     title: Type.String(),
     location: Type.String(),
     dateLostOrFound: Type.String(),
@@ -26,7 +27,7 @@ const MyClaimItemSchema = Type.Object({
     images: Type.Array(
       Type.Object({
         id: Type.String({ format: "uuid" }),
-        objectKey: Type.String(),
+        imageUrl: Type.String(),
       }),
     ),
   }),

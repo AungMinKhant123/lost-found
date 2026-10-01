@@ -28,7 +28,7 @@ export const useCreateItem = () => {
       });
 
       queryClient.invalidateQueries({
-        queryKey: ["my-items"],
+        queryKey: ["my-posts"],
       });
     },
   });

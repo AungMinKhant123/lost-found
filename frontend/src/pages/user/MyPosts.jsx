@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { useState } from "react";
 import { MapPin } from "lucide-react";
-import { getCurrentUser, getItemsByUser, getClaims } from "../../services/api";
-import { useAuthStore } from "../../store/authStore";
+import { Link } from "react-router";
+import { useMyPosts } from "../../hooks/useMyPosts";
 
-// The four filter tabs, in display order.
-// "value" matches how we'll filter the items array below.
+// The five filter tabs, in display order.
 const TABS = [
   { label: "All Items", value: "all" },
   { label: "Lost Items", value: "lost" },
@@ -14,8 +12,7 @@ const TABS = [
   { label: "Pending Claims", value: "pending" },
 ];
 
-// Formats an ISO date string ("2026-09-06") into "Sep 6, 2026",
-// matching the wireframe's date display.
+// Formats an ISO date string into "Sep 6, 2026".
 function formatDate(isoDate) {
   return new Date(isoDate).toLocaleDateString("en-US", {
     month: "short",
@@ -25,47 +22,52 @@ function formatDate(isoDate) {
 }
 
 const MyPosts = () => {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("all");
 
-  // Maps itemId -> count of pending claims on that item, so each card
-  // can show how many people are waiting on a response.
-  const [pendingCounts, setPendingCounts] = useState({});
-  const authUserId = useAuthStore((state) => state.user?.id);
+  const {
+    data: postsData,
+    isLoading: postsLoading,
+    error: postsError,
+  } = useMyPosts();
 
-  useEffect(() => {
-    getCurrentUser()
-      .then((user) => Promise.all([getItemsByUser(user.id), getClaims()]))
-      .then(([itemsData, claimsData]) => {
-        setItems(itemsData);
-        const counts = {};
-        claimsData
-          .filter((claim) => claim.status === "pending")
-          .forEach((claim) => {
-            counts[claim.itemId] = (counts[claim.itemId] || 0) + 1;
-          });
-        setPendingCounts(counts);
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [authUserId]);
+  const items = postsData?.data ?? [];
 
-  // Filters the fetched items based on which tab is active.
   const filteredItems = items.filter((item) => {
-    if (activeTab === "all") return true;
-    if (activeTab === "resolved") return item.resolved;
-    if (activeTab === "pending") return pendingCounts[item.id] > 0;
-    return item.status === activeTab && !item.resolved;
+    if (activeTab === "all") {
+      return true;
+    }
+
+    if (activeTab === "lost") {
+      return item.type === "LOST";
+    }
+
+    if (activeTab === "found") {
+      return item.type === "FOUND";
+    }
+
+    if (activeTab === "resolved") {
+      return item.status === "RESOLVED";
+    }
+
+    if (activeTab === "pending") {
+      return item.pendingClaimsCount > 0;
+    }
+
+    return true;
   });
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (postsLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (postsError) {
+    return <div>Error: {postsError.message}</div>;
+  }
 
   return (
     <div>
       <h1 className="text-heading-1 font-bold text-text-primary">My Posts</h1>
+
       <p className="text-body-md text-text-secondary mt-2">
         Manage the items you've reported lost or found
       </p>
@@ -95,62 +97,82 @@ const MyPosts = () => {
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-          {filteredItems.map((item) => (
-            <div
-              key={item.id}
-              className="border border-border rounded-lg overflow-hidden"
-            >
-              {/* Image placeholder — swap for the real uploaded photo once
-          the Report Item feature exists and items have a real image URL. */}
-              <div className="w-full h-40 bg-neutral-100 flex items-center justify-center text-text-secondary text-body-sm">
-                Image Placeholder
-              </div>
+          {filteredItems.map((item) => {
+            const pendingCount = item.pendingClaimsCount ?? 0;
 
-              <div className="p-4">
-                {/* Status badges: Lost/Found (red or green), plus a pending-claims
-      badge (orange) when applicable — grouped together in one row. */}
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`inline-block px-2 py-0.5 rounded text-label-sm font-medium ${
-                      item.status === "lost"
-                        ? "bg-error/10 text-error"
-                        : "bg-success/10 text-success"
-                    }`}
-                  >
-                    {item.status === "lost" ? "Lost" : "Found"}
-                  </span>
+            const isLost = item.type === "LOST";
+            const isResolved = item.status === "RESOLVED";
 
-                  {pendingCounts[item.id] > 0 && (
-                    <span className="inline-block px-2 py-0.5 rounded text-label-sm font-medium bg-warning/10 text-warning">
-                      {pendingCounts[item.id]} pending claim
-                      {pendingCounts[item.id] > 1 ? "s" : ""}
+            return (
+              <div
+                key={item.id}
+                className="border border-border rounded-lg overflow-hidden"
+              >
+                {/* Item image */}
+                <div className="w-full h-40 bg-neutral-100 flex items-center justify-center overflow-hidden">
+                  {item.images?.[0]?.imageUrl ? (
+                    <img
+                      src={item.images[0].imageUrl}
+                      alt={item.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-text-secondary text-body-sm">
+                      No Image
                     </span>
                   )}
                 </div>
 
-                <h3 className="text-heading-3 font-bold text-text-primary mt-2">
-                  {item.title}
-                </h3>
+                <div className="p-4">
+                  {/* Status badges */}
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`inline-block px-2 py-0.5 rounded text-label-sm font-medium ${
+                        isLost
+                          ? "bg-error/10 text-error"
+                          : "bg-success/10 text-success"
+                      }`}
+                    >
+                      {isLost ? "Lost" : "Found"}
+                    </span>
 
-                <div className="flex items-center gap-1 text-body-sm text-text-secondary mt-1">
-                  <MapPin size={14} />
-                  {item.location}
+                    {pendingCount > 0 && (
+                      <span className="inline-block px-2 py-0.5 rounded text-label-sm font-medium bg-warning/10 text-warning">
+                        {pendingCount} pending claim
+                        {pendingCount > 1 ? "s" : ""}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="text-heading-3 font-bold text-text-primary mt-2">
+                    {item.title}
+                  </h3>
+
+                  {/* Location */}
+                  <div className="flex items-center gap-1 text-body-sm text-text-secondary mt-1">
+                    <MapPin size={14} />
+                    {item.location}
+                  </div>
+
+                  {/* Date + status */}
+                  <p className="text-body-sm text-text-secondary mt-1">
+                    {formatDate(item.dateLostOrFound)} ·{" "}
+                    {isResolved ? "Resolved" : "Searching"}
+                  </p>
+
+                  {/* Details */}
+
+                  <Link
+                    to={`/account/posts/${item.id}`}
+                    className="mt-3 inline-flex items-center justify-center w-full border border-border rounded-lg px-4 py-2 text-body-md text-text-primary hover:bg-background-subtle transition-colors"
+                  >
+                    View Details
+                  </Link>
                 </div>
-
-                <p className="text-body-sm text-text-secondary mt-1">
-                  {formatDate(item.date)} ·{" "}
-                  {item.resolved ? "Resolved" : "Searching"}
-                </p>
-
-                <Link
-                  to={`/account/posts/${item.id}`}
-                  className="mt-3 inline-flex items-center justify-center w-full border border-border rounded-lg px-4 py-2 text-body-md text-text-primary hover:bg-background-subtle transition-colors"
-                >
-                  View Details
-                </Link>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

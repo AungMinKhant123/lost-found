@@ -7,48 +7,50 @@ const api = axios.create({
 });
 
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
 
   async (error) => {
     const originalRequest = error.config;
 
-    // No response from server
     if (!error.response) {
       return Promise.reject(error);
     }
 
-    // If refresh request itself failed,
-    // do NOT try to refresh again.
-    if (originalRequest?.url?.includes("/auth/refresh")) {
-      useAuthStore.getState().logout();
-
+    // Never refresh auth endpoints themselves
+    if (
+      originalRequest?.url?.includes("/auth/refresh") ||
+      originalRequest?.url?.includes("/auth/logout")
+    ) {
       return Promise.reject(error);
     }
 
-    // Only try refresh once for a 401
-    if (
-      error.response.status === 401 &&
-      originalRequest &&
-      !originalRequest._retry
-    ) {
-      originalRequest._retry = true;
-
-      try {
-        await api.post("/auth/refresh");
-
-        // Refresh succeeded, retry original request
-        return api(originalRequest);
-      } catch (refreshError) {
-        // Refresh failed → session is no longer valid
-        useAuthStore.getState().logout();
-
-        return Promise.reject(refreshError);
-      }
+    if (error.response.status !== 401) {
+      return Promise.reject(error);
     }
 
-    return Promise.reject(error);
+    // Don't refresh when already logged out
+    const isAuthenticated = useAuthStore.getState().isAuthenticated;
+
+    if (!isAuthenticated) {
+      return Promise.reject(error);
+    }
+
+    // Retry only once
+    if (originalRequest?._retry) {
+      return Promise.reject(error);
+    }
+
+    originalRequest._retry = true;
+
+    try {
+      await api.post("/auth/refresh");
+
+      return api(originalRequest);
+    } catch (refreshError) {
+      useAuthStore.getState().logout();
+
+      return Promise.reject(refreshError);
+    }
   },
 );
 
