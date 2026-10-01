@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router";
 import { X, MapPin } from "lucide-react";
 import toast from "react-hot-toast";
-import { getCurrentUser, createClaim } from "../services/api";
+
 import { useAuthStore } from "../store/authStore";
+import { useItem } from "../hooks/useItem";
+import { useCreateClaim } from "../hooks/useCreateClaim";
 
 function formatDate(isoDate) {
   return new Date(isoDate).toLocaleDateString("en-US", {
@@ -17,123 +19,143 @@ function capitalize(word) {
   return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
-// Item List/Home now hand this component items in the REAL backend's
-// shape (type: "LOST", category: { name }, dateLostOrFound, status:
-// "OPEN"/"RESOLVED") — different from the flat shape My Posts/My Claims
-// still use (status: "lost", category: "Bags", date, resolved). This
-// normalizes either one into the single flat shape the rest of this
-// component already expects, so nothing below this line needs to change.
-function normalizeItem(raw) {
-  const isRealShape = "type" in raw || "dateLostOrFound" in raw;
-
-  if (!isRealShape) {
-    return {
-      id: raw.id,
-      title: raw.title,
-      location: raw.location,
-      description: raw.description || "",
-      status: raw.status,
-      resolved: Boolean(raw.resolved),
-      date: raw.date,
-      category: raw.category || "",
-      color: raw.color || "",
-      userId: raw.userId,
-    };
-  }
-
-  return {
-    id: raw.id,
-    title: raw.title,
-    location: raw.location,
-    description: raw.description || "",
-    status: raw.type === "LOST" ? "lost" : "found",
-    resolved: raw.status === "RESOLVED",
-    date: raw.dateLostOrFound,
-    category: raw.category?.name || "",
-    color: raw.color?.name || "",
-    userId: raw.userId,
-  };
-}
-
-// Shows an item's full details in a modal, with a "Claim" flow built in.
-// "view" toggles between the details screen and the claim submission
-// form, both inside the same modal shell rather than stacking a second
-// modal on top.
-const ItemDetailsModal = ({ item: rawItem, onClose }) => {
-  const item = normalizeItem(rawItem);
+const ItemDetailsModal = ({ itemId, onClose, allowClaim = true }) => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const [view, setView] = useState("details"); // 'details' | 'claimForm' | 'claimSuccess'
+
+  const [view, setView] = useState("details");
   const [message, setMessage] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState(null);
 
-  console.log("ItemDetailsModal rendered, view =", view);
-  // added for  fixing bug by chat
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      console.log("🚨 BROWSER IS RELOADING");
-    };
+  // =========================
+  // GET ITEM
+  // =========================
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
+  const { data: item, isLoading, isError, error } = useItem(itemId);
 
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, []);
+  // =========================
+  // CREATE CLAIM
+  // =========================
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      getCurrentUser()
-        .then((user) => setCurrentUserId(user.id))
-        .catch((err) => console.error("Failed to load current user:", err));
-    }
-  }, [isAuthenticated]);
-
-  // A user can't claim an item they posted themselves.
-  const isOwnItem = currentUserId && item.userId === currentUserId;
+  const createClaimMutation = useCreateClaim();
 
   const handleSubmitClaim = async (e) => {
-    console.log("handleSubmitClaim fired", e);
     e.preventDefault();
+
     if (!message.trim()) {
       toast.error("Please describe why this item belongs to you.");
       return;
     }
 
-    setIsSubmitting(true);
-    try {
-      console.log("about to call createClaim");
-      await createClaim({
-        itemId: item.id,
-        userId: currentUserId,
-        status: "pending",
+    createClaimMutation.mutate(
+      {
+        itemId,
         message: message.trim(),
-        claimedAt: new Date().toISOString(),
-      });
-      console.log("createClaim succeeded, setting view to claimSuccess");
-      setView("claimSuccess");
-    } catch (err) {
-      console.log("createClaim FAILED:", err);
-      toast.error(
-        err.friendly
-          ? err.message
-          : "Failed to submit claim. Please try again.",
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
+      },
+      {
+        onSuccess: () => {
+          setView("claimSuccess");
+          setMessage("");
+        },
+
+        onError: (err) => {
+          toast.error(
+            err?.response?.data?.message ||
+              (err?.friendly
+                ? err.message
+                : "Failed to submit claim. Please try again."),
+          );
+        },
+      },
+    );
   };
+
+  // =========================
+  // LOADING
+  // =========================
+
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+        <div className="bg-background rounded-lg p-6 max-w-md w-full">
+          <div className="flex items-center justify-between">
+            <h2 className="text-heading-2 font-bold text-text-primary">
+              Loading...
+            </h2>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="border border-border rounded-lg p-2 text-text-secondary hover:bg-background-subtle"
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          <div className="flex justify-center py-12">
+            <p className="text-body-md text-text-secondary">
+              Loading item details...
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // =========================
+  // ERROR
+  // =========================
+
+  if (isError) {
+    return (
+      <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+        <div className="bg-background rounded-lg p-6 max-w-md w-full">
+          <div className="flex items-start justify-between">
+            <h2 className="text-heading-2 font-bold text-text-primary">
+              Unable to load item
+            </h2>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="border border-border rounded-lg p-2 text-text-secondary hover:bg-background-subtle"
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          <p className="text-body-md text-text-secondary mt-4">
+            {error?.friendly
+              ? error.message
+              : "Failed to load item details. Please try again."}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!item) {
+    return null;
+  }
+
+  // =========================
+  // ITEM STATUS
+  // =========================
+
+  const isResolved = item.status === "RESOLVED";
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
       <div className="bg-background rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
-        {/* ===== DETAILS VIEW ===== */}
+        {/* =====================================================
+            DETAILS VIEW
+        ====================================================== */}
+
         {view === "details" && (
           <>
             <div className="flex items-start justify-between">
               <h2 className="text-heading-2 font-bold text-text-primary">
                 {item.title}
               </h2>
+
               <button
                 type="button"
                 onClick={onClose}
@@ -143,56 +165,94 @@ const ItemDetailsModal = ({ item: rawItem, onClose }) => {
               </button>
             </div>
 
+            {/* Status */}
+
             <span
               className={`inline-block mt-3 px-2 py-0.5 rounded text-label-sm font-medium ${
-                item.status === "lost"
-                  ? "bg-error/10 text-error"
-                  : "bg-success/10 text-success"
+                isResolved
+                  ? "bg-success/10 text-success"
+                  : "bg-warning/10 text-warning"
               }`}
             >
-              {item.status.toUpperCase()}
+              {capitalize(item.status)}
             </span>
 
-            {/* Image placeholder — swap for the real item photo later */}
-            <div className="w-full h-48 rounded-lg bg-neutral-100 flex items-center justify-center text-text-secondary text-body-sm mt-4">
-              Image Placeholder
-            </div>
+            {/* =================================================
+                IMAGE
+            ================================================== */}
+
+            {item.images?.length > 0 ? (
+              <div className="w-full h-48 rounded-lg overflow-hidden bg-neutral-100 mt-4">
+                <img
+                  src={item.images[0].imageUrl}
+                  alt={item.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ) : (
+              <div className="w-full h-48 rounded-lg bg-neutral-100 flex items-center justify-center text-text-secondary text-body-sm mt-4">
+                No Image
+              </div>
+            )}
+
+            {/* =================================================
+                ITEM INFORMATION
+            ================================================== */}
 
             <div className="grid grid-cols-2 gap-4 mt-5">
+              {/* Category */}
+
               <div>
                 <p className="text-body-sm font-medium text-text-primary">
                   Category
                 </p>
+
                 <p className="text-body-md text-text-secondary mt-0.5">
-                  {item.category || "N/A"}
+                  {item.category?.name || "N/A"}
                 </p>
               </div>
+
+              {/* Location */}
+
               <div>
                 <p className="text-body-sm font-medium text-text-primary">
                   Location
                 </p>
+
                 <div className="flex items-center gap-1 text-body-md text-text-secondary mt-0.5">
                   <MapPin size={14} />
                   {item.location}
                 </div>
               </div>
+
+              {/* Colour */}
+
               <div>
                 <p className="text-body-sm font-medium text-text-primary">
                   Colour
                 </p>
+
                 <p className="text-body-md text-text-secondary mt-0.5">
-                  {item.color || "N/A"}
+                  {item.color?.name || "N/A"}
                 </p>
               </div>
+
+              {/* Date */}
+
               <div>
                 <p className="text-body-sm font-medium text-text-primary">
                   Date
                 </p>
+
                 <p className="text-body-md text-text-secondary mt-0.5">
-                  {formatDate(item.date)}
+                  {formatDate(item.dateLostOrFound)}
                 </p>
               </div>
             </div>
+
+            {/* =================================================
+                DESCRIPTION
+            ================================================== */}
 
             {item.description && (
               <p className="text-body-md text-text-primary mt-5">
@@ -200,19 +260,22 @@ const ItemDetailsModal = ({ item: rawItem, onClose }) => {
               </p>
             )}
 
-            {/* Claim button logic:
-                - Own item -> no button at all
-                - Guest -> prompt to log in
-                - Logged-in, someone else's item -> real Claim button */}
+            {/* =================================================
+                RESOLVED MESSAGE
+            ================================================== */}
 
-            {item.resolved && (
+            {isResolved && (
               <p className="text-center text-body-sm text-text-secondary mt-6">
                 This item has been resolved, so it can't be claimed anymore.
-                Contact admin if any disputes.
+                Contact admin if there are any disputes.
               </p>
             )}
 
-            {!isOwnItem && !item.resolved && (
+            {/* =================================================
+                CLAIM BUTTON
+            ================================================== */}
+
+            {allowClaim && !isResolved && (
               <div className="flex justify-center mt-6">
                 {isAuthenticated ? (
                   <button
@@ -236,13 +299,17 @@ const ItemDetailsModal = ({ item: rawItem, onClose }) => {
           </>
         )}
 
-        {/* ===== CLAIM FORM VIEW ===== */}
+        {/* =====================================================
+            CLAIM FORM VIEW
+        ====================================================== */}
+
         {view === "claimForm" && (
           <>
             <div className="flex items-start justify-between">
               <h2 className="text-heading-2 font-bold text-text-primary">
                 Claim This Item
               </h2>
+
               <button
                 type="button"
                 onClick={onClose}
@@ -254,7 +321,7 @@ const ItemDetailsModal = ({ item: rawItem, onClose }) => {
 
             <p className="text-body-sm text-text-secondary mt-2">
               Describe something specific about "{item.title}" that only the
-              real owner would know, this helps the poster verify your claim.
+              real owner would know. This helps the poster verify your claim.
             </p>
 
             <form onSubmit={handleSubmitClaim} className="mt-4">
@@ -274,28 +341,36 @@ const ItemDetailsModal = ({ item: rawItem, onClose }) => {
                 >
                   Back
                 </button>
+
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={createClaimMutation.isPending}
                   className="bg-primary hover:bg-primary-dark text-text-inverse rounded-lg px-6 py-2.5 text-body-md font-medium transition-colors disabled:opacity-50"
                 >
-                  {isSubmitting ? "Submitting..." : "Submit Claim"}
+                  {createClaimMutation.isPending
+                    ? "Submitting..."
+                    : "Submit Claim"}
                 </button>
               </div>
             </form>
           </>
         )}
 
-        {/* ===== SUCCESS VIEW ===== */}
+        {/* =====================================================
+            SUCCESS VIEW
+        ====================================================== */}
+
         {view === "claimSuccess" && (
           <div className="flex flex-col items-center text-center py-4">
             <h2 className="text-heading-2 font-bold text-text-primary">
               Claim Submitted!
             </h2>
+
             <p className="text-body-md text-text-secondary mt-2">
               The poster will review your claim. You can track its status from
               My Claims.
             </p>
+
             <button
               type="button"
               onClick={onClose}

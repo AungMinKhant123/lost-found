@@ -1,9 +1,11 @@
 import { Link, NavLink, useNavigate } from "react-router";
 import { useState, useRef, useEffect } from "react";
 import { User, LogOut, Settings, LayoutGrid } from "lucide-react";
-import { useAuthStore } from "../../store/authStore";
+import { useQueryClient } from "@tanstack/react-query";
+
 import { logoutUser } from "../../api/authApi";
 import { useProfile } from "../../hooks/useProfile";
+import { useAuthStore } from "../../store/authStore";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -22,6 +24,7 @@ const UserHeader = () => {
   const { data: user } = useProfile();
 
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   // Controls whether the Profile dropdown is open.
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -56,6 +59,11 @@ const UserHeader = () => {
       );
     } finally {
       logout();
+
+      queryClient.removeQueries({
+        queryKey: ["profile"],
+      });
+
       setIsDropdownOpen(false);
       navigate("/login");
     }

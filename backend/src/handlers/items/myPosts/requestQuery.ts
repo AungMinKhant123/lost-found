@@ -1,15 +1,15 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { ItemStatus, ItemType } from "../../../generated/enums.js";
 
-const ItemTypeQuerySchema  = Type.Unsafe<ItemType>({
+const ItemTypeQuerySchema = Type.Unsafe<ItemType>({
   type: "string",
-  enum: ["LOST", "FOUND"]
-})
+  enum: ["LOST", "FOUND"],
+});
 
-const ItemStatusQuerySchema  = Type.Unsafe<ItemStatus>({
+const ItemStatusQuerySchema = Type.Unsafe<ItemStatus>({
   type: "string",
-  enum: ["OPEN", "RESOLVED"]
-})
+  enum: ["OPEN", "RESOLVED"],
+});
 
 const PendingClaimsQuerySchema = Type.Unsafe<"true" | "false">({
   type: "string",

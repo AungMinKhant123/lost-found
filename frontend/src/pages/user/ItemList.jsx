@@ -796,7 +796,7 @@ const ItemList = () => {
 
       {selectedItem && (
         <ItemDetailsModal
-          item={selectedItem}
+          itemId={selectedItem.id}
           onClose={() => setSelectedItem(null)}
         />
       )}

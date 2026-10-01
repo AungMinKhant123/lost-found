@@ -1,13 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 import { MapPin, Flag, XCircle } from "lucide-react";
-import {
-  getItemById,
-  getClaimsForItem,
-  getUserById,
-  updateClaimStatus,
-  updateItemStatus,
-} from "../../services/api";
+import { getMyItemClaims, updateItemClaimStatus } from "../../api/itemsApi";
 import PostActions from "../../components/user/PostActions";
 
 const STATUS_STYLES = {
@@ -42,18 +36,17 @@ const PostClaims = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    Promise.all([getItemById(id), getClaimsForItem(id)])
-      .then(async ([itemData, claimsData]) => {
+    getMyItemClaims(id)
+      .then(({ item: itemData, claims: claimsData }) => {
         setItem(itemData);
-        const withUsers = await Promise.all(
-          claimsData.map(async (claim) => {
-            const user = await getUserById(claim.userId);
-            return { ...claim, claimant: user };
-          }),
+        setClaimsWithUsers(
+          claimsData.map((claim) => ({
+            ...claim,
+            status: claim.status.toLowerCase(),
+          })),
         );
-        setClaimsWithUsers(withUsers);
       })
-      .catch((err) => setError(err.message))
+      .catch((err) => setError(err.response?.data?.message ?? err.message))
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -66,11 +59,11 @@ const PostClaims = () => {
     const claimId = claimToDecline;
     setUpdatingId(claimId);
     try {
-      await updateClaimStatus(claimId, "declined");
+      await updateItemClaimStatus(id, claimId, "declined");
       setClaimsWithUsers((prev) =>
         prev.map((c) => (c.id === claimId ? { ...c, status: "declined" } : c)),
       );
-    } catch (err) {
+    } catch {
       alert("Failed to update claim. Please try again.");
     } finally {
       setUpdatingId(null);
@@ -93,18 +86,20 @@ const PostClaims = () => {
     setUpdatingId(claimId);
 
     try {
-      const otherPendingClaims = claimsWithUsers.filter(
-        (c) => c.id !== claimId && c.status === "pending",
+      await updateItemClaimStatus(id, claimId, "accepted");
+
+      setClaimsWithUsers((prev) =>
+        prev.map((claim) => {
+          if (claim.id === claimId) return { ...claim, status: "accepted" };
+          if (claim.status === "pending") {
+            return { ...claim, status: "declined" };
+          }
+          return claim;
+        }),
       );
 
-      await Promise.all([
-        updateClaimStatus(claimId, "accepted"),
-        ...otherPendingClaims.map((c) => updateClaimStatus(c.id, "declined")),
-        updateItemStatus(item.id, { resolved: true }),
-      ]);
-
       navigate(`/account/posts/${item.id}/claims/${claimId}`);
-    } catch (err) {
+    } catch {
       alert("Failed to accept claim. Please try again.");
       setUpdatingId(null);
       setClaimToConfirm(null);
@@ -139,7 +134,7 @@ const PostClaims = () => {
             {item.title}
           </h2>
           <p className="text-body-sm text-text-secondary mt-1">
-            {formatDate(item.date)}
+            {formatDate(item.dateLostOrFound)}
           </p>
           <div className="flex items-center gap-1 text-body-sm text-text-secondary mt-1">
             <MapPin size={14} />
@@ -170,7 +165,7 @@ const PostClaims = () => {
                     {claim.message}
                   </p>
                   <p className="text-body-sm text-text-secondary mt-1">
-                    {formatDate(claim.claimedAt)}
+                    {formatDate(claim.createdAt)}
                   </p>
                 </div>
               </div>

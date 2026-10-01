@@ -3,11 +3,17 @@ import { ItemStatus, ItemType } from "../../../generated/enums.js";
 
 const MyPostItemSchema = Type.Object({
   id: Type.String({ format: "uuid" }),
+
   type: Type.Enum(ItemType),
+
   title: Type.String(),
+
   description: Type.Optional(Type.String()),
+
   location: Type.String(),
+
   dateLostOrFound: Type.String(),
+
   status: Type.Enum(ItemStatus),
 
   pendingClaims: Type.Number(),
@@ -25,9 +31,11 @@ const MyPostItemSchema = Type.Object({
   images: Type.Array(
     Type.Object({
       id: Type.String({ format: "uuid" }),
-      objectKey: Type.String(),
+      imageUrl: Type.String(),
     }),
   ),
+
+  pendingClaimsCount: Type.Number(),
 });
 
 export const MyPostsResponseBodySchema = Type.Object({

@@ -53,8 +53,13 @@ export const useCreateItem = () => {
     mutationFn: createItemWithFallback,
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["items"] });
-      queryClient.invalidateQueries({ queryKey: ["my-items"] });
+      queryClient.invalidateQueries({
+        queryKey: ["items"],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["my-posts"],
+      });
     },
   });
 };
