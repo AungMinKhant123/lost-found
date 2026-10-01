@@ -4,6 +4,7 @@ import type { MyPostsRequestQuery } from "./requestQuery.js";
 import type { MyPostsResponseBody } from "./responseBody.js";
 
 import { prisma } from "../../../lib/prisma.js";
+import { ClaimStatus } from "../../../generated/enums.js";
 
 export async function myPostsHandler(
   request: FastifyRequest,
@@ -20,7 +21,7 @@ export async function myPostsHandler(
   const skip = (page - 1) * limit;
 
   const where = {
-    userId,
+  userId,
 
     ...(query.type && {
       type: query.type,
@@ -63,6 +64,14 @@ export async function myPostsHandler(
             name: true,
           },
         },
+      },
+    },
+
+    orderBy: {
+      createdAt: "desc",
+    },
+  }),
+]);
 
         color: {
           select: {
@@ -84,6 +93,10 @@ export async function myPostsHandler(
       },
     }),
   ]);
+const formattedItems = items.map(({ _count, ...item}) => ({
+  ...item,
+  pendingClaims: _count.claims,
+}));
 
   const pendingClaimCounts = await prisma.claim.groupBy({
     by: ["itemId"],
@@ -143,8 +156,7 @@ export async function myPostsHandler(
   const totalPages = Math.ceil(total / limit);
 
   return reply.send({
-    data,
-
+    data: formattedItems,
     pagination: {
       page,
       limit,

@@ -653,18 +653,19 @@ const ItemList = () => {
                       {/* ========================================
                             IMAGE
                         ======================================== */}
-
-                      {item.images?.length > 0 ? (
-                        <img
-                          src={item.images[0].imageUrl}
-                          alt={item.title}
-                          className="w-full h-40 object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-40 bg-neutral-100 flex items-center justify-center text-text-secondary text-body-sm">
-                          No image
-                        </div>
-                      )}
+                      <div className="pt-4 px-4 rounded-lg">
+                        {item.images?.length > 0 ? (
+                          <img
+                            src={item.images[0].imageUrl}
+                            alt={item.title}
+                            className="w-full h-40 object-cover rounded-lg"
+                          />
+                        ) : (
+                          <div className="w-full h-40 bg-neutral-100 flex items-center justify-center text-text-secondary text-body-sm rounded-lg">
+                            No image
+                          </div>
+                        )}
+                      </div>
 
                       <div className="p-4">
                         {/* ======================================

@@ -93,13 +93,19 @@ export default function NewPost() {
   // Cleanup preview URLs when component unmounts
   // --------------------------------------------------
 
+  const imagesRef = useRef([]);
+
+  useEffect(() => {
+    imagesRef.current = images;
+  }, [images]);
+
   useEffect(() => {
     return () => {
-      images.forEach((image) => {
+      imagesRef.current.forEach((image) => {
         URL.revokeObjectURL(image.url);
       });
     };
-  }, [images]);
+  }, []);
 
   // --------------------------------------------------
   // Handle normal input changes
@@ -922,14 +928,14 @@ export default function NewPost() {
 
       {showConfirmModal && (
         <div
-          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-4"
+          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center pt-30 px-5 py-6 overflow-y-auto"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) {
               setShowConfirmModal(false);
             }
           }}
         >
-          <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl overflow-hidden">
+          <div className="w-full max-w-xl max-h-[calc(100vh-3rem)] bg-white rounded-2xl shadow-xl overflow-hidden">
             {/* Modal header */}
 
             <div className="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
@@ -950,23 +956,27 @@ export default function NewPost() {
             {/* Modal body */}
 
             <div className="p-6 space-y-5">
-              <div>
-                <p className="text-sm text-gray-500">Post type</p>
+              {/* Post type + Item */}
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <p className="text-sm text-gray-500">Post type</p>
 
-                <p className="font-medium text-gray-900 mt-1">
-                  {formData.type === "LOST" ? "Lost" : "Found"}
-                </p>
+                  <p className="font-medium text-gray-900 mt-1">
+                    {formData.type === "LOST" ? "Lost" : "Found"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-sm text-gray-500">Item</p>
+
+                  <p className="font-medium text-gray-900 mt-1">
+                    {formData.title}
+                  </p>
+                </div>
               </div>
 
-              <div>
-                <p className="text-sm text-gray-500">Item</p>
-
-                <p className="font-medium text-gray-900 mt-1">
-                  {formData.title}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
+              {/* Category + Color */}
+              <div className="grid grid-cols-2 gap-6">
                 <div>
                   <p className="text-sm text-gray-500">Category</p>
 
@@ -995,22 +1005,26 @@ export default function NewPost() {
                 </div>
               </div>
 
-              <div>
-                <p className="text-sm text-gray-500">Location</p>
+              {/* Location + Date */}
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <p className="text-sm text-gray-500">Location</p>
 
-                <p className="font-medium text-gray-900 mt-1">
-                  {formData.location}
-                </p>
+                  <p className="font-medium text-gray-900 mt-1">
+                    {formData.location}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-sm text-gray-500">Date</p>
+
+                  <p className="font-medium text-gray-900 mt-1">
+                    {formData.dateLostOrFound}
+                  </p>
+                </div>
               </div>
 
-              <div>
-                <p className="text-sm text-gray-500">Date</p>
-
-                <p className="font-medium text-gray-900 mt-1">
-                  {formData.dateLostOrFound}
-                </p>
-              </div>
-
+              {/* Images */}
               {images.length > 0 && (
                 <div>
                   <p className="text-sm text-gray-500 mb-2">Images</p>
@@ -1021,13 +1035,14 @@ export default function NewPost() {
                         key={image.id}
                         src={image.url}
                         alt="Item preview"
-                        className="w-16 h-16 rounded-lg object-cover border border-gray-200"
+                        className="w-20 h-20 rounded-lg object-cover border border-gray-200 flex-shrink-0"
                       />
                     ))}
                   </div>
                 </div>
               )}
 
+              {/* Confirmation message */}
               <div className="p-4 rounded-xl bg-gray-50">
                 <p className="text-sm text-gray-600">
                   Once you confirm, your post will be submitted and linked to

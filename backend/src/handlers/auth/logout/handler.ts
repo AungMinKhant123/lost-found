@@ -44,6 +44,6 @@ export async function logoutHandler(
   });
 
   return reply.send({
-    message: "Logout Success",
+    message: "Logout Success!",
   });
 }

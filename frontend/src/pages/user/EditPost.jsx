@@ -83,7 +83,7 @@ const PickerField = ({
 const EditPost = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { categories, colours } = useAttributes();
+  const { categories, colors } = useAttributes();
 
   const [item, setItem] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
@@ -191,7 +191,7 @@ const EditPost = () => {
     label: c.name,
     Icon: getCategoryIcon(c.icon),
   }));
-  const colourOptions = colours.map((c) => ({
+  const colourOptions = colors.map((c) => ({
     value: c.name,
     label: c.name,
     hex: c.hex,

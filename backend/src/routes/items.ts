@@ -35,6 +35,7 @@ export async function itemsRoutes(app: FastifyInstance) {
     },
     myClaimsHandler,
   );
+
   app.post(
     "/item/createNewPost",
     {
@@ -78,3 +79,40 @@ export async function itemsRoutes(app: FastifyInstance) {
     updateItemClaimStatusHandler,
   );
 }
+
+  app.delete(
+    "/item/cancelclaims/:claimId",
+    {
+      preHandler: app.verifyUser,
+      schema: MyClaimCancelSchema,
+    },
+    myClaimCancelHandler,
+  );
+
+  app.delete(
+    "/item/deleteposts/:itemId",
+    {
+      preHandler: app.verifyUser,
+      schema: MyPostDeleteSchema,
+    },
+    myPostDeleteHandler,
+  );
+
+  app.get(
+    "/item/myclaims/:claimId",
+    {
+      preHandler: app.verifyUser,
+      schema: MyClaimDetailsSchema,
+    },
+    myClaimDetailsHandler,
+  );
+
+  app.get(
+    "/item/mypostviewdetail/:itemId",
+    {
+      preHandler: app.verifyUser,
+      schema: MyPostViewDetailSchema,
+    },
+    myPostViewDetailHandler,
+  )
+};

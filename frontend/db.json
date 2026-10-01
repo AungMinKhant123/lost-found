@@ -17,7 +17,7 @@
       "status": "found",
       "location": "Cafeteria",
       "date": "2026-09-06",
-      "resolved": false,
+      "resolved": true,
       "userId": "1",
       "category": "Other",
       "color": "Blue"
@@ -368,6 +368,23 @@
       "id": "dvunX51qq0g",
       "createdAt": "2026-09-28T17:40:32.172Z",
       "updatedAt": "2026-09-28T17:42:19.532Z"
+    },
+    {
+      "title": "Iphone 13 Pro Max",
+      "status": "found",
+      "category": "Electronics",
+      "color": "Blue",
+      "location": "Canteen",
+      "date": "2026-09-29",
+      "description": "I found it under the desk which is right next to the Fridge.",
+      "resolved": false,
+      "userId": "2",
+      "postedBy": {
+        "name": "Ashfaq Ifthicar",
+        "email": "ash@gmail.com"
+      },
+      "id": "hVMb7aSCriI",
+      "createdAt": "2026-09-29T11:26:24.129Z"
     }
   ],
   "users": [
@@ -377,12 +394,12 @@
       "lastName": "Linn",
       "email": "myolwin400400@gmail.com",
       "phone": "0945609416",
-      "profession": "Student",
+      "profession": "STUDENT",
       "socialMedia": "https://www.facebook.com/david.lin",
       "password": "abcd1234!",
       "confirmPassword": "abcd1234!",
       "agreeTerms": true,
-      "aboutMe": "I am a UI/UX designer"
+      "aboutMe": "I am a UI/UX designer !!!"
     },
     {
       "firstName": "Ashfaq",
@@ -559,14 +576,6 @@
       "claimedAt": "2026-08-05T14:20:00"
     },
     {
-      "id": "4",
-      "itemId": "13",
-      "userId": "1",
-      "status": "pending",
-      "message": "I lost my umbrella here yesterday afternoon.",
-      "claimedAt": "2026-08-09T09:15:00"
-    },
-    {
       "id": "5",
       "itemId": "5",
       "userId": "8",
@@ -641,7 +650,7 @@
     {
       "itemId": "2",
       "userId": "2",
-      "status": "pending",
+      "status": "accepted",
       "message": "this item is mine i said so",
       "claimedAt": "2026-09-23T07:30:31.367Z",
       "id": "k5evWJnJIq8"
@@ -649,7 +658,7 @@
     {
       "itemId": "2",
       "userId": "2",
-      "status": "pending",
+      "status": "declined",
       "message": "i am testing this claim",
       "claimedAt": "2026-09-23T07:32:23.593Z",
       "id": "bxKz4rtlTjs"
@@ -913,7 +922,7 @@
     {
       "itemId": "2",
       "userId": "2",
-      "status": "pending",
+      "status": "declined",
       "message": "testing",
       "claimedAt": "2026-09-26T09:04:44.888Z",
       "id": "GH9Ip58LfUY"
@@ -973,6 +982,14 @@
       "message": "Has my name printed in the backside.",
       "claimedAt": "2026-09-27T12:10:19.754Z",
       "id": "9FyWDL1uZME"
+    },
+    {
+      "itemId": "hVMb7aSCriI",
+      "userId": "1",
+      "status": "pending",
+      "message": "this item is mine beacuse i said so",
+      "claimedAt": "2026-09-30T04:07:16.729Z",
+      "id": "-sN3t06jMFg"
     }
   ],
   "categories": [
@@ -1062,6 +1079,11 @@
       "name": "Pink",
       "hex": "#ff1af7",
       "id": "wGCGGYoeDUM"
+    },
+    {
+      "name": "Purple",
+      "hex": "#8b5cf6",
+      "id": "M9xmOSw10P0"
     }
   ],
   "locations": [
