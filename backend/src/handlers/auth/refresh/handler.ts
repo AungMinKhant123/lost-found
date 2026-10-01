@@ -68,6 +68,7 @@ export async function refreshHandler(
     {
       userId: user.id,
       email: user.email,
+      role: user.role,
     },
     {
       expiresIn: "15m",

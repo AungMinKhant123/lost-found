@@ -58,8 +58,8 @@ model Category {
   updatedAt   DateTime @updatedAt
   createdById String
   updatedById String
-  createdBy   User     @relation("CategoryCreatedBy", fields: [createdById], references: [id])
-  updatedBy   User     @relation("CategoryUpdatedBy", fields: [updatedById], references: [id])
+  createdBy   User     @relation("CategoryCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  updatedBy   User     @relation("CategoryUpdatedBy", fields: [updatedById], references: [id], onDelete: Restrict)
   items       Item[]
 }
 
@@ -74,8 +74,8 @@ model Color {
   createdById String
   updatedById String
 
-  createdBy   User     @relation("ColorCreatedBy", fields: [createdById], references: [id])
-  updatedBy   User     @relation("ColorUpdatedBy", fields: [updatedById], references: [id])
+  createdBy   User     @relation("ColorCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  updatedBy   User     @relation("ColorUpdatedBy", fields: [updatedById], references: [id], onDelete: Restrict)
 
   items       Item[]
 }
@@ -96,8 +96,8 @@ model Item {
   createdById     String
   updatedById     String
   claims          Claim[]
-  category        Category    @relation(fields: [categoryId], references: [id])
-  color           Color       @relation(fields: [colorId], references: [id])
+  category        Category    @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  color           Color       @relation(fields: [colorId], references: [id], onDelete: Restrict)
   createdBy       User        @relation("ItemCreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
   updatedBy       User        @relation("ItemUpdatedBy", fields: [updatedById], references: [id], onDelete: Cascade)
   user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -165,6 +165,7 @@ enum UserProfession {
 enum UserRole {
   USER
   ADMIN
+  SUPERADMIN
 }
 
 enum ItemType {
