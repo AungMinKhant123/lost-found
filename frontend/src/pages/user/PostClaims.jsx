@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 import { MapPin, Flag, XCircle } from "lucide-react";
 import { getMyItemClaims, updateItemClaimStatus } from "../../api/itemsApi";
+import {
+  getMyItemClaimsMock,
+  updateItemClaimStatusMock,
+} from "../../services/api";
 import PostActions from "../../components/user/PostActions";
 
 const STATUS_STYLES = {
@@ -22,6 +26,32 @@ function capitalize(word) {
   return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
+function isBackendUnreachable(error) {
+  return !error?.response || error.response.status >= 500;
+}
+
+async function fetchMyItemClaimsWithFallback(itemId) {
+  try {
+    return await getMyItemClaims(itemId);
+  } catch (error) {
+    if (import.meta.env.DEV && isBackendUnreachable(error)) {
+      return await getMyItemClaimsMock(itemId);
+    }
+    throw error;
+  }
+}
+
+async function updateItemClaimStatusWithFallback(itemId, claimId, status) {
+  try {
+    return await updateItemClaimStatus(itemId, claimId, status);
+  } catch (error) {
+    if (import.meta.env.DEV && isBackendUnreachable(error)) {
+      return await updateItemClaimStatusMock(itemId, claimId, status);
+    }
+    throw error;
+  }
+}
+
 const PostClaims = () => {
   const { id } = useParams();
   const [item, setItem] = useState(null);
@@ -36,7 +66,7 @@ const PostClaims = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    getMyItemClaims(id)
+    fetchMyItemClaimsWithFallback(id)
       .then(({ item: itemData, claims: claimsData }) => {
         setItem(itemData);
         setClaimsWithUsers(
@@ -59,7 +89,7 @@ const PostClaims = () => {
     const claimId = claimToDecline;
     setUpdatingId(claimId);
     try {
-      await updateItemClaimStatus(id, claimId, "declined");
+      await updateItemClaimStatusWithFallback(id, claimId, "declined");
       setClaimsWithUsers((prev) =>
         prev.map((c) => (c.id === claimId ? { ...c, status: "declined" } : c)),
       );
@@ -86,7 +116,7 @@ const PostClaims = () => {
     setUpdatingId(claimId);
 
     try {
-      await updateItemClaimStatus(id, claimId, "accepted");
+      await updateItemClaimStatusWithFallback(id, claimId, "accepted");
 
       setClaimsWithUsers((prev) =>
         prev.map((claim) => {

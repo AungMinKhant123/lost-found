@@ -166,8 +166,6 @@ const ClaimDetails = () => {
       )}
 
       {claim.status === "pending" && (
-        // No wireframe was provided for this state — placeholder design,
-        // confirm with UI/UX before treating this as final.
         <div className="border border-border rounded-lg p-8 mt-6 flex flex-col items-center text-center">
           <Clock size={32} className="text-warning" />
           <h3 className="text-heading-3 font-bold text-text-primary mt-3">
