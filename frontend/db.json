@@ -301,7 +301,7 @@
       "createdAt": "2026-09-21T03:33:22.205Z"
     },
     {
-      "title": " Samsung S24 Ultra+",
+      "title": "Samsung S24+",
       "status": "lost",
       "category": "Electronics",
       "color": "Black",
@@ -315,7 +315,8 @@
         "email": "ash@gmail.com"
       },
       "id": "It8vSeJUq8w",
-      "createdAt": "2026-09-27T12:14:32.390Z"
+      "createdAt": "2026-09-27T12:14:32.390Z",
+      "updatedAt": "2026-10-02T09:59:13.738Z"
     },
     {
       "title": "Nike Shoes",
