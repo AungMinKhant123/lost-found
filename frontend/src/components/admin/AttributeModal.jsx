@@ -113,7 +113,12 @@ const AttributeModal = ({ isOpen, onClose, onSave, type, editing }) => {
               <div className="flex h-12 items-center gap-3 rounded-lg border border-border px-4 focus-within:ring-2 focus-within:ring-primary bg-background">
                 <div
                   className="w-6 h-6 rounded-md shrink-0 border border-border shadow-sm transition-colors"
-                  style={{ backgroundColor: hex }}
+                  style={{
+                    background:
+                      name.trim().toLowerCase() === "other"
+                        ? "conic-gradient(from 180deg, #ef4444, #f97316, #eab308, #10b981, #3b82f6, #8b5cf6, #ef4444)"
+                        : hex,
+                  }}
                 />
                 <input
                   id="attribute-name"

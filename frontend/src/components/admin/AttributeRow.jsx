@@ -6,7 +6,7 @@ import { isFallbackAttribute } from "../../services/api";
 // left side shows a colour swatch or a category icon.
 const AttributeRow = ({ variant, attribute, itemCount, onEdit, onDelete }) => {
   const isColour = variant === "colours";
-  const isProtected = isFallbackAttribute(attribute.name);
+  const isProtected = isFallbackAttribute(attribute.name) || itemCount > 0;
   const Icon = getCategoryIcon(attribute.icon);
 
   return (
@@ -14,7 +14,11 @@ const AttributeRow = ({ variant, attribute, itemCount, onEdit, onDelete }) => {
       {isColour ? (
         <div
           className="w-8 h-8 rounded-md shrink-0 border border-border shadow-sm"
-          style={{ backgroundColor: attribute.hex }}
+          style={{
+            background: isFallbackAttribute(attribute.name)
+              ? "conic-gradient(from 180deg, #ef4444, #f97316, #eab308, #10b981, #3b82f6, #8b5cf6, #ef4444)"
+              : attribute.hex,
+          }}
         />
       ) : (
         <div className="w-8 h-8 shrink-0 flex items-center justify-center">
@@ -36,9 +40,11 @@ const AttributeRow = ({ variant, attribute, itemCount, onEdit, onDelete }) => {
         disabled={isProtected}
         aria-label={`Delete ${attribute.name}`}
         title={
-          isProtected
+          isFallbackAttribute(attribute.name)
             ? `"${attribute.name}" is the fallback value and can't be deleted`
-            : `Delete ${attribute.name}`
+            : itemCount > 0
+              ? `"${attribute.name}" is still used by ${itemCount} item${itemCount === 1 ? "" : "s"} - remove or reassign them first`
+              : `Delete ${attribute.name}`
         }
         className="w-8 h-8 shrink-0 flex items-center justify-center rounded-md border border-border-strong text-text-primary transition-colors hover:bg-error/10 hover:text-error disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-text-primary"
       >
