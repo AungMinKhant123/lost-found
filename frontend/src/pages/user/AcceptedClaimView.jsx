@@ -1,6 +1,22 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
 import { getAcceptedClaimContact } from "../../api/itemsApi";
+import { getAcceptedClaimContactMock } from "../../services/api";
+
+function isBackendUnreachable(error) {
+  return !error?.response || error.response.status >= 500;
+}
+
+async function fetchContactWithFallback(itemId, claimId) {
+  try {
+    return await getAcceptedClaimContact(itemId, claimId);
+  } catch (error) {
+    if (import.meta.env.DEV && isBackendUnreachable(error)) {
+      return await getAcceptedClaimContactMock(itemId, claimId);
+    }
+    throw error;
+  }
+}
 
 const AcceptedClaimView = () => {
   const { itemId, claimId } = useParams();
@@ -9,7 +25,7 @@ const AcceptedClaimView = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    getAcceptedClaimContact(itemId, claimId)
+    fetchContactWithFallback(itemId, claimId)
       .then(setClaimant)
       .catch((err) => setError(err.response?.data?.message ?? err.message))
       .finally(() => setLoading(false));

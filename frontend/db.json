@@ -28,7 +28,7 @@
       "status": "lost",
       "location": "Central Phuket",
       "date": "2026-09-06",
-      "resolved": false,
+      "resolved": true,
       "userId": "1",
       "category": "Other",
       "color": "Black"
@@ -342,7 +342,7 @@
       "location": "IT Lab",
       "date": "2026-09-28",
       "description": "The keysboard's brand is ASUS. And it has a missing number 8.",
-      "resolved": false,
+      "resolved": true,
       "userId": "1",
       "postedBy": {
         "name": "David Linn",
@@ -377,7 +377,7 @@
       "location": "Canteen",
       "date": "2026-09-29",
       "description": "I found it under the desk which is right next to the Fridge.",
-      "resolved": false,
+      "resolved": true,
       "userId": "2",
       "postedBy": {
         "name": "Ashfaq Ifthicar",
@@ -393,7 +393,7 @@
       "firstName": "David",
       "lastName": "Linn",
       "email": "myolwin400400@gmail.com",
-      "phone": "0945609416",
+      "phone": "0945609446",
       "profession": "STUDENT",
       "socialMedia": "https://www.facebook.com/david.lin",
       "password": "abcd1234!",
@@ -405,7 +405,7 @@
       "firstName": "Ashfaq",
       "lastName": "Ifthicar",
       "email": "ash@gmail.com",
-      "phone": "123456789",
+      "phone": "1234567890",
       "password": "qwertyuiop",
       "confirmPassword": "qwertyuiop",
       "profession": "STUDENT",
@@ -603,7 +603,7 @@
       "id": "8",
       "itemId": "3",
       "userId": "8",
-      "status": "pending",
+      "status": "declined",
       "message": "This looks like my backpack, it has a small tear on the side pocket.",
       "claimedAt": "2026-09-10T14:00:00"
     },
@@ -666,7 +666,7 @@
     {
       "itemId": "3",
       "userId": "2",
-      "status": "pending",
+      "status": "accepted",
       "message": "testing this claim again",
       "claimedAt": "2026-09-23T07:36:44.846Z",
       "id": "QVMK-rRY574"
@@ -986,10 +986,18 @@
     {
       "itemId": "hVMb7aSCriI",
       "userId": "1",
-      "status": "pending",
+      "status": "accepted",
       "message": "this item is mine beacuse i said so",
       "claimedAt": "2026-09-30T04:07:16.729Z",
       "id": "-sN3t06jMFg"
+    },
+    {
+      "itemId": "qo_1I0iWcN4",
+      "userId": "2",
+      "status": "accepted",
+      "message": "I am ashfaq, this item belongs to me.",
+      "claimedAt": "2026-10-02T04:13:12.955Z",
+      "id": "akdsCL8z0Vw"
     }
   ],
   "categories": [
@@ -1027,6 +1035,11 @@
       "id": "7",
       "name": "Other",
       "icon": "package"
+    },
+    {
+      "name": "Mobile Phone",
+      "icon": "smartphone",
+      "id": "JOIJPyhCznM"
     }
   ],
   "colours": [
@@ -1084,6 +1097,11 @@
       "name": "Purple",
       "hex": "#8b5cf6",
       "id": "M9xmOSw10P0"
+    },
+    {
+      "name": "Yellow",
+      "hex": "#f0e914",
+      "id": "JhpPQmJNJac"
     }
   ],
   "locations": [

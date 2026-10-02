@@ -830,6 +830,7 @@ function toBackendShapedItem(mockItem) {
     description: mockItem.description || "",
     type: mockItem.status === "lost" ? "LOST" : "FOUND",
     status: mockItem.resolved ? "RESOLVED" : "OPEN",
+    resolved: Boolean(mockItem.resolved),
     dateLostOrFound: mockItem.date,
     category: mockItem.category
       ? { id: mockItem.category, name: mockItem.category }
@@ -926,4 +927,151 @@ export async function createItemMockFromFormData(formData) {
       email: user.email,
     },
   });
+}
+
+// ===== Fallbacks for single-item view, claim creation, My Posts, My
+// Claims, Claims Received, and the accepted-claim contact view =====
+// All reshape mock data into whatever shape the REAL backend's
+// equivalent endpoint returns, so the pages/hooks calling these never
+// need to know which source actually answered.
+
+export async function getItemByIdMock(id) {
+  const item = await getItemById(id);
+  return toBackendShapedItem(item);
+}
+
+// Backs useCreateClaim's fallback. Reuses createClaim's own rule
+// enforcement (no claiming your own post, no claiming resolved items,
+// no duplicate pending claims) — those errors are already marked
+// `.friendly`, which ItemDetailsModal already knows how to display.
+export async function createClaimMockFromBackendShape({ itemId, message }) {
+  const user = await getCurrentUser();
+  return createClaim({
+    itemId,
+    userId: user.id,
+    status: "pending",
+    message,
+    claimedAt: new Date().toISOString(),
+  });
+}
+
+export async function getMyPostsMock() {
+  const user = await getCurrentUser();
+  const [items, claims] = await Promise.all([
+    getItemsByUser(user.id),
+    getClaims(),
+  ]);
+
+  const data = items.map((item) => {
+    const pendingClaimsCount = claims.filter(
+      (c) => c.itemId === item.id && c.status === "pending",
+    ).length;
+    return { ...toBackendShapedItem(item), pendingClaimsCount };
+  });
+
+  return { data };
+}
+
+export async function getMyClaimsMock({
+  page = 1,
+  limit = 6,
+  claimStatus,
+} = {}) {
+  const user = await getCurrentUser();
+  const allClaims = await getClaimsByUser(user.id);
+
+  const withItem = await Promise.all(
+    allClaims.map(async (claim) => ({
+      ...claim,
+      status: claim.status.toUpperCase(),
+      item: toBackendShapedItem(await getItemById(claim.itemId)),
+    })),
+  );
+
+  const counts = {
+    all: withItem.length,
+    pending: withItem.filter((c) => c.status === "PENDING").length,
+    accepted: withItem.filter((c) => c.status === "ACCEPTED").length,
+    declined: withItem.filter((c) => c.status === "DECLINED").length,
+  };
+
+  const filtered = claimStatus
+    ? withItem.filter((c) => c.status === claimStatus)
+    : withItem;
+
+  const start = (page - 1) * limit;
+
+  return {
+    data: filtered.slice(start, start + limit),
+    counts,
+    pagination: {
+      totalPages: Math.max(1, Math.ceil(filtered.length / limit)),
+    },
+  };
+}
+
+// Backs PostClaims.jsx's fallback for "Claims Received".
+export async function getMyItemClaimsMock(itemId) {
+  const [item, claims, users] = await Promise.all([
+    getItemById(itemId),
+    getClaimsForItem(itemId),
+    getUsers(),
+  ]);
+
+  const claimsWithClaimant = claims.map((claim) => {
+    const claimant = users.find((u) => u.id === claim.userId);
+    return {
+      ...claim,
+      status: claim.status.toUpperCase(),
+      createdAt: claim.claimedAt,
+      claimant: claimant
+        ? {
+            firstName: claimant.firstName,
+            lastName: claimant.lastName,
+            profileUrl: null,
+          }
+        : { firstName: "Unknown", lastName: "", profileUrl: null },
+    };
+  });
+
+  return { item: toBackendShapedItem(item), claims: claimsWithClaimant };
+}
+
+// Backs PostClaims.jsx's fallback for Accept/Decline. "Accepted" does the
+// full cascade ourselves (decline every other pending claim on this item,
+// mark the item resolved), since the real backend presumably does this
+// server-side and the mock has nothing else to trigger it.
+export async function updateItemClaimStatusMock(itemId, claimId, status) {
+  const normalized = status.toLowerCase();
+
+  if (normalized === "accepted") {
+    const claims = await getClaimsForItem(itemId);
+    const others = claims.filter(
+      (c) => c.id !== claimId && c.status === "pending",
+    );
+
+    await Promise.all([
+      updateClaimStatus(claimId, "accepted"),
+      ...others.map((c) => updateClaimStatus(c.id, "declined")),
+      updateItemStatus(itemId, { resolved: true }),
+    ]);
+  } else {
+    await updateClaimStatus(claimId, normalized);
+  }
+
+  return { success: true };
+}
+
+// Backs AcceptedClaimView.jsx's fallback.
+export async function getAcceptedClaimContactMock(itemId, claimId) {
+  const claim = await getClaimById(claimId);
+  const claimant = await getUserById(claim.userId);
+
+  return {
+    firstName: claimant.firstName,
+    lastName: claimant.lastName,
+    phone: claimant.phone || null,
+    email: claimant.email,
+    profileUrl: null,
+  };
 }
