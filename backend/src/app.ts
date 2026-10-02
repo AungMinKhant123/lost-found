@@ -13,6 +13,7 @@ import multipart from "./plugins/multipart.js";
 import { itemsRoutes } from "./routes/items.js";
 import { categoryRoutes } from "./routes/categories.js";
 import { colorRoutes } from "./routes/colors.js";
+import { adminRoutes } from "./routes/admin.js";
 
 export async function buildApp() {
   const app = Fastify({
@@ -42,6 +43,8 @@ export async function buildApp() {
   await app.register(categoryRoutes);
   await app.register(colorRoutes);
   await app.register(itemsRoutes);
+
+  await app.register(adminRoutes);
 
   return app;
 }
