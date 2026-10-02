@@ -6,6 +6,14 @@ export async function seedUsers(prisma: PrismaClient) {
 
   const usersData = [
     {
+      firstName: "Super",
+      lastName: "Admin",
+      email: "superadmin@lostfound.com",
+      phone: "0900000000",
+      profession: "WORKER" as const,
+      role: "SUPERADMIN" as const,
+    },
+    {
       firstName: "System",
       lastName: "Admin",
       email: "admin@lostfound.com",

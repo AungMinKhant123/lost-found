@@ -61,6 +61,7 @@ export async function passwordChangeHandler(
     {
       userId: user.id,
       email: user.email,
+      role: user.role,
     },
     {
       expiresIn: "15m",
