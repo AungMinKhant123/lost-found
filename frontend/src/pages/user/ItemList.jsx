@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Search, MapPin, ChevronDown, X } from "lucide-react";
+import { Search, MapPin, ChevronDown, X, Filter } from "lucide-react";
 
 import DecorativeBackground from "../../components/DecorativeBackground/DecorativeBackground";
 import ItemDetailsModal from "../../components/ItemDetailsModal";
@@ -76,6 +76,11 @@ const ItemList = () => {
 
   const [selectedItem, setSelectedItem] = useState(null);
   const [isColorsExpanded, setIsColorsExpanded] = useState(true);
+
+  // Mobile only: whether the filter sidebar panel is open (on lg+ the
+  // sidebar is always visible as the left column, so this state is
+  // ignored there).
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
   // ============================================================
   // ATTRIBUTES
@@ -266,6 +271,9 @@ const ItemList = () => {
 
     // Start from first page after applying filters.
     setCurrentPage(1);
+
+    // Close the collapsible panel on mobile so results are visible.
+    setIsFiltersOpen(false);
   };
 
   // ============================================================
@@ -278,6 +286,9 @@ const ItemList = () => {
     setPendingColors(appliedColors);
     setPendingDateFrom(appliedDateFrom);
     setPendingDateTo(appliedDateTo);
+
+    // Close the collapsible panel on mobile.
+    setIsFiltersOpen(false);
   };
 
   // ============================================================
@@ -331,20 +342,19 @@ const ItemList = () => {
             HERO
         ====================================================== */}
 
-        <section className="max-w-[1280px] mx-auto px-10 py-16">
-          <div className="grid grid-cols-2 gap-10 items-center">
+        <section className="max-w-[1280px] mx-auto px-10 py-10 sm:py-14 lg:py-16">
+          <div className="grid grid-cols-1 gap-8 items-center md:grid-cols-2 md:gap-10">
             <div>
-              <p className="text-body-lg font-semibold text-text-primary tracking-wide">
+              <p className="text-body-md font-semibold text-text-primary tracking-wide sm:text-body-lg">
                 LOST &amp; FOUND COMMUNITY
               </p>
 
-              <h1 className="text-display-lg font-bold text-primary-dark mt-2">
+              <h1 className="text-[22px] leading-[1.25] font-bold text-primary-dark mt-2 sm:text-[32px] md:text-[40px] lg:text-display-lg">
                 Find what
-                <br />
-                you're looking for.
+                <br className="hidden sm:inline" /> you're looking for.
               </h1>
 
-              <p className="text-body-lg text-text-secondary mt-4 max-w-md">
+              <p className="text-body-md text-text-secondary mt-4 max-w-md sm:text-body-lg">
                 Browse recently reported lost and found items. Search, filter,
                 and discover a possible match in just a few clicks.
               </p>
@@ -352,11 +362,11 @@ const ItemList = () => {
 
             {/* Illustration */}
 
-            <div className="w-full h-80 rounded-xl flex items-center justify-center text-text-secondary text-body-sm">
+            <div className="w-full h-auto rounded-xl flex items-center justify-center text-text-secondary text-body-sm md:h-80">
               <img
                 src="https://res.cloudinary.com/d5tnusci/image/upload/v1789924308/itemlists_f7kjjr.png"
                 alt=""
-                className="w-300 h-auto"
+                className="w-full max-w-[320px] h-auto sm:max-w-[460px] lg:max-w-none lg:w-300"
               />
             </div>
           </div>
@@ -367,7 +377,7 @@ const ItemList = () => {
 
           <form
             onSubmit={handleSearchSubmit}
-            className="flex justify-center gap-4 mt-10"
+            className="flex justify-center gap-3 mt-8 sm:gap-4 sm:mt-10"
           >
             <div className="relative w-full max-w-xl">
               <Search
@@ -398,9 +408,12 @@ const ItemList = () => {
               )}
             </div>
 
+            {/* On phones the button is hidden to keep the search bar
+                full-width (press Enter to search); it reappears from the
+                sm breakpoint up. */}
             <button
               type="submit"
-              className="bg-primary hover:bg-primary-dark text-text-inverse rounded-lg px-8 py-3 text-body-md font-medium transition-colors"
+              className="hidden sm:inline-flex bg-primary hover:bg-primary-dark text-text-inverse rounded-lg px-8 py-3 text-body-md font-medium transition-colors"
             >
               Search
             </button>
@@ -411,13 +424,20 @@ const ItemList = () => {
             FILTERS + RESULTS
         ====================================================== */}
 
-        <section className="max-w-[1280px] mx-auto px-10 pb-16">
-          <div className="grid grid-cols-[280px_1fr] gap-10 items-start">
+        <section className="max-w-[1280px] mx-auto px-10 pb-12 lg:pb-16">
+          <div className="grid grid-cols-1 gap-6 items-start lg:grid-cols-[280px_1fr] lg:gap-10">
             {/* ==================================================
                 FILTER SIDEBAR
+                Collapsed by default on mobile (toggled by the
+                "Filters" button next to the results count) and always
+                visible on lg+ where it sits as a left column.
             ================================================== */}
 
-            <div className="border border-border rounded-lg p-6">
+            <div
+              className={`${
+                isFiltersOpen ? "block" : "hidden"
+              } lg:block border border-border rounded-lg p-5 sm:p-6`}
+            >
               <div className="flex items-center justify-between">
                 <h2 className="text-heading-3 font-bold text-text-primary">
                   Filters
@@ -612,9 +632,26 @@ const ItemList = () => {
             ================================================== */}
 
             <div>
-              <h2 className="text-heading-2 font-bold text-primary-dark">
-                {isLoading ? "Loading..." : `${totalItems} items found`}
-              </h2>
+              <div className="flex items-center justify-between gap-4">
+                <h2 className="text-heading-3 font-bold text-primary-dark sm:text-heading-2">
+                  {isLoading ? "Loading..." : `${totalItems} items found`}
+                </h2>
+
+                {/* ==========================================
+                    FILTERS TOGGLE (mobile only)
+                    Opens the collapsible filter panel above.
+                =========================================== */}
+
+                <button
+                  type="button"
+                  onClick={() => setIsFiltersOpen((open) => !open)}
+                  aria-expanded={isFiltersOpen}
+                  className="lg:hidden inline-flex items-center gap-2 border border-border rounded-lg px-4 py-2 text-body-md text-text-primary hover:bg-background-subtle transition-colors"
+                >
+                  <Filter size={16} className="text-primary" />
+                  Filters
+                </button>
+              </div>
 
               {/* =================================================
                   ERROR
@@ -644,7 +681,7 @@ const ItemList = () => {
               ================================================= */}
 
               {!isLoading && !isError && items.length > 0 && (
-                <div className="grid grid-cols-3 gap-6 mt-6">
+                <div className="grid grid-cols-1 gap-5 mt-6 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
                   {items.map((item) => (
                     <div
                       key={item.id}
@@ -726,7 +763,7 @@ const ItemList = () => {
                         <button
                           type="button"
                           onClick={() => setSelectedItem(item)}
-                          className="mt-3 inline-flex items-center justify-center w-full border border-border rounded-lg px-4 py-2 text-body-md text-text-primary hover:bg-primary hover:text-text-inverse hover:border-primary transition-colors"
+                          className="mt-3 inline-flex items-center justify-center border border-border rounded-lg px-4 py-2 text-body-md text-text-primary hover:bg-primary hover:text-text-inverse hover:border-primary transition-colors"
                         >
                           More Details
                         </button>
@@ -741,14 +778,14 @@ const ItemList = () => {
               ================================================== */}
 
               {totalPages > 1 && (
-                <div className="flex items-center justify-center gap-2 mt-8">
+                <div className="flex flex-wrap items-center justify-center gap-2 mt-8">
                   {/* Previous */}
 
                   <button
                     type="button"
                     disabled={currentPage === 1}
                     onClick={() => setCurrentPage((page) => page - 1)}
-                    className="border border-border rounded-lg px-4 py-2 text-body-md text-text-primary hover:bg-background-subtle disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    className="border border-border rounded-lg px-3 py-2 text-body-sm text-text-primary hover:bg-background-subtle disabled:opacity-40 disabled:cursor-not-allowed transition-colors sm:px-4 sm:text-body-md"
                   >
                     Previous
                   </button>
@@ -763,7 +800,7 @@ const ItemList = () => {
                       key={page}
                       type="button"
                       onClick={() => setCurrentPage(page)}
-                      className={`w-10 h-10 rounded-lg text-body-md font-medium transition-colors ${
+                      className={`w-9 h-9 rounded-lg text-body-sm font-medium transition-colors sm:w-10 sm:h-10 sm:text-body-md ${
                         currentPage === page
                           ? "bg-primary text-text-inverse"
                           : "border border-border text-text-primary hover:bg-background-subtle"
@@ -779,7 +816,7 @@ const ItemList = () => {
                     type="button"
                     disabled={currentPage === totalPages}
                     onClick={() => setCurrentPage((page) => page + 1)}
-                    className="border border-border rounded-lg px-4 py-2 text-body-md text-text-primary hover:bg-background-subtle disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    className="border border-border rounded-lg px-3 py-2 text-body-sm text-text-primary hover:bg-background-subtle disabled:opacity-40 disabled:cursor-not-allowed transition-colors sm:px-4 sm:text-body-md"
                   >
                     Next
                   </button>

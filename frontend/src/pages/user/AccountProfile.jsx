@@ -33,16 +33,18 @@ function isHttpUrl(value) {
   }
 }
 
-// One row of the Personal Information card
+// One row of the Personal Information card.
+// Phone-sized (< sm): icon+label on one line, value below it.
+// sm+ keeps the original side-by-side layout.
 const InfoRow = ({ icon: Icon, label, children }) => (
-  <div className="flex flex-row items-center gap-14 w-full">
-    <div className="flex flex-row items-center gap-3 w-36.5 shrink-0">
+  <div className="flex flex-col items-start gap-1.5 w-full sm:flex-row sm:items-center sm:gap-14">
+    <div className="flex flex-row items-center gap-3 w-full sm:w-36.5 shrink-0">
       <Icon size={20} strokeWidth={2} className="text-primary-dark" />
       <span className="text-body-md font-medium text-text-primary whitespace-nowrap">
         {label}
       </span>
     </div>
-    {children}
+    <div className="pl-8 min-w-0 sm:pl-0">{children}</div>
   </div>
 );
 
@@ -135,22 +137,22 @@ const AccountProfile = () => {
             {/* Profile Information + Buttons */}
             <div className="flex flex-col xl:flex-row justify-center items-center gap-6 w-full">
               {/* Profile Image + User Information */}
-              <div className="flex flex-row justify-center items-center gap-4.75 w-full xl:w-98.75 h-46">
+              <div className="flex flex-row justify-center items-center gap-4.75 w-full xl:w-98.75">
                 {/* Profile Avatar */}
                 {user.profileUrl ? (
                   <img
                     src={user.profileUrl}
                     alt={`${fullName}'s profile`}
-                    className="w-45.5 h-46 rounded-full object-cover shrink-0"
+                    className="w-24 h-24 sm:w-28 sm:h-28 xl:w-45.5 xl:h-46 rounded-full object-cover shrink-0"
                   />
                 ) : (
-                  <div className="w-45.5 h-46 bg-neutral-300 rounded-full shrink-0 flex items-center justify-center text-4xl font-bold text-white uppercase">
+                  <div className="w-24 h-24 sm:w-28 sm:h-28 xl:w-45.5 xl:h-46 bg-neutral-300 rounded-full shrink-0 flex items-center justify-center text-4xl font-bold text-white uppercase">
                     {fullName.charAt(0)}
                   </div>
                 )}
 
                 {/* User Details */}
-                <div className="flex flex-col justify-center items-center gap-1 min-w-0 flex-1 h-46">
+                <div className="flex flex-col justify-center items-start gap-1 min-w-0 flex-1">
                   <h2 className="w-full text-heading-1 font-bold text-text-primary break-words">
                     {fullName}
                   </h2>
@@ -166,7 +168,7 @@ const AccountProfile = () => {
               </div>
 
               {/* Edit + Setting Buttons */}
-              <div className="flex flex-row items-start gap-8 w-66 h-11.5">
+              <div className="flex flex-row items-start justify-center gap-8 w-full xl:w-66">
                 <Link
                   to="/account/edit-profile"
                   className="flex justify-center items-center w-29 h-11 px-2.5 rounded-lg bg-primary text-body-md text-text-inverse hover:bg-primary-dark transition-colors"
@@ -217,18 +219,18 @@ const AccountProfile = () => {
           <div className="flex flex-col justify-center items-center gap-7.75 w-full">
             {/* ================= ABOUT ME ================= */}
             <div className="box-border flex flex-col justify-center items-center gap-3 w-full max-w-165 min-h-29.75 px-6 border border-border rounded-lg py-4">
-              <h3 className="w-full max-w-118.75 text-heading-3 font-semibold text-text-primary">
+              <h3 className="w-full text-heading-3 font-semibold text-text-primary text-center">
                 About Me
               </h3>
 
-              <p className="w-full max-w-118.75 text-body-sm text-text-primary">
+              <p className="w-full max-w-118.75 text-body-sm text-text-primary text-center">
                 {user.aboutMe || `Hi! I am ${fullName}.`}
               </p>
             </div>
 
             {/* ================= PERSONAL INFORMATION ================= */}
             <div className="box-border flex flex-col justify-center items-center gap-6 w-full max-w-165 min-h-53 px-6 border border-border rounded-lg py-4">
-              <h3 className="w-full max-w-114.75 text-heading-3 font-semibold text-text-primary">
+              <h3 className="w-full text-heading-3 font-semibold text-text-primary text-center">
                 Personal Information
               </h3>
 
@@ -290,13 +292,13 @@ const AccountProfile = () => {
 
             {/* ================= SECURITY ================= */}
             <div className="box-border flex flex-col justify-center items-center gap-6 w-full max-w-165 min-h-55 px-6 border border-border rounded-lg py-4">
-              <h3 className="w-full max-w-115.25 text-heading-3 font-semibold text-text-primary">
+              <h3 className="w-full text-heading-3 font-semibold text-text-primary text-center">
                 Security
               </h3>
 
               <div className="flex flex-col items-start gap-6 w-full max-w-125">
                 {/* Password */}
-                <div className="flex flex-row items-start gap-14 w-full">
+                <div className="flex w-full flex-col items-start gap-3 sm:flex-row sm:items-start sm:gap-14">
                   <div className="flex flex-row items-start gap-3 w-57.5 shrink-0">
                     <KeyRound
                       size={22}
@@ -315,20 +317,22 @@ const AccountProfile = () => {
                     </div>
                   </div>
 
-                  <span className="text-body-lg text-text-primary">
-                    *******
-                  </span>
+                  <div className="flex flex-row items-start gap-6">
+                    <span className="text-body-lg text-text-primary">
+                      *******
+                    </span>
 
-                  <Link
-                    to="/account/change-password"
-                    className="text-body-lg text-primary-dark hover:underline"
-                  >
-                    Change
-                  </Link>
+                    <Link
+                      to="/account/change-password"
+                      className="text-body-lg text-primary-dark hover:underline"
+                    >
+                      Change
+                    </Link>
+                  </div>
                 </div>
 
                 {/* Two Factor Authentication */}
-                <div className="flex flex-row items-start gap-14 w-full">
+                <div className="flex w-full flex-col items-start gap-3 sm:flex-row sm:items-start sm:gap-14">
                   <div className="flex flex-row items-start gap-3 w-57.5 shrink-0">
                     <ShieldCheck
                       size={20}
@@ -341,16 +345,18 @@ const AccountProfile = () => {
                     </span>
                   </div>
 
-                  <span className="text-body-lg text-text-primary">
-                    Disabled
-                  </span>
+                  <div className="flex flex-row items-start gap-6">
+                    <span className="text-body-lg text-text-primary">
+                      Disabled
+                    </span>
 
-                  <button
-                    type="button"
-                    className="text-body-lg text-primary-dark hover:underline"
-                  >
-                    Enable
-                  </button>
+                    <button
+                      type="button"
+                      className="text-body-lg text-primary-dark hover:underline"
+                    >
+                      Enable
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

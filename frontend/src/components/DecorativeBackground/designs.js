@@ -88,6 +88,10 @@ export const designs = {
       color: "#604AB1",
       top: 270,
       right: -130,
+      // On mobile the blob would sit right on top of the hero text and
+      // the item cards (which have no background of their own), so it is
+      // dropped entirely — matches the clean white mobile design.
+      mobile: { hidden: true },
     },
     {
       type: "blob",
@@ -98,6 +102,7 @@ export const designs = {
       color: "#6F4FB4",
       top: 340,
       left: -95,
+      mobile: { hidden: true },
     },
   ],
   howItWorks: [
@@ -152,6 +157,10 @@ export const designs = {
       color: "#6F4FB4",
       top: 1050,
       left: -38,
+      // Mobile: slide most of the blob off the left edge so only a thin
+      // accent sliver shows (the desktop position would cover the team
+      // member photos on a 390px screen).
+      mobile: { top: 640, left: -455 },
     },
     {
       type: "blob",
@@ -162,6 +171,7 @@ export const designs = {
       color: "#6F4FB4",
       top: 700,
       right: 0,
+      mobile: { top: 560, right: -215 },
     },
     {
       type: "blob",
@@ -172,6 +182,7 @@ export const designs = {
       color: "#6F4FB4",
       top: 3400,
       right: 0,
+      mobile: { top: 3400, right: -420 },
     },
     {
       type: "blob",
@@ -182,6 +193,7 @@ export const designs = {
       color: "#6F4FB4",
       top: 4250,
       left: 0,
+      mobile: { top: 4250, left: -300 },
     },
     {
       type: "blob",
@@ -192,6 +204,7 @@ export const designs = {
       color: "#6F4FB4",
       top: 4655,
       right: -100,
+      mobile: { top: 4655, right: -540 },
     },
   ],
 };
