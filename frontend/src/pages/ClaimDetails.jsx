@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
 import { MapPin, ShieldAlert, Clock } from "lucide-react";
-import { getClaimById, getItemById } from "../services/api";
+import { getClaimById, getItemById, getUserById } from "../services/api";
 import CancelClaimButton from "../components/user/CancelClaimButton";
 
 // Same status-pill colors used in My Claims, for consistency.
@@ -38,14 +38,26 @@ const ClaimDetails = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // First fetch the claim, then fetch the item it points to —
-    // we need both to render the page.
     getClaimById(id)
-      .then((claimData) => {
+      .then(async (claimData) => {
         setClaim(claimData);
-        return getItemById(claimData.itemId);
+        const itemData = await getItemById(claimData.itemId);
+
+        // Older/mock items only have postedBy set on a few seeded
+        // records. For everything else, fall back to the item owner's
+        // real user record so Contact Information is never blank just
+        // because postedBy wasn't filled in.
+        if (!itemData.postedBy && itemData.userId) {
+          const owner = await getUserById(itemData.userId);
+          itemData.postedBy = {
+            name: `${owner.firstName} ${owner.lastName}`,
+            phone: owner.phone || null,
+            email: owner.email,
+          };
+        }
+
+        setItem(itemData);
       })
-      .then((itemData) => setItem(itemData))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [id]);

@@ -613,7 +613,10 @@ export default function NewPost() {
                         <span
                           className="w-5 h-5 rounded-full border border-gray-300"
                           style={{
-                            backgroundColor: selectedColor.hexCode,
+                            background:
+                              selectedColor.name.toLowerCase() === "other"
+                                ? "conic-gradient(from 180deg, #ef4444, #f97316, #eab308, #10b981, #3b82f6, #8b5cf6, #ef4444)"
+                                : selectedColor.hexCode,
                           }}
                         />
                       ) : (
@@ -656,7 +659,10 @@ export default function NewPost() {
                             <span
                               className="w-5 h-5 rounded-full border border-gray-300"
                               style={{
-                                backgroundColor: color.hexCode,
+                                background:
+                                  color.name.toLowerCase() === "other"
+                                    ? "conic-gradient(from 180deg, #ef4444, #f97316, #eab308, #10b981, #3b82f6, #8b5cf6, #ef4444)"
+                                    : color.hexCode,
                               }}
                             />
 
@@ -911,7 +917,7 @@ export default function NewPost() {
               <button
                 type="submit"
                 disabled={createItemMutation.isPending}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-black text-white font-medium hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary text-white font-medium hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed transition"
               >
                 <Upload size={18} />
 
@@ -993,7 +999,10 @@ export default function NewPost() {
                       <span
                         className="w-4 h-4 rounded-full border border-gray-300"
                         style={{
-                          backgroundColor: selectedColor.hexCode,
+                          background:
+                            selectedColor.name.toLowerCase() === "other"
+                              ? "conic-gradient(from 180deg, #ef4444, #f97316, #eab308, #10b981, #3b82f6, #8b5cf6, #ef4444)"
+                              : selectedColor.hexCode,
                         }}
                       />
                     )}
@@ -1067,7 +1076,7 @@ export default function NewPost() {
                 type="button"
                 onClick={handleConfirmSubmit}
                 disabled={createItemMutation.isPending}
-                className="px-6 py-3 rounded-xl bg-black text-white font-medium hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                className="px-6 py-3 rounded-xl bg-primary text-white font-medium hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed transition"
               >
                 {createItemMutation.isPending
                   ? "Submitting..."

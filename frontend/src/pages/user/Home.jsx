@@ -3,6 +3,8 @@ import { Link } from "react-router";
 import { MapPin } from "lucide-react";
 import Button from "../../components/Button";
 import DecorativeBackground from "../../components/DecorativeBackground/DecorativeBackground";
+import { useState } from "react";
+import ItemDetailsModal from "../../components/ItemDetailsModal";
 
 // Formats an ISO date string into "Sep 6, 2026".
 function formatDate(isoDate) {
@@ -20,6 +22,8 @@ const Home = () => {
     isError,
     error,
   } = useLatestItems();
+
+  const [selectedItem, setSelectedItem] = useState(null);
 
   return (
     <div className="relative w-full">
@@ -207,12 +211,13 @@ const Home = () => {
                       {item.status === "RESOLVED" ? "Resolved" : "Searching"}
                     </p>
 
-                    <Link
-                      to={`/items/${item.id}`}
+                    <button
+                      type="button"
+                      onClick={() => setSelectedItem(item)}
                       className="mt-3 inline-flex items-center justify-center w-full border border-border rounded-lg px-4 py-2 text-body-md text-text-primary hover:bg-primary hover:text-text-inverse hover:border-primary transition-colors"
                     >
                       More Details
-                    </Link>
+                    </button>
                   </div>
                 </div>
               ))}
@@ -220,6 +225,13 @@ const Home = () => {
           )}
         </section>
       </div>
+
+      {selectedItem && (
+        <ItemDetailsModal
+          itemId={selectedItem.id}
+          onClose={() => setSelectedItem(null)}
+        />
+      )}
     </div>
   );
 };
