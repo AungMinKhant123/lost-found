@@ -155,7 +155,7 @@ const Login = () => {
   return (
     <>
       <UserHeader />
-      <div className="min-h-screen bg-[#F8FAFC] mx-auto px-10 py-12 pt-35">
+      <div className="min-h-screen bg-[#F8FAFC] mx-auto px-5 py-8 pt-28 sm:px-10 sm:py-12 sm:pt-35">
         {/* =====================================================
           MAIN CONTAINER
       ===================================================== */}
@@ -178,7 +178,8 @@ const Login = () => {
 
           <section
             className="
-            flex
+            hidden
+            lg:flex
             w-full
             min-h-225
             shrink-0

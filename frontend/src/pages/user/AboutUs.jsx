@@ -61,6 +61,7 @@ const teamMembers = [
   },
 ];
 
+
 function TeamMember({ member, index }) {
   const reverse = index % 2 === 1;
 
@@ -73,24 +74,27 @@ function TeamMember({ member, index }) {
         flex
         w-full
         max-w-[953px]
-        items-center
-        gap-[24px]
-        py-0
-        ${reverse ? "lg:flex-row-reverse" : "lg:flex-row"}
         flex-col
+        items-center
+        gap-7
+        px-5
+        lg:gap-[24px]
+        lg:px-0
+        ${reverse ? "lg:flex-row-reverse" : "lg:flex-row"}
       `}
     >
       {/* PROFILE IMAGE */}
-
       <div
         className="
-          h-[280px]
-          w-[280px]
+          h-[150px]
+          w-[150px]
           shrink-0
           overflow-hidden
           rounded-full
-          sm:h-[360px]
-          sm:w-[360px]
+          sm:h-[210px]
+          sm:w-[210px]
+          md:h-[260px]
+          md:w-[260px]
           lg:h-[464px]
           lg:w-[464px]
         "
@@ -101,14 +105,13 @@ function TeamMember({ member, index }) {
           className="
             h-full
             w-full
-            object-cover
             bg-neutral-100
+            object-cover
           "
         />
       </div>
 
       {/* TEXT */}
-
       <div
         className="
           flex
@@ -116,30 +119,21 @@ function TeamMember({ member, index }) {
           max-w-[457px]
           flex-col
           items-center
-          gap-[22px]
+          gap-5
+          lg:gap-[22px]
         "
       >
         {/* NAME + ROLE */}
-
-        <div
-          className="
-            flex
-            w-full
-            flex-col
-            items-center
-            gap-[4px]
-          "
-        >
+        <div className="flex w-full flex-col items-center gap-1">
           <div
             className="
               flex
               w-full
-              min-h-[62px]
               flex-col
               items-center
               justify-center
-              gap-[10px]
-              px-[10px]
+              gap-2
+              px-2
             "
           >
             <h2
@@ -147,11 +141,13 @@ function TeamMember({ member, index }) {
                 m-0
                 w-full
                 text-center
-                text-[28px]
+                text-[24px]
                 font-bold
-                leading-[40px]
+                leading-tight
                 text-black
+                sm:text-[28px]
                 lg:text-[32px]
+                lg:leading-[40px]
               "
             >
               {member.name}
@@ -162,10 +158,11 @@ function TeamMember({ member, index }) {
                 m-0
                 w-full
                 text-center
-                text-[16px]
+                text-[15px]
                 font-normal
-                leading-[28px]
+                leading-7
                 text-black
+                sm:text-[16px]
                 lg:text-[18px]
               "
             >
@@ -175,17 +172,20 @@ function TeamMember({ member, index }) {
         </div>
 
         {/* DESCRIPTION */}
-
         <p
           className="
             m-0
             w-full
             max-w-[418px]
-            text-[16px]
+            text-center
+            text-[15px]
             font-normal
-            leading-[28px]
+            leading-[26px]
             text-black
+            sm:text-[16px]
+            lg:text-left
             lg:text-[18px]
+            lg:leading-[28px]
           "
         >
           {member.description}
@@ -212,100 +212,105 @@ export default function AboutUs() {
       {/* =====================================================
           HERO
       ====================================================== */}
+
       <section
         className="
-          relative
-          h-[455px]
-          w-full
-          overflow-hidden
-          bg-[#604AB1]
-          lg:h-[490px]
-        "
+    relative
+    h-[455px]
+    w-full
+    overflow-hidden
+    bg-[#604AB1]
+    sm:h-[490px]
+    lg:h-[490px]
+  "
       >
-        {/* HERO CONTENT */}
-
         <div
           className="
-            relative
-            z-10
-            mx-6px
-            flex
-            h-full
-            w-full
-            max-w-[1280px]
-            items-start
-            px-6
-            lg:px-0
-          "
+      relative
+      mx-auto
+      flex
+      h-full
+      w-full
+      max-w-[1280px]
+      flex-row
+      items-start
+      px-[24px]
+      sm:px-8
+      lg:px-0
+    "
         >
           {/* TEXT BLOCK */}
-
           <div
             className="
-              absolute
-              left-[5%]
-              top-[90px]
-              w-[52%]
-              max-w-[686px]
-              lg:left-[180px]
-              lg:top-[110px]
-            "
+        relative
+        z-20
+        mt-[28px]
+        flex
+        w-[65%]
+        shrink-0
+        flex-col
+        text-left
+        sm:mt-[60px]
+        lg:absolute
+        lg:left-[180px]
+        lg:top-[110px]
+        lg:mt-0
+        lg:w-[52%]
+        lg:max-w-[686px]
+      "
           >
             {/* HEADING */}
-
-            <div
-              className="
-                flex
-                flex-col
-                gap-[12px]
-              "
-            >
+            <div className="flex flex-col gap-[10px] lg:gap-[12px]">
               <h1
                 className="
-                  m-0
-                  whitespace-nowrap
-                  text-[53px]
-                  font-bold
-                  leading-[42px]
-                  text-white
-                  sm:text-[42px]
-                  lg:text-[53px]
-                  lg:leading-[54px]
-                "
+            m-0
+            text-[23px]
+            font-bold
+            leading-[1.25]
+            text-white
+            sm:text-[36px]
+            md:text-[44px]
+            lg:whitespace-nowrap
+            lg:text-[53px]
+            lg:leading-[54px]
+          "
               >
                 More than just lost and found
               </h1>
 
               <h2
                 className="
-                  m-0
-                  text-[36px]
-                  font-bold
-                  leading-[44px]
-                  text-black
-                  sm:text-[42px]
-                  lg:text-[48px]
-                  lg:leading-[48px]
-                "
+            m-0
+            text-[22px]
+            font-bold
+            leading-[1.3]
+            text-black
+            sm:text-[32px]
+            md:text-[40px]
+            lg:text-[48px]
+            lg:leading-[48px]
+          "
               >
                 — we're a community.
               </h2>
             </div>
 
             {/* DESCRIPTION */}
-
             <p
               className="
-                m-0
-                mt-[16px]
-                w-full
-                max-w-[626px]
-                text-[16px]
-                font-normal
-                leading-[28px]
-                text-white
-                lg:text-[18px]
-              "
+          m-0
+          mt-[16px]
+          w-full
+          text-[12px]
+          font-normal
+          leading-[18px]
+          text-white
+          sm:text-[15px]
+          sm:leading-[25px]
+          lg:max-w-[626px]
+          lg:text-[18px]
+          lg:leading-[28px]
+        "
             >
               LostFound is a simple and secure platform designed to help people
               report lost items, share found items, and reconnect belongings
@@ -313,80 +318,93 @@ export default function AboutUs() {
             </p>
 
             {/* BUTTON */}
-
             <button
               className="
-                mt-[28px]
-                flex
-                h-[64px]
-                w-[185px]
-                items-center
-                justify-center
-                rounded-[12px]
-                border
-                border-[#A9B3BD]
-                bg-[#F8FAFC]
-                px-[10px]
-                text-[14px]
-                font-medium
-                leading-[20px]
-                text-[#4B32A8]
-                transition
-                duration-200
-                hover:scale-[1.02]
-                hover:shadow-lg
-              "
+          mt-[22px]
+          flex
+          h-[42px]
+          w-fit
+          min-w-[150px]
+          items-center
+          justify-center
+          rounded-[12px]
+          border
+          border-[#A9B3BD]
+          bg-[#F8FAFC]
+          px-[10px]
+          text-[12px]
+          font-medium
+          text-[#4B32A8]
+          transition
+          hover:shadow-lg
+          sm:mt-[28px]
+          sm:h-[54px]
+          sm:min-w-[175px]
+          sm:text-[14px]
+          lg:h-[64px]
+          lg:w-[185px]
+        "
             >
               See Recent Reunion
             </button>
           </div>
 
           {/* HERO IMAGE */}
-
-          <img
-            src="https://res.cloudinary.com/d5tnusci/image/upload/v1789382320/signup_i2xqdg.png"
-            alt="LostFound items"
+          <div
             className="
-              absolute
-              left-[73%]
-              top-[55px]
-              z-10
-              h-auto
-              w-[630px]
-              max-w-none
-              translate-x-[15%]
-              object-contain
-            "
-          />
+        absolute
+        right-[-12px]
+        top-[145px]
+        z-10
+        w-[43%]
+        sm:right-0
+        sm:top-[125px]
+        sm:w-[42%]
+        lg:left-[73%]
+        lg:right-auto
+        lg:top-[55px]
+        lg:w-[630px]
+        lg:translate-x-[15%]
+      "
+          >
+            <img
+              src="https://res.cloudinary.com/d5tnusci/image/upload/v1789382320/signup_i2xqdg.png"
+              alt="LostFound items"
+              className="
+          h-auto
+          w-full
+          object-contain
+        "
+            />
+          </div>
         </div>
 
-        {/* =================================================
-            EXACT-STYLE FIGMA WAVE
-        ================================================== */}
-
+        {/* WAVE */}
         <svg
           className="
-            absolute
-            bottom-[-1px]
-            left-0
-            z-5
-            h-[145px]
-            w-full
-          "
+      absolute
+      bottom-[-1px]
+      left-0
+      z-10
+      h-[100px]
+      w-full
+      sm:h-[120px]
+      lg:h-[145px]
+    "
           viewBox="0 0 1280 145"
           preserveAspectRatio="none"
         >
           <path
             d="
-              M 0 5
-              C 55 105, 120 142, 215 142
-              C 360 142, 470 85, 610 52
-              C 770 14, 875 28, 970 52
-              C 1080 82, 1180 115, 1280 145
-              L 1280 145
-              L 0 145
-              Z
-            "
+        M 0 5
+        C 55 105, 120 142, 215 142
+        C 360 142, 470 85, 610 52
+        C 770 14, 875 28, 970 52
+        C 1080 82, 1180 115, 1280 145
+        L 1280 145
+        L 0 145
+        Z
+      "
             fill="#F8FAFC"
           />
         </svg>
@@ -395,6 +413,7 @@ export default function AboutUs() {
       {/* =====================================================
           STORY / TITLE
       ====================================================== */}
+
       <section
         className="
           relative
@@ -405,23 +424,28 @@ export default function AboutUs() {
       >
         <div
           className="
-            px-6
-            pb-[40px]
-            pt-[120px]
+            px-5
+            pb-8
+            pt-[75px]
+            sm:px-8
+            sm:pt-[95px]
             lg:ml-[174px]
             lg:px-0
+            lg:pb-[40px]
             lg:pt-[120px]
           "
         >
           <p
             className="
               m-0
-              mb-[8px]
-              text-[20px]
+              mb-2
+              text-[16px]
               font-semibold
-              leading-[32px]
+              leading-7
               text-black
+              sm:text-[20px]
               lg:text-[24px]
+              lg:leading-[32px]
             "
           >
             OUR STORY & MEET OUR TEAMS
@@ -430,10 +454,11 @@ export default function AboutUs() {
           <h2
             className="
               m-0
-              text-[36px]
+              text-[30px]
               font-bold
-              leading-[48px]
+              leading-[1.2]
               text-[#4B32A8]
+              sm:text-[38px]
               lg:text-[48px]
               lg:leading-[56px]
             "
@@ -446,14 +471,25 @@ export default function AboutUs() {
       {/* =====================================================
           TEAM SECTION
       ====================================================== */}
+
       <section
         className="
           relative
           w-full
-          pb-[140px]
+          pb-[80px]
+          sm:pb-[110px]
+          lg:pb-[140px]
         "
       >
-        <div className="relative z-10 space-y-[140px] lg:space-y-[190px]">
+        <div
+          className="
+            relative
+            z-10
+            space-y-[90px]
+            sm:space-y-[120px]
+            lg:space-y-[190px]
+          "
+        >
           {teamMembers.map((member, index) => (
             <TeamMember key={member.name} member={member} index={index} />
           ))}
@@ -463,6 +499,7 @@ export default function AboutUs() {
       {/* =====================================================
           CLOSING STATEMENT
       ====================================================== */}
+
       <section
         className="
           relative
@@ -470,20 +507,29 @@ export default function AboutUs() {
           mx-auto
           w-full
           max-w-[1280px]
-          pt-[75px]
-          pb-[140px]
+          px-5
+          pb-[90px]
+          pt-[45px]
           text-center
+          sm:px-8
+          sm:pb-[110px]
+          sm:pt-[60px]
+          lg:px-0
+          lg:pb-[140px]
+          lg:pt-[75px]
         "
       >
         <h2
           className="
             m-0
-            mb-[16px]
-            text-[28px]
+            mb-4
+            text-[25px]
             font-bold
-            leading-[36px]
+            leading-[1.35]
             text-black
+            sm:text-[29px]
             lg:text-[32px]
+            lg:leading-[36px]
           "
         >
           Built around people, not just items.
@@ -491,13 +537,15 @@ export default function AboutUs() {
 
         <p
           className="
-            m-0
             mx-auto
+            m-0
             max-w-[720px]
-            text-[16px]
+            text-[14px]
             font-normal
-            leading-[28px]
+            leading-[26px]
             text-black
+            sm:text-[16px]
+            sm:leading-[28px]
             lg:text-[18px]
           "
         >

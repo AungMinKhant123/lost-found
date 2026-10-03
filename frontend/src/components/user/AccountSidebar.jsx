@@ -27,7 +27,7 @@ const AccountSidebar = () => {
       : "User";
 
   return (
-    <aside className="w-full max-w-xs">
+    <aside className="w-full max-w-full lg:max-w-xs">
       {/* ================= USER INFO ================= */}
       <div className="flex items-center gap-3">
         {/* Profile Image */}
@@ -56,7 +56,7 @@ const AccountSidebar = () => {
       </div>
 
       {/* ================= NAV LINKS ================= */}
-      <nav className="mt-8 space-y-3">
+      <nav className="mt-6 grid grid-cols-2 gap-3 lg:mt-8 lg:block lg:space-y-3">
         {navItems.map(({ label, icon: Icon, to, end }) => (
           <NavLink
             key={label}

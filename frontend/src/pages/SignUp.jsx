@@ -136,10 +136,11 @@ const SignUp = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-10 py-12">
-      <div className="grid grid-cols-2 gap-10 items-stretch">
-        {/* LEFT: decorative info panel */}
-        <div className="rounded-2xl text-white p-10 flex flex-col bg-[linear-gradient(180deg,rgba(95,63,210,0.396)_0%,rgba(61,45,125,0.8217)_39.9%,rgba(26,12,42,0.99)_100%)]">
+    <div className="max-w-7xl mx-auto px-5 py-8 sm:px-10 sm:py-12">
+      <div className="grid grid-cols-1 items-stretch lg:grid-cols-2 lg:gap-10">
+        {/* LEFT: decorative info panel — desktop only; on phones the
+            page is just the sign-up form (per the mobile design). */}
+        <div className="hidden lg:flex rounded-2xl text-white p-10 flex-col bg-[linear-gradient(180deg,rgba(95,63,210,0.396)_0%,rgba(61,45,125,0.8217)_39.9%,rgba(26,12,42,0.99)_100%)]">
           <div className="w-full h-55 rounded-xl  mt-8 flex items-end justify-center text-white/50 text-body-sm">
             <img
               src="https://res.cloudinary.com/d5tnusci/image/upload/v1789382451/signup2_bzibei.png"
@@ -212,13 +213,16 @@ const SignUp = () => {
         </div>
 
         {/* RIGHT: sign-up form card */}
-        <div className="border border-border rounded-2xl p-10">
-          <div className="flex justify-end text-body-sm text-text-secondary">
+        <div className="flex flex-col">
+          {/* Account hint sits above the card, right-aligned (mobile design) */}
+          <div className="flex justify-end text-body-sm text-text-secondary mb-4">
             Already have an account?{" "}
             <Link to="/login" className="text-primary font-medium ml-1">
               Log In
             </Link>
           </div>
+
+          <div className="border border-border rounded-2xl p-6 sm:p-10 flex-1">
 
           <h1 className="text-heading-1 font-bold text-center mt-4">Sign Up</h1>
           <p className="text-body-md text-text-secondary text-center mt-2">
@@ -234,7 +238,7 @@ const SignUp = () => {
               <div className="relative mt-1">
                 <User
                   size={18}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-primary"
                 />
                 <input
                   type="text"
@@ -260,7 +264,7 @@ const SignUp = () => {
               <div className="relative mt-1">
                 <User
                   size={18}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-primary"
                 />
                 <input
                   type="text"
@@ -286,7 +290,7 @@ const SignUp = () => {
               <div className="relative mt-1">
                 <Mail
                   size={18}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-primary"
                 />
                 <input
                   type="email"
@@ -310,7 +314,7 @@ const SignUp = () => {
               <div className="relative mt-1">
                 <KeyRound
                   size={18}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-primary"
                 />
                 <input
                   type={showPassword ? "text" : "password"}
@@ -343,7 +347,7 @@ const SignUp = () => {
               <div className="relative mt-1">
                 <KeyRound
                   size={18}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-primary"
                 />
                 <input
                   type={showConfirmPassword ? "text" : "password"}
@@ -435,6 +439,7 @@ const SignUp = () => {
               We never share your information with anyone.
             </p>
           </form>
+          </div>
         </div>
       </div>
     </div>
