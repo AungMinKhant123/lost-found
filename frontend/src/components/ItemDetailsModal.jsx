@@ -9,6 +9,8 @@ import { useCreateClaim } from "../hooks/useCreateClaim";
 
 import ImageCarousel from "./ImageCarousel";
 
+import { useMyPosts } from "../hooks/useMyPosts";
+
 function formatDate(isoDate) {
   return new Date(isoDate).toLocaleDateString("en-US", {
     month: "short",
@@ -23,6 +25,16 @@ function capitalize(word) {
 
 const ItemDetailsModal = ({ itemId, onClose, allowClaim = true }) => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+  // The real backend's item response has no owner field at all, so we
+  // can't just compare item.userId against the logged-in user. Instead,
+  // we check whether this item shows up in the viewer's OWN posts list
+  // (an endpoint that already works) — if it does, it's their post.
+  const { data: myPostsData } = useMyPosts({}, { enabled: isAuthenticated });
+  const isOwnItem =
+    isAuthenticated &&
+    (myPostsData?.data ?? []).some((post) => post.id === itemId);
+  const currentUser = useAuthStore((state) => state.user);
 
   const [view, setView] = useState("details");
   const [message, setMessage] = useState("");
@@ -267,7 +279,13 @@ const ItemDetailsModal = ({ itemId, onClose, allowClaim = true }) => {
                 CLAIM BUTTON
             ================================================== */}
 
-            {allowClaim && !isResolved && (
+            {isOwnItem && !isResolved && (
+              <p className="text-center text-body-sm text-text-secondary mt-6">
+                This is your own post, so you can't claim it.
+              </p>
+            )}
+
+            {allowClaim && !isResolved && !isOwnItem && (
               <div className="flex justify-center mt-6">
                 {isAuthenticated ? (
                   <button

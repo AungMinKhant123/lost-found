@@ -1,25 +1,20 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { Pencil, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
-import { deletePost, getCurrentUser } from "../../services/api";
+import { deletePost } from "../../services/api";
 import ConfirmDeleteModal from "../admin/ConfirmDeleteModal";
 
-// Small edit + delete icon buttons for a post's OWNER, shown on the
-// "Claims Received" page. Renders nothing for anyone else.
+// Edit + delete icon buttons, shown on "Claims Received" (PostClaims.jsx).
+// No ownership check here: this component only ever renders on a page
+// you can only reach by opening one of YOUR OWN posts from My Posts, and
+// the real backend's response for this page has no owner field to check
+// against anyway. If PostActions is ever reused somewhere items from
+// OTHER users can appear, this needs a real ownership check added back.
 const PostActions = ({ item }) => {
   const navigate = useNavigate();
-  const [currentUserId, setCurrentUserId] = useState(null);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-
-  useEffect(() => {
-    getCurrentUser()
-      .then((user) => setCurrentUserId(user.id))
-      .catch((err) => console.error("Failed to load current user:", err));
-  }, []);
-
-  if (!currentUserId || item.userId !== currentUserId) return null;
 
   const handleConfirmDelete = async () => {
     setIsDeleting(true);
@@ -44,8 +39,7 @@ const PostActions = ({ item }) => {
   return (
     <>
       <div className="flex items-center gap-2">
-        {item.resolved ? (
-          // Resolved posts are locked, so the edit icon is greyed out.
+        {item.resolved || item.status === "RESOLVED" ? (
           <span
             title="Resolved posts can't be edited"
             aria-disabled="true"
