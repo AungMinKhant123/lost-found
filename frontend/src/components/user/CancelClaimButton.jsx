@@ -2,31 +2,30 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
-import { cancelClaim } from "../../services/api";
+import { useCancelMyClaim } from "../../hooks/useCancelMyClaim";
 
 // Small delete icon for the claimant, shown on the Claim Details page.
 // Renders nothing unless the claim is still pending.
 const CancelClaimButton = ({ claim, itemTitle }) => {
   const navigate = useNavigate();
   const [isConfirming, setIsConfirming] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const cancelMutation = useCancelMyClaim();
 
   if (claim.status !== "pending") return null;
 
   const handleConfirm = async () => {
-    setIsDeleting(true);
     try {
-      await cancelClaim(claim.id);
+      await cancelMutation.mutateAsync(claim.id);
       toast.success("Claim deleted.");
       navigate("/account/claims");
     } catch (err) {
       toast.error(
         err.friendly
           ? err.message
-          : "Couldn't delete this claim. Please try again.",
+          : err.response?.data?.message ??
+              "Couldn't delete this claim. Please try again.",
       );
       setIsConfirming(false);
-      setIsDeleting(false);
     }
   };
 
@@ -46,7 +45,7 @@ const CancelClaimButton = ({ claim, itemTitle }) => {
         <div
           className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[60] p-4"
           onMouseDown={(e) => {
-            if (e.target === e.currentTarget && !isDeleting) {
+            if (e.target === e.currentTarget && !cancelMutation.isPending) {
               setIsConfirming(false);
             }
           }}
@@ -69,7 +68,7 @@ const CancelClaimButton = ({ claim, itemTitle }) => {
               <button
                 type="button"
                 onClick={() => setIsConfirming(false)}
-                disabled={isDeleting}
+                disabled={cancelMutation.isPending}
                 className="border border-border rounded-lg px-6 py-2.5 text-body-md text-text-primary hover:bg-background-subtle transition-colors disabled:opacity-50"
               >
                 Keep Claim
@@ -77,10 +76,10 @@ const CancelClaimButton = ({ claim, itemTitle }) => {
               <button
                 type="button"
                 onClick={handleConfirm}
-                disabled={isDeleting}
+                disabled={cancelMutation.isPending}
                 className="bg-error hover:bg-error/90 text-white rounded-lg px-6 py-2.5 text-body-md font-medium transition-colors disabled:opacity-50"
               >
-                {isDeleting ? "Deleting..." : "Delete Claim"}
+                {cancelMutation.isPending ? "Deleting..." : "Delete Claim"}
               </button>
             </div>
           </div>

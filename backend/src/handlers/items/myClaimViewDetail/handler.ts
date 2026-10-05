@@ -16,56 +16,70 @@ export async function myClaimDetailsHandler(
 
   const claim = await prisma.claim.findFirst({
     where: {
-        id: claimId,
-        claimantId: userId,
-    }, 
+      id: claimId,
+      claimantId: userId,
+    },
 
     include: {
-        item: {
+      item: {
+        select: {
+          id: true,
+          type: true,
+          title: true,
+          location: true,
+          dateLostOrFound: true,
+
+          images: {
             select: {
-                id: true,
-                type: true,
-                title: true,
-                location: true,
-                dateLostOrFound: true,
-
-                images: {
-                    select: {
-                        id: true,
-                        objectKey: true,
-                    }
-                },
-
-                user: {
-                    select: {
-                        firstName: true,
-                        lastName: true,
-                        phone: true,
-                        email: true,
-                        profileKey: true,
-                    }
-                },
+              id: true,
+              objectKey: true,
             },
+          },
+
+          user: {
+            select: {
+              firstName: true,
+              lastName: true,
+              phone: true,
+              email: true,
+              profileKey: true,
+            },
+          },
         },
+      },
     },
   });
 
-  if(!claim) {
+  if (!claim) {
     throw new AppError("Claim not found!", 404);
   }
-  
+
+  const images = await Promise.all(
+    claim.item.images.map(async (image) => ({
+      id: image.id,
+      imageUrl: await request.server.minio.presignedGetObject(
+        process.env.MINIO_BUCKET || "lost-found",
+        image.objectKey,
+        60 * 60,
+      ),
+    })),
+  );
+
   const response = {
     id: claim.id,
     status: claim.status,
     message: claim.message,
-    createdAt: claim.createdAt,
+    createdAt: claim.createdAt.toISOString(),
 
-    item: claim.item,
+    item: {
+      ...claim.item,
+      images,
+    },
 
     ...(claim.status === "ACCEPTED" && {
-        poster: claim.item.user,
+      poster: claim.item.user,
     }),
-  }
+  };
 
   return reply.send({
     data: response,

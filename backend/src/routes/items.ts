@@ -23,6 +23,10 @@ import { myClaimCancelHandler } from "../handlers/items/myClaimCancel/handler.js
 import { MyClaimCancelSchema } from "../handlers/items/myClaimCancel/schema.js";
 import { MyPostDeleteSchema } from "../handlers/items/myPostDelete/schema.js";
 import { myPostDeleteHandler } from "../handlers/items/myPostDelete/handler.js";
+import { UpdateMyPostSchema } from "../handlers/items/updateMyPost/schema.js";
+import type { UpdateMyPostRequestBody } from "../handlers/items/updateMyPost/requestBody.js";
+import type { UpdateMyPostRequestParams } from "../handlers/items/updateMyPost/requestParams.js";
+import { updateMyPostHandler } from "../handlers/items/updateMyPost/handler.js";
 import { MyClaimDetailsSchema } from "../handlers/items/myClaimViewDetail/schema.js";
 import { myClaimDetailsHandler } from "../handlers/items/myClaimViewDetail/handler.js";
 import { MyPostViewDetailSchema } from "../handlers/items/myPostViewDetail/schema.js";
@@ -115,6 +119,18 @@ export async function itemsRoutes(app: FastifyInstance) {
       schema: MyPostDeleteSchema,
     },
     myPostDeleteHandler,
+  );
+
+  app.patch<{
+    Params: UpdateMyPostRequestParams;
+    Body: UpdateMyPostRequestBody;
+  }>(
+    "/item/updateposts/:itemId",
+    {
+      preHandler: app.verifyUser,
+      schema: UpdateMyPostSchema,
+    },
+    updateMyPostHandler,
   );
 
   app.get(

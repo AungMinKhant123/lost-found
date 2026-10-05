@@ -1,12 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 import { MapPin, Flag, XCircle } from "lucide-react";
-import { getMyItemClaims, updateItemClaimStatus } from "../../api/itemsApi";
-import {
-  getMyItemClaimsMock,
-  updateItemClaimStatusMock,
-} from "../../services/api";
 import PostActions from "../../components/user/PostActions";
+import { usePostClaims } from "../../hooks/usePostClaims";
+import { useUpdateItemClaimStatus } from "../../hooks/useUpdateItemClaimStatus";
 
 const STATUS_STYLES = {
   pending: "bg-warning/10 text-warning",
@@ -26,59 +23,25 @@ function capitalize(word) {
   return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
-function isBackendUnreachable(error) {
-  return !error?.response || error.response.status >= 500;
-}
-
-async function fetchMyItemClaimsWithFallback(itemId) {
-  try {
-    return await getMyItemClaims(itemId);
-  } catch (error) {
-    if (import.meta.env.DEV && isBackendUnreachable(error)) {
-      return await getMyItemClaimsMock(itemId);
-    }
-    throw error;
-  }
-}
-
-async function updateItemClaimStatusWithFallback(itemId, claimId, status) {
-  try {
-    return await updateItemClaimStatus(itemId, claimId, status);
-  } catch (error) {
-    if (import.meta.env.DEV && isBackendUnreachable(error)) {
-      return await updateItemClaimStatusMock(itemId, claimId, status);
-    }
-    throw error;
-  }
-}
-
 const PostClaims = () => {
   const { id } = useParams();
-  const [item, setItem] = useState(null);
-  const [claimsWithUsers, setClaimsWithUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const {
+    data: claimsResponse,
+    isLoading: loading,
+    error,
+  } = usePostClaims(id);
+  const updateClaimMutation = useUpdateItemClaimStatus();
+  const item = claimsResponse?.item;
+  const claimsWithUsers = (claimsResponse?.claims ?? []).map((claim) => ({
+    ...claim,
+    status: claim.status.toLowerCase(),
+  }));
   const [updatingId, setUpdatingId] = useState(null);
 
   // Holds the claim currently pending confirmation in the "Accept the
   // Claim?" modal. null means the modal is closed.
   const [claimToConfirm, setClaimToConfirm] = useState(null);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    fetchMyItemClaimsWithFallback(id)
-      .then(({ item: itemData, claims: claimsData }) => {
-        setItem(itemData);
-        setClaimsWithUsers(
-          claimsData.map((claim) => ({
-            ...claim,
-            status: claim.status.toLowerCase(),
-          })),
-        );
-      })
-      .catch((err) => setError(err.response?.data?.message ?? err.message))
-      .finally(() => setLoading(false));
-  }, [id]);
 
   // Holds the claim currently pending confirmation in the "Decline the
   // Claim?" modal. null means the modal is closed.
@@ -89,10 +52,11 @@ const PostClaims = () => {
     const claimId = claimToDecline;
     setUpdatingId(claimId);
     try {
-      await updateItemClaimStatusWithFallback(id, claimId, "declined");
-      setClaimsWithUsers((prev) =>
-        prev.map((c) => (c.id === claimId ? { ...c, status: "declined" } : c)),
-      );
+      await updateClaimMutation.mutateAsync({
+        itemId: id,
+        claimId,
+        status: "declined",
+      });
     } catch {
       alert("Failed to update claim. Please try again.");
     } finally {
@@ -116,17 +80,11 @@ const PostClaims = () => {
     setUpdatingId(claimId);
 
     try {
-      await updateItemClaimStatusWithFallback(id, claimId, "accepted");
-
-      setClaimsWithUsers((prev) =>
-        prev.map((claim) => {
-          if (claim.id === claimId) return { ...claim, status: "accepted" };
-          if (claim.status === "pending") {
-            return { ...claim, status: "declined" };
-          }
-          return claim;
-        }),
-      );
+      await updateClaimMutation.mutateAsync({
+        itemId: id,
+        claimId,
+        status: "accepted",
+      });
 
       navigate(`/account/posts/${item.id}/claims/${claimId}`);
     } catch {
@@ -137,7 +95,9 @@ const PostClaims = () => {
   };
 
   if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (error) {
+    return <div>Error: {error.response?.data?.message ?? error.message}</div>;
+  }
   if (!item) return <div>Item not found.</div>;
 
   const pendingCount = claimsWithUsers.filter(

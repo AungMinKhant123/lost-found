@@ -1,49 +1,29 @@
-import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import { useAuthStore } from "../../store/authStore";
-import { useLogout } from "../../hooks/useLogout";
-import { deleteUserAccount, isRealBackendUserId } from "../../services/api";
+import { useDeleteAccount } from "../../hooks/useDeleteAccount";
 
 const DeleteAccount = () => {
   const navigate = useNavigate();
-  const performLogout = useLogout();
   const user = useAuthStore((state) => state.user);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const deleteAccountMutation = useDeleteAccount();
+  const isDeleting = deleteAccountMutation.isPending;
 
   const handleCancel = () => {
     navigate("/account/settings");
   };
 
   const handleDeleteAccount = async () => {
-    // There is no delete-account endpoint on the real backend that we
-    // know of yet, so we can't (and shouldn't) guess one. Until it
-    // exists, deletion only works for json-server (mock) accounts.
-    // Real backend accounts get a clear message instead of a silent no-op.
-    const isMockAccount = user?.id && !isRealBackendUserId(user.id);
-
-    if (!isMockAccount) {
-      toast.error(
-        "Deleting this account isn't available yet — it needs the backend's delete-account endpoint.",
-      );
-      return;
-    }
-
-    setIsDeleting(true);
     try {
-      // Removes the user, their posts, and all related claims.
-      await deleteUserAccount(user.id);
-
-      // Then log out exactly like the normal logout does.
-      performLogout();
-
+      await deleteAccountMutation.mutateAsync(user?.id);
       toast.success("Your account has been deleted.");
       navigate("/login");
     } catch (err) {
-      console.error("Delete account failed:", err);
-      toast.error("Couldn't delete your account. Please try again.");
-      setIsDeleting(false);
+      toast.error(
+        err.response?.data?.message ??
+          "Couldn't delete your account. Please try again.",
+      );
     }
   };
 

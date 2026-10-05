@@ -24,6 +24,12 @@ export const updateProfile = async (formData) => {
   return response.data;
 };
 
+export const deleteAccount = async () => {
+  const response = await api.delete("/auth/userDelete");
+
+  return response.data;
+};
+
 export async function logoutUser() {
   const response = await api.post("/auth/logout");
 

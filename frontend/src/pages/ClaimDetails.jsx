@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
 import { MapPin, ShieldAlert, Clock } from "lucide-react";
-import { getClaimById, getItemById, getUserById } from "../services/api";
 import CancelClaimButton from "../components/user/CancelClaimButton";
+import { useMyClaimDetails } from "../hooks/useMyClaimDetails";
 
 // Same status-pill colors used in My Claims, for consistency.
 const STATUS_STYLES = {
@@ -32,38 +31,15 @@ function capitalize(word) {
 
 const ClaimDetails = () => {
   const { id } = useParams();
-  const [claim, setClaim] = useState(null);
-  const [item, setItem] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { data: claim, isLoading, error } = useMyClaimDetails(id);
 
-  useEffect(() => {
-    getClaimById(id)
-      .then(async (claimData) => {
-        setClaim(claimData);
-        const itemData = await getItemById(claimData.itemId);
-
-        // Older/mock items only have postedBy set on a few seeded
-        // records. For everything else, fall back to the item owner's
-        // real user record so Contact Information is never blank just
-        // because postedBy wasn't filled in.
-        if (!itemData.postedBy && itemData.userId) {
-          const owner = await getUserById(itemData.userId);
-          itemData.postedBy = {
-            name: `${owner.firstName} ${owner.lastName}`,
-            phone: owner.phone || null,
-            email: owner.email,
-          };
-        }
-
-        setItem(itemData);
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [id]);
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (isLoading) return <div>Loading...</div>;
+  if (error) {
+    return (
+      <div>Error: {error.response?.data?.message ?? error.message}</div>
+    );
+  }
+  const item = claim?.item;
   if (!claim || !item) return <div>Claim not found.</div>;
 
   return (
@@ -74,10 +50,17 @@ const ClaimDetails = () => {
 
       {/* Item summary + status pill */}
       <div className="flex items-center gap-4 mt-6">
-        {/* Image placeholder — swap for the real item photo later */}
-        <div className="w-20 h-20 rounded-lg bg-neutral-100 flex items-center justify-center text-text-secondary text-label-sm shrink-0">
-          Image
-        </div>
+        {item.images?.[0]?.imageUrl ? (
+          <img
+            src={item.images[0].imageUrl}
+            alt={item.title}
+            className="w-20 h-20 rounded-lg object-cover shrink-0"
+          />
+        ) : (
+          <div className="w-20 h-20 rounded-lg bg-neutral-100 flex items-center justify-center text-text-secondary text-label-sm shrink-0">
+            Image
+          </div>
+        )}
 
         <div className="flex-1">
           <h2 className="text-heading-3 font-bold text-text-primary">
@@ -128,23 +111,27 @@ const ClaimDetails = () => {
             </div>
           </div>
 
-          <div className="mt-4">
-            <label className="text-body-md font-medium text-text-primary">
-              Phone Number
-            </label>
-            <div className="border border-border rounded-lg px-4 py-2.5 mt-1 text-body-md text-text-secondary">
-              {item.postedBy?.phone}
+          {item.postedBy?.phone && (
+            <div className="mt-4">
+              <label className="text-body-md font-medium text-text-primary">
+                Phone Number
+              </label>
+              <div className="border border-border rounded-lg px-4 py-2.5 mt-1 text-body-md text-text-secondary">
+                {item.postedBy.phone}
+              </div>
             </div>
-          </div>
+          )}
 
-          <div className="mt-4">
-            <label className="text-body-md font-medium text-text-primary">
-              Email
-            </label>
-            <div className="border border-border rounded-lg px-4 py-2.5 mt-1 text-body-md text-text-secondary">
-              {item.postedBy?.email}
+          {item.postedBy?.email && (
+            <div className="mt-4">
+              <label className="text-body-md font-medium text-text-primary">
+                Email
+              </label>
+              <div className="border border-border rounded-lg px-4 py-2.5 mt-1 text-body-md text-text-secondary">
+                {item.postedBy.email}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="flex justify-center mt-6">
             <Link

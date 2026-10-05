@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { Pencil, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
-import { deletePost } from "../../services/api";
 import ConfirmDeleteModal from "../admin/ConfirmDeleteModal";
+import { useDeleteMyPost } from "../../hooks/useDeleteMyPost";
 
 // Edit + delete icon buttons, shown on "Claims Received" (PostClaims.jsx).
 // No ownership check here: this component only ever renders on a page
@@ -14,22 +14,21 @@ import ConfirmDeleteModal from "../admin/ConfirmDeleteModal";
 const PostActions = ({ item }) => {
   const navigate = useNavigate();
   const [confirmingDelete, setConfirmingDelete] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const deleteMutation = useDeleteMyPost();
 
   const handleConfirmDelete = async () => {
-    setIsDeleting(true);
     try {
-      await deletePost(item.id);
+      await deleteMutation.mutateAsync(item.id);
       toast.success("Post deleted.");
       navigate("/account/posts");
     } catch (err) {
       toast.error(
         err.friendly
           ? err.message
-          : "Couldn't delete this post. Please try again.",
+          : err.response?.data?.message ??
+              "Couldn't delete this post. Please try again.",
       );
       setConfirmingDelete(false);
-      setIsDeleting(false);
     }
   };
 
@@ -74,7 +73,7 @@ const PostActions = ({ item }) => {
           itemTitle={item.title}
           onCancel={() => setConfirmingDelete(false)}
           onConfirm={handleConfirmDelete}
-          isDeleting={isDeleting}
+          isDeleting={deleteMutation.isPending}
         />
       )}
     </>

@@ -22,6 +22,18 @@ export const getMyClaims = async (params = {}) => {
   return response.data;
 };
 
+export const getMyClaimDetails = async (claimId) => {
+  const response = await api.get(`/item/myclaims/${claimId}`);
+
+  return response.data.data;
+};
+
+export const cancelMyClaim = async (claimId) => {
+  const response = await api.delete(`/item/cancelclaims/${claimId}`);
+
+  return response.data;
+};
+
 export const getItemById = async (id) => {
   const response = await api.get(`/items/${id}`);
   return response.data;
@@ -54,3 +66,21 @@ export const updateItemClaimStatus = async (itemId, claimId, status) => {
 
   return response.data;
 };
+
+export async function deleteMyPost(itemId) {
+  const response = await api.delete(`/item/deleteposts/${itemId}`);
+
+  return response.data;
+}
+
+export async function getMyPostForEdit(itemId) {
+  const response = await api.get(`/item/mypostviewdetail/${itemId}`);
+
+  return response.data;
+}
+
+export async function updateMyPost(itemId, updates) {
+  const response = await api.patch(`/item/updateposts/${itemId}`, updates);
+
+  return response.data;
+}

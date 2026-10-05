@@ -4,7 +4,7 @@ import { ClaimStatus, ItemType } from "../../../generated/enums.js";
 const MyClaimDetailsResponseSchema = Type.Object({
   id: Type.String({ format: "uuid" }),
   status: Type.Enum(ClaimStatus),
-  message: Type.String(),
+  message: Type.Union([Type.String(), Type.Null()]),
   createdAt: Type.String({ format: "date-time" }),
 
   item: Type.Object({
@@ -17,7 +17,7 @@ const MyClaimDetailsResponseSchema = Type.Object({
     images: Type.Array(
       Type.Object({
         id: Type.String({ format: "uuid" }),
-        objectKey: Type.String(),
+        imageUrl: Type.String(),
       }),
     ),
   }),
@@ -26,9 +26,9 @@ const MyClaimDetailsResponseSchema = Type.Object({
     Type.Object({
       firstName: Type.String(),
       lastName: Type.String(),
-      phone: Type.Optional(Type.String()),
+      phone: Type.Union([Type.String(), Type.Null()]),
       email: Type.String(),
-      profileKey: Type.Optional(Type.String()),
+      profileKey: Type.Union([Type.String(), Type.Null()]),
     }),
   ),
 });
