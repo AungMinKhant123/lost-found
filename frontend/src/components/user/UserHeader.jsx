@@ -1,6 +1,6 @@
 import { Link, NavLink, useNavigate } from "react-router";
 import { useState, useRef, useEffect } from "react";
-import { User, LogOut, Settings, LayoutGrid } from "lucide-react";
+import { User, LogOut, Settings, LayoutGrid, Menu } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { logoutUser } from "../../api/authApi";
@@ -94,7 +94,7 @@ const UserHeader = () => {
         </Link>
 
         {/* ================= NAV LINKS ================= */}
-        <nav className="flex items-center gap-8">
+        <nav className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
             <NavLink
               key={link.label}

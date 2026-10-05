@@ -31,7 +31,7 @@ const Home = () => {
 
       <div className="relative z-10">
         {/* ================= HERO ================= */}
-        <section className="max-w-[1280px] mx-auto px-4 md:px-10 py-16">
+        <section className="max-w-[1280px] mx-auto px-4 md:px-10 py-10 md:py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
             <div>
               <h1 className="text-display-lg font-bold text-text-inverse">
@@ -52,7 +52,7 @@ const Home = () => {
               </Button>
             </div>
 
-            <div className="w-full h-80 rounded-xl flex items-center justify-center text-text-secondary text-body-sm">
+            <div className="w-full h-80 rounded-xl flex items-center justify-center text-text-secondary text-body-sm -mt-5 md:mt-0">
               <img
                 src="https://res.cloudinary.com/d5tnusci/image/upload/v1789382550/login_hh77bf.png"
                 alt=""
@@ -63,25 +63,25 @@ const Home = () => {
         </section>
 
         {/* ================= LOST / FOUND ================= */}
-        <section className="max-w-[1280px] mx-auto px-10 py-16">
-          <div className="relative h-[420px]">
+        <section className="max-w-[1280px] mx-auto px-4 md:px-10 py-16 -mt-4 md:mt-0">
+          <div className="relative h-[300px] md:h-[420px]">
             {/* Lost bubble */}
-            <div className="absolute left-[25%] top-[140px] w-24 h-24 border border-border rounded-full bg-background flex items-center justify-center text-body-md text-primary font-medium shadow-sm -rotate-25">
+            <div className="absolute left-[10%] md:left-[25%] top-[100px] md:top-[140px] w-24 h-24 border border-border rounded-full bg-background flex items-center justify-center text-body-md text-primary font-medium shadow-sm -rotate-25">
               Lost??
             </div>
 
             {/* Question bubble */}
-            <div className="absolute left-1/2 -translate-x-1/2 top-[75px] w-20 h-20 border border-border rounded-full bg-background flex items-center justify-center text-heading-3 font-bold text-text-primary shadow-sm rotate-10">
+            <div className="absolute left-[50%] -translate-x-1/2 top-[50px] md:top-[75px] w-20 h-20 border border-border rounded-full bg-background flex items-center justify-center text-heading-3 font-bold text-text-primary shadow-sm rotate-10">
               ?
             </div>
 
             {/* Found bubble */}
-            <div className="absolute right-[29%] top-[150px] w-24 h-24 border border-border rounded-full bg-background flex items-center justify-center text-body-md text-primary font-medium shadow-sm rotate-20">
+            <div className="absolute right-[10%] md:right-[29%] top-[130px] md:top-[150px] w-24 h-24 border border-border rounded-full bg-background flex items-center justify-center text-body-md text-primary font-medium shadow-sm rotate-20">
               Found??
             </div>
 
             {/* Phone */}
-            <div className="absolute left-[25%] top-[20px] w-100 h-202 flex items-center justify-center">
+            <div className="absolute left-[15%] md:left-[25%] top-[10px] md:top-[20px] w-60 md:w-100 h-202 flex items-center justify-center">
               <img
                 src="https://res.cloudinary.com/d5tnusci/image/upload/v1790133618/phone_siep1d.png"
                 alt=""
@@ -92,8 +92,8 @@ const Home = () => {
         </section>
 
         {/* ================= FEATURE: SPEED MATTERS ================= */}
-        <section className="max-w-[1280px] mx-auto px-10 py-16">
-          <div className="grid grid-cols-2 gap-10 items-center">
+        <section className="max-w-[1280px] mx-auto px-4 md:px-10 py-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
             <div className="w-full h-72 rounded-xl flex items-center justify-center text-text-secondary text-body-sm">
               {/* <img
                 src="https://res.cloudinary.com/d5tnusci/image/upload/v1790133618/phone_siep1d.png"
@@ -102,12 +102,12 @@ const Home = () => {
               /> */}
             </div>
 
-            <div>
+            <div className="-mt-16 md:mt-0">
               <p className="text-heading-3 font-semibold text-primary">
                 SPEED MATTERS
               </p>
 
-              <h2 className="text-display-md font-bold text-text-primary mt-2">
+              <h2 className="text-4xl md:text-display-md font-bold text-text-primary mt-2">
                 Most items are <br /> reunited in 48 hours
               </h2>
 
@@ -120,22 +120,22 @@ const Home = () => {
         </section>
 
         {/* ================= FEATURE: HUMAN REVIEW ================= */}
-        <section className="max-w-[1280px] mx-auto px-10 py-16">
-          <div className="grid grid-cols-2 gap-10 items-center">
+        <section className="max-w-[1280px] mx-auto px-4 md:px-10 py-16 relative">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
             <div className="w-full h-102 rounded-xl flex items-center justify-center text-text-secondary text-body-sm">
               <img
                 src="https://res.cloudinary.com/d5tnusci/image/upload/v1789664555/earphone_zxmi2w.png"
                 alt=""
-                className="w-90 h-auto absolute left-[12%] top-[1320px] rotate-35"
+                className="w-60 md:w-90 h-auto absolute left-[10%] md:left-[5%] top-[50px] md:-top-[97px] rotate-35"
               />
             </div>
 
-            <div className="-ml-35 mt-10">
+            <div className="ml-0 md:-ml-35 -mt-30 md:mt-10">
               <p className="text-heading-3 font-semibold text-primary">
                 A REAL PERSON, NOT AN ALGORITHM
               </p>
 
-              <h2 className="text-display-md font-bold text-text-primary mt-2">
+              <h2 className="text-4xl md:text-display-md font-bold text-text-primary mt-2">
                 Every claim gets a<br /> human review
               </h2>
 
@@ -149,13 +149,13 @@ const Home = () => {
         </section>
 
         {/* ================= RECENTLY REPORTED ITEMS ================= */}
-        <section className="max-w-[1280px] mx-auto px-10 py-16">
-          <h2 className="text-display-md font-bold text-text-primary">
+        <section className="max-w-[1280px] mx-auto px-5 md:px-10 py-10 md:py-16">
+          <h2 className="text-4xl md:text-display-md font-bold text-text-primary ml-0 md:ml-0">
             Recently Reported
             <br /> Items
           </h2>
 
-          <p className="text-body-md text-text-secondary mt-2">
+          <p className="text-body-md text-text-secondary mt-2 -ml-0  md:ml-0">
             Take a look at the latest lost and found items in our community
           </p>
 
@@ -170,11 +170,11 @@ const Home = () => {
           )}
 
           {!isLoading && !isError && (
-            <div className="grid grid-cols-[280px_280px_280px] gap-4 mt-8 justify-center">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-[280px_280px_280px] gap-4 mt-8 justify-center">
               {recentItems.map((item) => (
                 <div
                   key={item.id}
-                  className="border border-border rounded-lg overflow-hidden"
+                  className="border border-border rounded-lg overflow-hidden bg-[white] flex flex-col h-full"
                 >
                   {/* Image */}
                   <div className="w-full h-40 bg-neutral-100 overflow-hidden flex items-center justify-center">
@@ -192,8 +192,8 @@ const Home = () => {
                   </div>
 
                   {/* Content */}
-                  <div className="p-4">
-                    <h3 className="text-heading-3 font-bold text-text-primary">
+                  <div className="p-4 flex flex-col flex-1">
+                    <h3 className="text-xl md:text-heading-3 font-bold text-text-primary">
                       {item.title}
                     </h3>
 
@@ -207,14 +207,14 @@ const Home = () => {
                       {formatDate(item.dateLostOrFound)}
                     </p>
 
-                    <p className="text-body-sm text-text-secondary mt-1">
+                    <p className="text-body-sm text-text-secondary mt-1 mb-3">
                       {item.status === "RESOLVED" ? "Resolved" : "Searching"}
                     </p>
 
                     <button
                       type="button"
                       onClick={() => setSelectedItem(item)}
-                      className="mt-3 inline-flex items-center justify-center w-full border border-border rounded-lg px-4 py-2 text-body-md text-text-primary hover:bg-primary hover:text-text-inverse hover:border-primary transition-colors"
+                      className="mt-auto inline-flex items-center justify-center w-full border border-border rounded-lg px-4 py-2 text-body-md text-text-primary hover:bg-primary hover:text-text-inverse hover:border-primary transition-colors"
                     >
                       More Details
                     </button>
