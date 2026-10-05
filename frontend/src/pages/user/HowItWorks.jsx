@@ -12,28 +12,31 @@ const STEPS = [
   {
     title: "Report",
     description: "Report a lost or found item with details and location.",
-    className: "left-[95px] top-[80px]",
+    className:
+      "left-1/2 md:left-[95px] -translate-x-1/2 md:translate-x-0 top-[80px] md:top-[80px]",
     photo:
       "https://res.cloudinary.com/d5tnusci/image/upload/v1790405409/howdoesitwork1_luaqcu-removebg-preview_pvvhao.png",
   },
   {
     title: "Search",
     description: "Browse or search items in your area.",
-    className: "right-[90px] top-[650px]",
+    className:
+      "left-[180px] -translate-x-1/2 top-[650px] md:right-[90px] md:left-auto md:translate-x-0 md:top-[650px]",
     photo:
       "https://res.cloudinary.com/d5tnusci/image/upload/v1790405524/howdoesitwork2_rqrkbk-removebg-preview_z2pqbw.png",
   },
   {
     title: "Connect",
     description: "Contact the poster and arrange to return it.",
-    className: "right-[425px] top-[1250px]",
+    className:
+      "left-[210px] -translate-x-1/2 top-[1250px] md:right-[425px] md:left-auto md:translate-x-0 md:top-[1250px]",
     photo:
       "https://res.cloudinary.com/d5tnusci/image/upload/v1790405611/howdoesitwork3_qobbo5-removebg-preview_ez65x2.png",
   },
   {
     title: "Reunite",
     description: "Get your item back and make someone's day.",
-    className: "left-[180px] top-[1800px]",
+    className: "left-[20px] top-[1800px] md:left-[180px] md:top-[1800px]",
     photo:
       "https://res.cloudinary.com/d5tnusci/image/upload/v1790406979/Untitled_design-removebg-preview_ogny5t.png",
   },
@@ -44,7 +47,7 @@ const STEPS = [
 // as the container scrolls up through this line, that's what drives
 // progress from 0 to 1. Tweak this number to make the snake reach the
 // end sooner/later relative to how far you've scrolled.
-const TRIGGER_LINE_PX = 300;
+const TRIGGER_LINE_PX = 150;
 
 const HowItWorks = () => {
   const containerRef = useRef(null);
