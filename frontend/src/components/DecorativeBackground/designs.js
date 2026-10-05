@@ -42,7 +42,7 @@ export const designs = {
       height: 650,
       color: "#6F4FB4",
       top: -50,
-      left: -280,
+      left: -285,
     },
     // Tall left blob — behind the phone/headphones images, bleeding off the left edge
     {

@@ -33,9 +33,14 @@ export function buildConnectorPath(rectA, rectB) {
   const endY = rectB.top - 10;
 
   const verticalGap = endY - startY;
-  const controlPoint1X = startX;
+
+  const curveAmount = window.innerWidth < 768 ? 50 : 20;
+  const direction = endX > startX ? 1 : -1;
+
+  const controlPoint1X = startX + curveAmount * direction;
   const controlPoint1Y = startY + verticalGap * 0.5;
-  const controlPoint2X = endX;
+
+  const controlPoint2X = endX - curveAmount * direction;
   const controlPoint2Y = startY + verticalGap * 0.5;
 
   return `M ${startX} ${startY} C ${controlPoint1X} ${controlPoint1Y}, ${controlPoint2X} ${controlPoint2Y}, ${endX} ${endY}`;
