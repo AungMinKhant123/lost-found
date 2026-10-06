@@ -18,7 +18,7 @@ const ITEM_TYPES = [
   { label: "Resolved", value: "RESOLVED" },
 ];
 
-const ITEMS_PER_PAGE = 9;
+const ITEMS_PER_PAGE = window.innerWidth < 1024 ? 8 : 9;
 
 function formatDate(isoDate) {
   if (!isoDate) return "";
@@ -345,7 +345,7 @@ const ItemList = () => {
         <section className="max-w-[1280px] mx-auto px-10 py-10 sm:py-14 lg:py-16">
           <div className="grid grid-cols-1 gap-8 items-center md:grid-cols-2 md:gap-10">
             <div>
-              <p className="text-body-md font-semibold text-text-primary tracking-wide sm:text-body-lg">
+              <p className="text-display-lg font-semibold text-text-primary tracking-wide sm:text-body-lg">
                 LOST &amp; FOUND COMMUNITY
               </p>
 
@@ -385,12 +385,22 @@ const ItemList = () => {
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary"
               />
 
+              {/* 📱 MOBILE INPUT (Visible on mobile, hidden on md screens and up) */}
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="Search for items eg. wallets..."
+                className="block md:hidden w-full border border-border rounded-lg pl-11 pr-10 py-3 text-body-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+
+              {/* 💻 DESKTOP INPUT (Hidden on mobile, visible on md screens and up) */}
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder="Search for items eg. wallets, backpacks..."
-                className="w-full border border-border rounded-lg pl-11 pr-10 py-3 text-body-md focus:outline-none focus:ring-2 focus:ring-primary"
+                className="hidden md:block w-full border border-border rounded-lg pl-11 pr-10 py-3 text-body-md focus:outline-none focus:ring-2 focus:ring-primary"
               />
 
               {activeSearch && (
@@ -461,7 +471,7 @@ const ItemList = () => {
                   Item Types
                 </h3>
 
-                <div className="flex flex-col gap-3 mt-3 px-1">
+                <div className="grid grid-cols-2 md:flex md:flex-col gap-3 mt-3 px-1">
                   {ITEM_TYPES.map((type) => (
                     <label
                       key={type.value}
@@ -490,14 +500,14 @@ const ItemList = () => {
                   Category
                 </h3>
 
-                <div className="flex flex-col gap-3 mt-3 px-1">
+                <div className="flex flex-col  gap-3 mt-3 px-0 sm:px-1">
                   {categories.map((category) => {
                     const Icon = getCategoryIcon(category.icon);
 
                     return (
                       <label
                         key={category.id}
-                        className="flex items-center gap-2 text-body-md text-text-primary cursor-pointer"
+                        className="flex items-center gap-2 text-body-md text-text-primary cursor-pointer "
                       >
                         <input
                           type="checkbox"
@@ -572,32 +582,38 @@ const ItemList = () => {
                 </h3>
 
                 <div className="px-1 mt-3">
-                  <label className="text-body-sm text-text-secondary">
-                    From
-                  </label>
+                  <div className="grid grid-cols-[auto_1fr] gap-4 sm:block">
+                    <label className="text-body-sm text-text-secondary self-center sm:self-auto w-12">
+                      From
+                    </label>
 
-                  <div className="relative mt-1">
-                    <input
-                      type="date"
-                      value={pendingDateFrom}
-                      onChange={(event) =>
-                        setPendingDateFrom(event.target.value)
-                      }
-                      className="w-full border border-border rounded-lg px-3 py-2 text-body-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
+                    <div className="relative mt-1">
+                      <input
+                        type="date"
+                        value={pendingDateFrom}
+                        onChange={(event) =>
+                          setPendingDateFrom(event.target.value)
+                        }
+                        className="w-full border border-border rounded-lg px-3 py-2 text-body-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                      />
+                    </div>
                   </div>
 
-                  <label className="text-body-sm text-text-secondary mt-3 block">
-                    To
-                  </label>
-
-                  <div className="relative mt-1">
-                    <input
-                      type="date"
-                      value={pendingDateTo}
-                      onChange={(event) => setPendingDateTo(event.target.value)}
-                      className="w-full border border-border rounded-lg px-3 py-2 text-body-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
+                  <div className="grid grid-cols-[auto_1fr] gap-4 mt-3 sm:mt-0 sm:block">
+                    {/* mt-0 on mobile so it stays centered, sm:mt-3 brings back your desktop spacing */}
+                    <label className="text-body-sm text-text-secondary self-center mt-0 sm:mt-3 sm:block sm:self-auto w-12">
+                      To
+                    </label>
+                    <div className="relative mt-1">
+                      <input
+                        type="date"
+                        value={pendingDateTo}
+                        onChange={(event) =>
+                          setPendingDateTo(event.target.value)
+                        }
+                        className="w-full border border-border rounded-lg px-3 py-2 text-body-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -681,7 +697,7 @@ const ItemList = () => {
               ================================================= */}
 
               {!isLoading && !isError && items.length > 0 && (
-                <div className="grid grid-cols-1 gap-5 mt-6 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+                <div className="grid grid-cols-2 gap-3 mt-6 sm:gap-6 lg:grid-cols-3 -mx-5 sm:mx-0">
                   {items.map((item) => (
                     <div
                       key={item.id}
@@ -690,21 +706,21 @@ const ItemList = () => {
                       {/* ========================================
                             IMAGE
                         ======================================== */}
-                      <div className="pt-4 px-4 rounded-lg">
+                      <div className="pt-3 sm:pt-4 px-3 sm:px-4 rounded-lg">
                         {item.images?.length > 0 ? (
                           <img
                             src={item.images[0].imageUrl}
                             alt={item.title}
-                            className="w-full h-40 object-cover rounded-lg"
+                            className="w-full h-30 sm:h-40 object-cover rounded-lg"
                           />
                         ) : (
-                          <div className="w-full h-40 bg-neutral-100 flex items-center justify-center text-text-secondary text-body-sm rounded-lg">
+                          <div className="w-full h-30 sm:h-40 bg-neutral-100 flex items-center justify-center text-text-secondary text-body-sm rounded-lg">
                             No image
                           </div>
                         )}
                       </div>
 
-                      <div className="p-4">
+                      <div className="p-3 md:p-4">
                         {/* ======================================
                               LOST / FOUND
                           ====================================== */}
@@ -723,7 +739,7 @@ const ItemList = () => {
                               TITLE
                           ====================================== */}
 
-                        <h3 className="text-heading-3 font-bold text-text-primary mt-2 truncate">
+                        <h3 className="text-body-md sm:text-heading-3 font-bold text-text-primary mt-2 truncate">
                           {item.title}
                         </h3>
 
@@ -763,7 +779,7 @@ const ItemList = () => {
                         <button
                           type="button"
                           onClick={() => setSelectedItem(item)}
-                          className="mt-3 inline-flex items-center justify-center border border-border rounded-lg px-4 py-2 text-body-md text-text-primary hover:bg-primary hover:text-text-inverse hover:border-primary transition-colors"
+                          className="mt-2 sm:mt-3 inline-flex items-center justify-center w-full border border-border rounded-lg px-4 py-2 text-body-md text-text-primary hover:bg-primary hover:text-text-inverse hover:border-primary transition-colors"
                         >
                           More Details
                         </button>
@@ -778,7 +794,7 @@ const ItemList = () => {
               ================================================== */}
 
               {totalPages > 1 && (
-                <div className="flex flex-wrap items-center justify-center gap-2 mt-8">
+                <div className="flex flex-nowrap items-center justify-center gap-2 mt-8">
                   {/* Previous */}
 
                   <button
