@@ -2,9 +2,41 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { ChevronDown, Calendar } from "lucide-react";
 import toast from "react-hot-toast";
-import { getCurrentUser, getItemById, updatePost } from "../../services/api";
+import { getProfile } from "../../api/authApi";
+import { getMyPostForEdit } from "../../api/itemsApi";
+import {
+  getCurrentUser,
+  getItemById,
+} from "../../services/api";
 import { useAttributes } from "../../hooks/useAttributes";
+import { useUpdateMyPost } from "../../hooks/useUpdateMyPost";
 import { getCategoryIcon } from "../../utils/categoryIcons";
+
+function isBackendUnreachable(error) {
+  return !error?.response || error.response.status >= 500;
+}
+
+async function getMyPostForEditWithFallback(itemId) {
+  try {
+    return await getMyPostForEdit(itemId);
+  } catch (error) {
+    if (import.meta.env.DEV && isBackendUnreachable(error)) {
+      return await getItemById(itemId);
+    }
+    throw error;
+  }
+}
+
+async function getProfileWithFallback() {
+  try {
+    return await getProfile();
+  } catch (error) {
+    if (import.meta.env.DEV && isBackendUnreachable(error)) {
+      return await getCurrentUser();
+    }
+    throw error;
+  }
+}
 
 // A styled dropdown, same look as the ones on New Post. Each option can
 // show an icon (categories) or a colour swatch (colours).
@@ -84,6 +116,7 @@ const EditPost = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { categories, colors } = useAttributes();
+  const updateMutation = useUpdateMyPost();
 
   const [item, setItem] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
@@ -99,20 +132,39 @@ const EditPost = () => {
     description: "",
   });
   const [errors, setErrors] = useState({});
-  const [isSaving, setIsSaving] = useState(false);
 
   // Load the post and the current user together, then fill the form.
   useEffect(() => {
-    Promise.all([getItemById(id), getCurrentUser()])
+    Promise.all([getMyPostForEditWithFallback(id), getProfileWithFallback()])
       .then(([itemData, user]) => {
-        setItem(itemData);
+        const category =
+          typeof itemData.category === "string"
+            ? itemData.category
+            : itemData.category?.name || "";
+        const color =
+          typeof itemData.color === "string"
+            ? itemData.color
+            : itemData.color?.name || "";
+        const date = itemData.date || itemData.dateLostOrFound || "";
+
+        setItem({
+          ...itemData,
+          userId: itemData.userId || user.id,
+          resolved: itemData.resolved ?? itemData.status === "RESOLVED",
+          status:
+            itemData.type === "LOST"
+              ? "lost"
+              : itemData.type === "FOUND"
+                ? "found"
+                : itemData.status,
+        });
         setCurrentUserId(user.id);
         setForm({
           title: itemData.title || "",
-          category: itemData.category || "",
+          category,
           location: itemData.location || "",
-          color: itemData.color || "",
-          date: itemData.date || "",
+          color,
+          date: date.slice(0, 10),
           description: itemData.description || "",
         });
       })
@@ -143,15 +195,33 @@ const EditPost = () => {
     setErrors(next);
     if (Object.keys(next).length > 0) return;
 
-    setIsSaving(true);
+    const category = categories.find((option) => option.name === form.category);
+    const color = colors.find((option) => option.name === form.color);
+
+    if (!category || (form.color && !color)) {
+      toast.error("Please choose a valid category and colour.");
+      return;
+    }
+
     try {
-      await updatePost(id, {
-        title: form.title.trim(),
-        category: form.category,
-        color: form.color,
-        location: form.location.trim(),
-        date: form.date,
-        description: form.description.trim(),
+      await updateMutation.mutateAsync({
+        itemId: id,
+        updates: {
+          title: form.title.trim(),
+          categoryId: category.id,
+          ...(color ? { colorId: color.id } : {}),
+          location: form.location.trim(),
+          dateLostOrFound: form.date,
+          description: form.description.trim(),
+        },
+        mockUpdates: {
+          title: form.title.trim(),
+          category: form.category,
+          ...(form.color ? { color: form.color } : {}),
+          location: form.location.trim(),
+          date: form.date,
+          description: form.description.trim(),
+        },
       });
       toast.success("Post updated.");
       navigate(`/account/posts/${id}`);
@@ -159,10 +229,9 @@ const EditPost = () => {
       toast.error(
         err.friendly
           ? err.message
-          : "Couldn't save your changes. Please try again.",
+          : err.response?.data?.message ??
+              "Couldn't save your changes. Please try again.",
       );
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -320,10 +389,10 @@ const EditPost = () => {
           </Link>
           <button
             type="submit"
-            disabled={isSaving}
+            disabled={updateMutation.isPending}
             className="bg-primary hover:bg-primary-dark text-text-inverse rounded-lg px-8 py-2.5 text-body-md font-medium transition-colors disabled:opacity-50"
           >
-            {isSaving ? "Saving..." : "Save Changes"}
+            {updateMutation.isPending ? "Saving..." : "Save Changes"}
           </button>
         </div>
       </form>

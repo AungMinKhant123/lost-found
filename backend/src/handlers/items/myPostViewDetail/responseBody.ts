@@ -5,13 +5,14 @@ const ClaimantSchema = Type.Object({
   id: Type.String({ format: "uuid" }),
   firstName: Type.String(),
   lastName: Type.String(),
-  profileUrl: Type.Optional(Type.String()),
+  profileUrl: Type.Union([Type.String(), Type.Null()]),
 });
 
 const ClaimSchema = Type.Object({
   id: Type.String({ format: "uuid" }),
   message: Type.Optional(Type.String()),
   status: Type.Enum(ClaimStatus),
+  createdAt: Type.String({ format: "date-time" }),
 
   claimant: ClaimantSchema,
 });
@@ -25,7 +26,7 @@ const MyPostDetailsSchema = Type.Object({
   id: Type.String({ format: "uuid" }),
   type: Type.Enum(ItemType),
   title: Type.String(),
-  description: Type.Optional(Type.String()),
+  description: Type.Union([Type.String(), Type.Null()]),
   location: Type.String(),
   dateLostOrFound: Type.String({ format: "date-time" }),
   status: Type.Enum(ItemStatus),
@@ -44,9 +45,7 @@ const MyPostDetailsSchema = Type.Object({
   claims: Type.Array(ClaimSchema),
 });
 
-export const MyPostViewDetailResponseBodySchema = Type.Object({
-  data: MyPostDetailsSchema,
-});
+export const MyPostViewDetailResponseBodySchema = MyPostDetailsSchema;
 
 export type MyPostViewDetailResponseBody = Static<
   typeof MyPostViewDetailResponseBodySchema

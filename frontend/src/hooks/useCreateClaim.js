@@ -22,8 +22,12 @@ export function useCreateClaim() {
 
   return useMutation({
     mutationFn: createClaimWithFallback,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["my-claims"] });
-    },
+    onSuccess: (_, { itemId }) =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["my-claims"] }),
+        queryClient.invalidateQueries({ queryKey: ["post-claims", itemId] }),
+        queryClient.invalidateQueries({ queryKey: ["item", itemId] }),
+        queryClient.invalidateQueries({ queryKey: ["my-posts"] }),
+      ]),
   });
 }
