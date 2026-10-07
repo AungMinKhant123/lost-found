@@ -30,7 +30,7 @@ const Notification = () => {
   };
 
   return (
-    <div className="flex justify-center px-4 py-8">
+    <div className="flex justify-center px-4 py-8 ">
       {/* Main Notification Card */}
       <div
         className="
@@ -42,25 +42,28 @@ const Notification = () => {
           items-center
           justify-center
           gap-6
+          bg-white
           rounded-lg
           border
           border-[#A9B3BD]
           px-4
-          py-8
+          py-6 sm:py-8
         "
       >
         {/* Content */}
-        <div className="flex w-full max-w-[645px] flex-col items-start gap-[37px]">
+        <div className="flex w-full max-w-[645px] flex-col items-start gap-8 sm:gap-[37px]">
           {/* Header */}
           <div className="flex w-full flex-col items-start gap-4">
             <h1
               className="
-                font-['Inter']
-                text-[32px]
-                font-bold
-                leading-[40px]
-                text-black
-              "
+              font-['Inter']
+              text-[28px]
+              font-bold
+              leading-[36px]
+              text-black
+              sm:text-[32px]
+              sm:leading-[40px]
+            "
             >
               Notification Preferences
             </h1>
@@ -119,7 +122,7 @@ const Notification = () => {
         </div>
 
         {/* Buttons */}
-        <div className="flex items-center gap-4">
+        <div className="flex w-full max-w-[564px] items-center gap-2 sm:gap-4">
           {/* Cancel */}
           <button
             type="button"
@@ -128,7 +131,8 @@ const Notification = () => {
               box-border
               flex
               h-[49px]
-              w-[274px]
+              w-full
+              sm:w-[274px]
               items-center
               justify-center
               rounded-lg
@@ -156,7 +160,8 @@ const Notification = () => {
               box-border
               flex
               h-[49px]
-              w-[274px]
+              w-full
+              sm:w-[274px]
               items-center
               justify-center
               rounded-lg
@@ -172,6 +177,7 @@ const Notification = () => {
               text-white
               transition-colors
               hover:bg-[#5B3DE0]
+              text-nowrap
             "
           >
             Save Changes
@@ -189,12 +195,12 @@ const NotificationItem = ({ icon, title, description, enabled, onToggle }) => {
       className="
         box-border
         flex
-        h-[93px]
+        h-auto min-h-[93px] sm:h-[93px] py-4 sm:py-0
         w-full
         max-w-[632px]
         items-center
         justify-center
-        gap-12
+        gap-4 sm:gap-12
         rounded-xl
         border
         border-[#A9B3BD]
@@ -210,24 +216,28 @@ const NotificationItem = ({ icon, title, description, enabled, onToggle }) => {
         <div className="flex flex-1 flex-col items-start gap-2">
           <h2
             className="
-              font-['Inter']
-              text-2xl
-              font-semibold
-              leading-8
-              text-black
-            "
+            font-['Inter']
+            text-xl
+            font-semibold
+            leading-7
+            text-black
+            sm:text-2xl
+            sm:leading-8
+          "
           >
             {title}
           </h2>
 
           <p
             className="
-              font-['Inter']
-              text-base
-              font-medium
-              leading-6
-              text-black
-            "
+            font-['Inter']
+            text-sm
+            font-medium
+            leading-5
+            text-black
+            sm:text-base
+            sm:leading-6
+          "
           >
             {description}
           </p>
@@ -239,7 +249,7 @@ const NotificationItem = ({ icon, title, description, enabled, onToggle }) => {
         type="button"
         onClick={onToggle}
         aria-label={`Turn ${title} ${enabled ? "off" : "on"}`}
-        className="flex shrink-0 items-center justify-center"
+        className="flex shrink-0 items-center justify-center cursor-pointer"
       >
         <div
           className={`
@@ -265,7 +275,7 @@ const NotificationItem = ({ icon, title, description, enabled, onToggle }) => {
               transition-all
               ${
                 enabled
-                  ? "left-[12px] border-[#4B32A8]"
+                  ? "right-[2px] border-[#4B32A8]"
                   : "left-[2px] border-[#A9B3BD]"
               }
             `}

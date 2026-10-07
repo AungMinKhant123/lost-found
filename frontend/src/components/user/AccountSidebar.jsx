@@ -76,7 +76,7 @@ const AccountSidebar = () => {
         ))}
 
         {/* Admin Dashboard — only visible to admins */}
-        {user?.role === "admin" && (
+        {/* {user?.role === "admin" && (
           <Link
             to="/admin"
             className="flex items-center gap-3 border border-border rounded-lg px-4 py-3 text-body-md text-text-primary hover:bg-background-subtle transition-colors"
@@ -84,7 +84,7 @@ const AccountSidebar = () => {
             <LayoutGrid size={20} />
             Admin Dashboard
           </Link>
-        )}
+        )} */}
 
         {/* Settings */}
 

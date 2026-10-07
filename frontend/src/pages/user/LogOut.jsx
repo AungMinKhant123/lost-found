@@ -38,7 +38,7 @@ const Logout = () => {
           mb-32
         "
       >
-        <div className="flex justify-center px-4 py-8">
+        <div className="flex justify-center px-4  bg-white">
           {/* Main Logout Card */}
           <div
             className="

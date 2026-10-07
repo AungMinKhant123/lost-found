@@ -25,11 +25,7 @@ function capitalize(word) {
 
 const PostClaims = () => {
   const { id } = useParams();
-  const {
-    data: claimsResponse,
-    isLoading: loading,
-    error,
-  } = usePostClaims(id);
+  const { data: claimsResponse, isLoading: loading, error } = usePostClaims(id);
   const updateClaimMutation = useUpdateItemClaimStatus();
   const item = claimsResponse?.item;
   const claimsWithUsers = (claimsResponse?.claims ?? []).map((claim) => ({
@@ -149,7 +145,7 @@ const PostClaims = () => {
       </div>
 
       {/* Claims list */}
-      <div className="flex flex-col gap-4 mt-8">
+      <div className="flex flex-col gap-4 mt-8 bg-white">
         {claimsWithUsers.map((claim) => (
           <div key={claim.id} className="border border-border rounded-lg p-6">
             <div className="flex items-start justify-between">

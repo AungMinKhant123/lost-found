@@ -44,7 +44,7 @@ const DeleteAccount = () => {
           mb-32
         "
       >
-        <div className="flex justify-center px-4 py-8">
+        <div className="flex justify-center px-4  bg-white">
           {/* Main Logout Card */}
           <div
             className="
@@ -105,8 +105,9 @@ const DeleteAccount = () => {
                 font-['Inter']
                 text-sm
                 font-normal
-                leading-5
+                leading-6
                 text-black
+                px-15 sm:px-5
               "
                 >
                   Are you sure you want to delete your account? This account

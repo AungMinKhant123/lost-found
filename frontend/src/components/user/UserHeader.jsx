@@ -100,7 +100,7 @@ const UserHeader = () => {
 
   return (
     <header className="fixed top-0 left-0 z-50 w-full bg-background-subtle border-b border-border px-4 md:px-10 py-3 ">
-      <div className="flex items-center justify-between pb-2 md:pb-0 pt-1 md:pt-0 ">
+      <div className="flex items-center justify-between pb-2 md:pb-0 pt-3 md:pt-0 ">
         {/* ================= LOGO ================= */}
         <Link to="/">
           <div className="flex justify-center items-center gap-2">
