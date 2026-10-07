@@ -103,7 +103,7 @@ const Home = () => {
             </div>
 
             <div className="-mt-16 md:mt-0">
-              <p className="text-heading-3 font-semibold text-primary">
+              <p className="text-heading-3 font-semibold text-white sm:text-primary ">
                 SPEED MATTERS
               </p>
 
