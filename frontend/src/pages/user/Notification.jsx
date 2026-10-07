@@ -30,7 +30,7 @@ const Notification = () => {
   };
 
   return (
-    <div className="flex justify-center px-4 py-8">
+    <div className="flex justify-center px-4 py-8 ">
       {/* Main Notification Card */}
       <div
         className="
@@ -42,11 +42,12 @@ const Notification = () => {
           items-center
           justify-center
           gap-6
+          bg-white
           rounded-lg
           border
           border-[#A9B3BD]
           px-4
-          py-8
+          py-6 sm:py-8
         "
       >
         {/* Content */}
@@ -55,12 +56,14 @@ const Notification = () => {
           <div className="flex w-full flex-col items-start gap-4">
             <h1
               className="
-                font-['Inter']
-                text-[32px]
-                font-bold
-                leading-[40px]
-                text-black
-              "
+              font-['Inter']
+              text-[28px]
+              font-bold
+              leading-[36px]
+              text-black
+              sm:text-[32px]
+              sm:leading-[40px]
+            "
             >
               Notification Preferences
             </h1>
@@ -189,12 +192,12 @@ const NotificationItem = ({ icon, title, description, enabled, onToggle }) => {
       className="
         box-border
         flex
-        h-[93px]
+        h-auto min-h-[93px] sm:h-[93px] py-4 sm:py-0
         w-full
         max-w-[632px]
         items-center
         justify-center
-        gap-12
+        gap-4 sm:gap-12
         rounded-xl
         border
         border-[#A9B3BD]

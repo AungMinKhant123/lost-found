@@ -47,7 +47,7 @@ const AcceptedClaimView = () => {
         You can now contact the claimant below to arrange the handover.
       </p>
 
-      <div className="border border-border rounded-lg p-8 mt-6">
+      <div className="border border-border rounded-lg p-8 mt-6 bg-white">
         <h2 className="text-heading-3 font-bold text-text-primary text-center">
           Contact Information
         </h2>

@@ -193,13 +193,13 @@ const AccountProfile = () => {
                   className="flex flex-col border border-border rounded-xl overflow-hidden bg-white shadow-sm"
                 >
                   {/* Card Header Section */}
-                  <div className="flex items-center justify-center gap-2.5 bg-neutral-50 border-b border-border py-2.5 px-4">
+                  <div className="flex items-center justify-center gap-2.5 bg-neutral-50 border-b border-border  sm:py-3 px-4 min-h-15 sm:min-h-7">
                     <Icon
                       size={20}
                       strokeWidth={2}
                       className={`text-primary-dark shrink-0 ${iconClass}`}
                     />
-                    <span className="text-body-md font-medium text-text-primary whitespace-nowrap">
+                    <span className="text-body-md sm:text-body-md font-medium text-text-primary text-center leading-tight">
                       {label}
                     </span>
                   </div>
@@ -318,7 +318,7 @@ const AccountProfile = () => {
                   </div>
 
                   <div className="flex flex-row items-start gap-6">
-                    <span className="text-body-lg text-text-primary">
+                    <span className="text-body-lg text-text-primary ml-8.5 sm:ml-0">
                       *******
                     </span>
 
@@ -346,7 +346,7 @@ const AccountProfile = () => {
                   </div>
 
                   <div className="flex flex-row items-start gap-6">
-                    <span className="text-body-lg text-text-primary">
+                    <span className="text-body-lg text-text-primary ml-8.5 sm:ml-0">
                       Disabled
                     </span>
 
