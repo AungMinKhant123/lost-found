@@ -79,7 +79,7 @@ const MyPosts = () => {
             key={tab.value}
             type="button"
             onClick={() => setActiveTab(tab.value)}
-            className={`px-4 py-2 rounded-full text-body-sm font-medium transition-colors ${
+            className={` px-3 sm:px-4 py-3 sm:py-2 rounded-full text-body-sm font-medium transition-colors ${
               activeTab === tab.value
                 ? "bg-background text-primary shadow-sm"
                 : "text-text-secondary hover:text-text-primary"
@@ -96,7 +96,7 @@ const MyPosts = () => {
           No items in this category yet.
         </p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 mt-6 bg-white">
           {filteredItems.map((item) => {
             const pendingCount = item.pendingClaimsCount ?? 0;
 
@@ -106,7 +106,7 @@ const MyPosts = () => {
             return (
               <div
                 key={item.id}
-                className="border border-border rounded-lg overflow-hidden"
+                className="flex flex-col h-full border border-border rounded-lg overflow-hidden"
               >
                 {/* Item image */}
                 <div className="w-full h-40 bg-neutral-100 flex items-center justify-center overflow-hidden">
@@ -123,7 +123,7 @@ const MyPosts = () => {
                   )}
                 </div>
 
-                <div className="p-4">
+                <div className="p-4 flex flex-col flex-1">
                   {/* Status badges */}
                   <div className="flex items-center gap-2">
                     <span
@@ -156,7 +156,7 @@ const MyPosts = () => {
                   </div>
 
                   {/* Date + status */}
-                  <p className="text-body-sm text-text-secondary mt-1">
+                  <p className="text-body-sm text-text-secondary mt-1 mb-3 sm:mb-0">
                     {formatDate(item.dateLostOrFound)} ·{" "}
                     {isResolved ? "Resolved" : "Searching"}
                   </p>
@@ -165,7 +165,7 @@ const MyPosts = () => {
 
                   <Link
                     to={`/account/posts/${item.id}`}
-                    className="mt-3 inline-flex items-center justify-center w-full border border-border rounded-lg px-4 py-2 text-body-md text-text-primary hover:bg-background-subtle transition-colors"
+                    className="mt-auto sm:mt-3 inline-flex items-center justify-center w-full border border-border rounded-lg px-4 py-2 text-body-md text-text-primary hover:bg-background-subtle transition-colors"
                   >
                     View Details
                   </Link>

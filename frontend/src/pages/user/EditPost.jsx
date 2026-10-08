@@ -4,10 +4,7 @@ import { ChevronDown, Calendar } from "lucide-react";
 import toast from "react-hot-toast";
 import { getProfile } from "../../api/authApi";
 import { getMyPostForEdit } from "../../api/itemsApi";
-import {
-  getCurrentUser,
-  getItemById,
-} from "../../services/api";
+import { getCurrentUser, getItemById } from "../../services/api";
 import { useAttributes } from "../../hooks/useAttributes";
 import { useUpdateMyPost } from "../../hooks/useUpdateMyPost";
 import { getCategoryIcon } from "../../utils/categoryIcons";
@@ -229,8 +226,8 @@ const EditPost = () => {
       toast.error(
         err.friendly
           ? err.message
-          : err.response?.data?.message ??
-              "Couldn't save your changes. Please try again.",
+          : (err.response?.data?.message ??
+              "Couldn't save your changes. Please try again."),
       );
     }
   };
@@ -267,7 +264,7 @@ const EditPost = () => {
   }));
 
   return (
-    <div className="max-w-2xl border border-border rounded-lg p-8">
+    <div className="max-w-2xl border border-border rounded-lg p-8 bg-white">
       <h1 className="text-heading-1 font-bold text-primary-dark">Edit Post</h1>
       <p className="text-body-sm text-text-secondary mt-2">
         Update the details of your post. Accurate descriptions help people
@@ -353,10 +350,10 @@ const EditPost = () => {
               onChange={(e) => setField("date", e.target.value)}
               className="w-full border border-border rounded-lg pl-3 pr-10 py-2.5 text-body-md focus:outline-none focus:ring-2 focus:ring-primary"
             />
-            <Calendar
+            {/* <Calendar
               size={18}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary pointer-events-none"
-            />
+            /> */}
           </div>
           {errors.date && (
             <p className="text-error text-label-sm mt-1">{errors.date}</p>
@@ -390,7 +387,7 @@ const EditPost = () => {
           <button
             type="submit"
             disabled={updateMutation.isPending}
-            className="bg-primary hover:bg-primary-dark text-text-inverse rounded-lg px-8 py-2.5 text-body-md font-medium transition-colors disabled:opacity-50"
+            className="bg-primary hover:bg-primary-dark text-text-inverse rounded-lg px-5 sm:px-8 py-2.5 text-body-md font-medium transition-colors disabled:opacity-50 text-nowrap"
           >
             {updateMutation.isPending ? "Saving..." : "Save Changes"}
           </button>

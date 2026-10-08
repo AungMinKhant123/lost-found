@@ -35,9 +35,7 @@ const ClaimDetails = () => {
 
   if (isLoading) return <div>Loading...</div>;
   if (error) {
-    return (
-      <div>Error: {error.response?.data?.message ?? error.message}</div>
-    );
+    return <div>Error: {error.response?.data?.message ?? error.message}</div>;
   }
   const item = claim?.item;
   if (!claim || !item) return <div>Claim not found.</div>;
@@ -49,38 +47,58 @@ const ClaimDetails = () => {
       </h1>
 
       {/* Item summary + status pill */}
-      <div className="flex items-center gap-4 mt-6">
-        {item.images?.[0]?.imageUrl ? (
-          <img
-            src={item.images[0].imageUrl}
-            alt={item.title}
-            className="w-20 h-20 rounded-lg object-cover shrink-0"
-          />
-        ) : (
-          <div className="w-20 h-20 rounded-lg bg-neutral-100 flex items-center justify-center text-text-secondary text-label-sm shrink-0">
-            Image
-          </div>
-        )}
+      <div className="flex items-start gap-4 mt-6">
+        <div className="flex items-center gap-4 flex-1 min-w-0">
+          {item.images?.[0]?.imageUrl ? (
+            <img
+              src={item.images[0].imageUrl}
+              alt={item.title}
+              className="w-20 h-20 rounded-lg object-cover shrink-0"
+            />
+          ) : (
+            <div className="w-20 h-20 rounded-lg bg-neutral-100 flex items-center justify-center text-text-secondary text-label-sm shrink-0">
+              Image
+            </div>
+          )}
 
-        <div className="flex-1">
-          <h2 className="text-heading-3 font-bold text-text-primary">
-            {item.title}
-          </h2>
-          <div className="flex items-center gap-1 text-body-sm text-text-secondary mt-1">
-            <MapPin size={14} />
-            {capitalize(item.status)} · {item.location}
+          <div className="min-w-0">
+            <h2 className="text-heading-3 font-bold text-text-primary">
+              {item.title}
+            </h2>
+
+            <div className="flex items-center gap-1 text-body-sm text-text-secondary mt-1">
+              <MapPin size={14} />
+              {capitalize(item.status)} · {item.location}
+            </div>
+
+            <p className="text-body-sm text-text-secondary mt-1">
+              Claimed {formatDateTime(claim.claimedAt)}
+            </p>
+
+            {/* Mobile status */}
+            <span
+              className={`inline-block w-fit mt-2 px-4 py-1.5 rounded-full text-body-sm font-medium capitalize sm:hidden ${STATUS_STYLES[claim.status]}`}
+            >
+              {claim.status}
+            </span>
           </div>
-          <p className="text-body-sm text-text-secondary mt-1">
-            Claimed {formatDateTime(claim.claimedAt)}
-          </p>
         </div>
 
-        <span
-          className={`px-4 py-1.5 rounded-full text-body-sm font-medium capitalize ${STATUS_STYLES[claim.status]}`}
-        >
-          {claim.status}
-        </span>
-        <CancelClaimButton claim={claim} itemTitle={item.title} />
+        {/* Desktop status + cancel button */}
+        <div className="hidden sm:flex items-center gap-3 shrink-0">
+          <span
+            className={`px-4 py-1.5 rounded-full text-body-sm font-medium capitalize ${STATUS_STYLES[claim.status]}`}
+          >
+            {claim.status}
+          </span>
+
+          <CancelClaimButton claim={claim} itemTitle={item.title} />
+        </div>
+
+        {/* Mobile cancel button */}
+        <div className="sm:hidden shrink-0">
+          <CancelClaimButton claim={claim} itemTitle={item.title} />
+        </div>
       </div>
 
       {/* Claim message */}
@@ -93,7 +111,7 @@ const ClaimDetails = () => {
 
       {/* Conditional section based on status */}
       {claim.status === "accepted" && (
-        <div className="border border-border rounded-lg p-6 mt-6">
+        <div className="border border-border rounded-lg p-6 mt-6 bg-white">
           <h3 className="text-heading-3 font-bold text-text-primary">
             Contact Information
           </h3>
@@ -145,7 +163,7 @@ const ClaimDetails = () => {
       )}
 
       {claim.status === "declined" && (
-        <div className="border border-border rounded-lg p-8 mt-6 flex flex-col items-center text-center">
+        <div className="border border-border rounded-lg p-8 mt-6 flex flex-col items-center text-center bg-white">
           <ShieldAlert size={32} className="text-error" />
           <h3 className="text-heading-3 font-bold text-text-primary mt-3">
             Information message
@@ -165,7 +183,7 @@ const ClaimDetails = () => {
       )}
 
       {claim.status === "pending" && (
-        <div className="border border-border rounded-lg p-8 mt-6 flex flex-col items-center text-center">
+        <div className="border border-border rounded-lg p-8 mt-6 flex flex-col items-center text-center bg-white">
           <Clock size={32} className="text-warning" />
           <h3 className="text-heading-3 font-bold text-text-primary mt-3">
             Waiting for a response

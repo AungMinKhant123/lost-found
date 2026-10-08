@@ -62,7 +62,7 @@ export const designs = {
       viewBox: "0 0 260 875",
       width: 260,
       height: 850,
-      color: "#6F4FB4",
+      color: "#604AB1",
       top: 800,
       right: -60,
     },

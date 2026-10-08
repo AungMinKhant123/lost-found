@@ -84,20 +84,20 @@ const MyClaims = () => {
           No claims in this category yet.
         </p>
       ) : (
-        <div className="flex flex-col gap-4 mt-6">
+        <div className="grid grid-cols-2 gap-3 mt-6 sm:flex sm:flex-col sm:gap-4 bg-white">
           {claims.map((claim) => {
             const item = claim.item;
             return (
               <div
                 key={claim.id}
-                className="flex items-center gap-4 border border-border rounded-lg p-4"
+                className="flex flex-col gap-4 border border-border rounded-lg p-4 sm:flex-row sm:items-center"
               >
                 {/* Image placeholder — swap for the real item photo later */}
                 {item.images?.[0]?.imageUrl ? (
                   <img
                     src={item.images[0].imageUrl}
                     alt={item.title}
-                    className="w-20 h-20 rounded-lg object-cover shrink-0"
+                    className="w-20 h-20 rounded-lg object-cover shrink-0 self-center sm:self-auto"
                   />
                 ) : (
                   <div className="w-20 h-20 rounded-lg bg-neutral-100 flex items-center justify-center text-text-secondary text-label-sm shrink-0">
@@ -105,7 +105,7 @@ const MyClaims = () => {
                   </div>
                 )}
 
-                <div className="flex-1">
+                <div className="flex-1 w-full sm:w-auto">
                   <h3 className="text-heading-3 font-bold text-text-primary">
                     {item.title}
                   </h3>
@@ -121,14 +121,14 @@ const MyClaims = () => {
                 </div>
 
                 <span
-                  className={`px-4 py-1.5 rounded-full text-body-sm font-medium capitalize ${STATUS_STYLES[claim.status]}`}
+                  className={`px-4 py-1.5 rounded-full text-body-sm font-medium capitalize self-start sm:self-auto ${STATUS_STYLES[claim.status]} -my-2.5 sm:my-0`}
                 >
                   {claim.status.toLowerCase()}
                 </span>
 
                 <Link
                   to={`/account/claims/${claim.id}`}
-                  className="border border-border rounded-lg px-4 py-2 text-body-md text-primary hover:bg-background-subtle transition-colors"
+                  className="w-full sm:w-auto border border-border text-center rounded-lg px-4 py-2 text-body-md text-primary hover:bg-background-subtle transition-colors mt-1 sm:mt-0"
                 >
                   View Claim
                 </Link>
