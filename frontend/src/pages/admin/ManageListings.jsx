@@ -1,7 +1,11 @@
-import { useEffect, useState } from "react";
-import { Search, ChevronDown, Eye, Trash2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { Search, Eye, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
-import { getItems, getUsers, getClaims, deleteItem } from "../../services/api";
+import {
+  deleteAdminListing,
+  getAdminListing,
+  getAdminListings,
+} from "../../api/adminApi";
 import ListingDetailsModal from "../../components/admin/ListingDetailsModal";
 import ConfirmDeleteModal from "../../components/admin/ConfirmDeleteModal";
 import AdminSelect from "../../components/admin/AdminSelect";
@@ -19,11 +23,11 @@ function formatDate(isoDate) {
 
 const ManageListings = () => {
   const [items, setItems] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [totalPages, setTotalPages] = useState(0);
 
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -33,119 +37,124 @@ const ManageListings = () => {
   // confirm modal. Kept separate so "delete from the details modal"
   // can stack the confirm modal on top without closing the details one
   // first.
-  const [viewingItemId, setViewingItemId] = useState(null);
+  const [viewingItem, setViewingItem] = useState(null);
   const [deletingItemId, setDeletingItemId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const loadData = () => {
-    setLoading(true);
-    Promise.all([getItems(), getUsers(), getClaims()])
-      .then(([itemsData, usersData, claimsData]) => {
-        setItems(itemsData);
-        setUsers(usersData);
-        setClaims(claimsData);
-      })
-      .finally(() => setLoading(false));
-  };
-
   const { categories } = useAttributes();
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setDebouncedSearch(search);
+      setCurrentPage(1);
+    }, 300);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [search]);
+
+  const categoryId =
+    categoryFilter === "all"
+      ? undefined
+      : categories.find((category) => category.name === categoryFilter)?.id;
+
+  const loadData = useCallback(async (signal) => {
+    setLoading(true);
+    try {
+      const result = await getAdminListings({
+        page: currentPage,
+        limit: ROWS_PER_PAGE,
+        ...(debouncedSearch.trim() && { search: debouncedSearch.trim() }),
+        ...(statusFilter !== "all" && {
+          status: statusFilter.toUpperCase(),
+        }),
+        ...(typeFilter !== "all" && { type: typeFilter.toUpperCase() }),
+        ...(categoryId && { categoryId }),
+      }, { signal });
+      if (signal?.aborted) return;
+      setItems(
+        result.data.map((item) => ({
+          ...item,
+          status: item.type.toLowerCase(),
+          resolved: item.status === "RESOLVED",
+          category: item.category.name,
+          date: item.createdAt,
+          posterName: `${item.user.firstName} ${item.user.lastName?.charAt(0) ? `${item.user.lastName.charAt(0)}.` : ""}`.trim(),
+        })),
+      );
+      setTotalPages(result.pagination.totalPages);
+    } catch (error) {
+      if (signal?.aborted) return;
+      console.error("Failed to load admin listings:", error);
+      setItems([]);
+      setTotalPages(0);
+      toast.error(error.message || "Failed to load listings.");
+    } finally {
+      if (!signal?.aborted) setLoading(false);
+    }
+  }, [categoryId, currentPage, debouncedSearch, statusFilter, typeFilter]);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    const controller = new AbortController();
+    loadData(controller.signal);
+    return () => controller.abort();
+  }, [loadData]);
 
-  const findUser = (userId) => users.find((u) => u.id === userId);
-
-  // "Maren O." style — first name + last initial.
-  const posterNameFor = (item) => {
-    const user = findUser(item.userId);
-    if (!user) return "Unknown";
-    const lastInitial = user.lastName ? `${user.lastName.charAt(0)}.` : "";
-    return `${user.firstName} ${lastInitial}`.trim();
-  };
-
-  // Joins each item with its display-ready poster name, contact info
-  // (item.postedBy takes priority if set, otherwise falls back to the
-  // user's own record), and claim count — this is the shape the table
-  // and filters actually work with.
-  const joinedItems = items.map((item) => {
-    const user = findUser(item.userId);
-    return {
-      ...item,
-      posterName: posterNameFor(item),
-      posterPhone: item.postedBy?.phone || user?.phone || null,
-      posterEmail: item.postedBy?.email || user?.email || null,
-      claimCount: claims.filter((c) => c.itemId === item.id).length,
-    };
-  });
-
-  const filteredItems = joinedItems.filter((item) => {
-    if (search) {
-      const q = search.toLowerCase();
-      if (
-        !item.title.toLowerCase().includes(q) &&
-        !item.posterName.toLowerCase().includes(q)
-      ) {
-        return false;
-      }
-    }
-    if (statusFilter === "open" && item.resolved) return false;
-    if (statusFilter === "resolved" && !item.resolved) return false;
-    if (typeFilter !== "all" && item.status !== typeFilter) return false;
-    if (categoryFilter !== "all" && item.category !== categoryFilter)
-      return false;
-    return true;
-  });
-
-  const totalPages = Math.ceil(filteredItems.length / ROWS_PER_PAGE);
-  const paginatedItems = filteredItems.slice(
-    (currentPage - 1) * ROWS_PER_PAGE,
-    currentPage * ROWS_PER_PAGE,
-  );
+  const paginatedItems = items;
 
   // Reset to page 1 whenever a filter/search changes, so you don't get
   // stuck on an empty later page after narrowing results.
   useEffect(() => {
     setCurrentPage(1);
-  }, [search, statusFilter, typeFilter, categoryFilter]);
-
-  const viewingItem = viewingItemId
-    ? (() => {
-        const item = joinedItems.find((i) => i.id === viewingItemId);
-        if (!item) return null;
-        const itemClaims = claims
-          .filter((c) => c.itemId === viewingItemId)
-          .map((c) => ({
-            ...c,
-            claimantName: (() => {
-              const u = findUser(c.userId);
-              return u ? `${u.firstName} ${u.lastName}` : "Unknown";
-            })(),
-          }));
-        return { ...item, claims: itemClaims };
-      })()
-    : null;
+  }, [statusFilter, typeFilter, categoryFilter]);
 
   const deletingItemTitle = deletingItemId
     ? items.find((i) => i.id === deletingItemId)?.title
     : null;
 
+  const handleViewItem = async (itemId) => {
+    setViewingItem(null);
+    try {
+      const item = await getAdminListing(itemId);
+      setViewingItem({
+        ...item,
+        status: item.type.toLowerCase(),
+        resolved: item.status === "RESOLVED",
+        category: item.category.name,
+        color: item.color.name,
+        date: item.dateLostOrFound,
+        posterName: item.poster.name,
+        posterPhone: item.poster.phone,
+        posterEmail: item.poster.email,
+        claims: item.claims.map((claim) => ({
+          ...claim,
+          status: claim.status.toLowerCase(),
+          claimantName: `${claim.claimant.firstName} ${claim.claimant.lastName}`.trim(),
+          claimedAt: claim.createdAt,
+        })),
+      });
+    } catch (error) {
+      console.error("Failed to load admin listing details:", error);
+      toast.error(error.message || "Failed to load listing details.");
+    }
+  };
+
   const handleConfirmDelete = async () => {
     setIsDeleting(true);
     try {
-      await deleteItem(deletingItemId);
+      await deleteAdminListing(deletingItemId);
       toast.success("Listing Deleted!");
       setDeletingItemId(null);
-      setViewingItemId(null); // close the details modal too, if it was open
-      loadData();
-    } catch (err) {
-      toast.error("Failed to delete listing. Please try again.");
+      setViewingItem(null);
+      await loadData();
+    } catch (error) {
+      toast.error(error.message || "Failed to delete listing. Please try again.");
     } finally {
       setIsDeleting(false);
     }
   };
 
-  if (loading) return <div className="p-10">Loading...</div>;
+  if (loading && items.length === 0) {
+    return <div className="p-10">Loading...</div>;
+  }
 
   return (
     <div className="p-10">
@@ -282,7 +291,7 @@ const ManageListings = () => {
                     <div className="flex items-center gap-3">
                       <button
                         type="button"
-                        onClick={() => setViewingItemId(item.id)}
+                        onClick={() => handleViewItem(item.id)}
                         className="text-success hover:opacity-70"
                         title="View details"
                       >
@@ -345,7 +354,7 @@ const ManageListings = () => {
       {viewingItem && (
         <ListingDetailsModal
           item={viewingItem}
-          onClose={() => setViewingItemId(null)}
+          onClose={() => setViewingItem(null)}
           onDeleteClick={() => setDeletingItemId(viewingItem.id)}
         />
       )}

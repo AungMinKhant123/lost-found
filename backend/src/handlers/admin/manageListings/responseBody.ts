@@ -15,6 +15,11 @@ const ManageListingItemSchema = Type.Object({
     name: Type.String(),
   }),
 
+  color: Type.Object({
+    id: Type.String({ format: "uuid" }),
+    name: Type.String(),
+  }),
+
   user: Type.Object({
     id: Type.String({ format: "uuid" }),
     firstName: Type.String(),

@@ -1,4 +1,5 @@
 import { Type, type Static } from "@sinclair/typebox";
+import { UserRole } from "../../../generated/enums.js";
 
 export const ProfileResponseBodySchema = Type.Object({
   id: Type.String(),
@@ -7,6 +8,7 @@ export const ProfileResponseBodySchema = Type.Object({
   lastName: Type.String(),
   email: Type.String(),
 
+  role: Type.Enum(UserRole),
   phone: Type.Union([Type.String(), Type.Null()]),
 
   profileKey: Type.Union([Type.String(), Type.Null()]),

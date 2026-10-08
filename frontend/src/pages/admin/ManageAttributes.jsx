@@ -5,17 +5,18 @@ import { Search, X, Plus } from "lucide-react";
 import toast from "react-hot-toast";
 
 import {
-  getCategories,
-  getColours,
-  getItems,
-  createCategory,
-  updateCategory,
-  deleteCategory,
-  createColour,
-  updateColour,
-  deleteColour,
-  sameAttributeName,
+  isFallbackAttribute,
 } from "../../services/api";
+import {
+  createAdminCategory,
+  createAdminColor,
+  deleteAdminCategory,
+  deleteAdminColor,
+  getAdminCategories,
+  getAdminColors,
+  updateAdminCategory,
+  updateAdminColor,
+} from "../../api/adminApi";
 
 import AttributeRow from "../../components/admin/AttributeRow";
 
@@ -43,13 +44,11 @@ const CONFIG = {
 
     subtitle: "shown as a filter on Browse Items",
 
-    itemField: "color", // items store the colour NAME under "color"
+    create: createAdminColor,
 
-    create: createColour,
+    update: updateAdminColor,
 
-    update: updateColour,
-
-    remove: deleteColour,
+    remove: deleteAdminColor,
   },
 
   categories: {
@@ -61,13 +60,11 @@ const CONFIG = {
 
     subtitle: "used to tag every listing",
 
-    itemField: "category",
+    create: createAdminCategory,
 
-    create: createCategory,
+    update: updateAdminCategory,
 
-    update: updateCategory,
-
-    remove: deleteCategory,
+    remove: deleteAdminCategory,
   },
 };
 
@@ -75,8 +72,6 @@ const ManageAttributes = () => {
   const [colours, setColours] = useState([]);
 
   const [categories, setCategories] = useState([]);
-
-  const [items, setItems] = useState([]);
 
   const [loading, setLoading] = useState(true);
 
@@ -104,24 +99,30 @@ const ManageAttributes = () => {
 
   const source = activeTab === "colours" ? colours : categories;
 
-  // Re-reads everything from json-server. Used after every change so
-
-  // the list AND the item counts always match the real data.
+  // Reload both lists and their backend-calculated usage counts after a change.
 
   const fetchData = async () => {
-    const [colourData, categoryData, itemData] = await Promise.all([
-      getColours(),
-
-      getCategories(),
-
-      getItems(),
+    const [colourData, categoryData] = await Promise.all([
+      getAdminColors(),
+      getAdminCategories(),
     ]);
 
-    setColours(colourData);
+    const fallbackLast = (list) =>
+      [...list].sort(
+        (a, b) =>
+          Number(isFallbackAttribute(a.name)) -
+          Number(isFallbackAttribute(b.name)),
+      );
 
-    setCategories(categoryData);
-
-    setItems(itemData);
+    setColours(
+      fallbackLast(
+        colourData.map((colour) => ({
+          ...colour,
+          hex: colour.hexCode,
+        })),
+      ),
+    );
+    setCategories(fallbackLast(categoryData));
   };
 
   useEffect(() => {
@@ -129,18 +130,13 @@ const ManageAttributes = () => {
       .catch((err) => {
         console.error("Failed to load attributes:", err);
 
-        toast.error("Couldn't load attributes. Is the mock API running?");
+        toast.error(err.message || "Couldn't load attributes.");
       })
 
       .finally(() => setLoading(false));
   }, []);
 
-  // How many items currently use this colour/category.
-
-  const countFor = (attribute) =>
-    items.filter((item) =>
-      sameAttributeName(item[config.itemField], attribute.name),
-    ).length;
+  const countFor = (attribute) => attribute.itemCount ?? 0;
 
   const visible = source.filter(
     (attribute) =>

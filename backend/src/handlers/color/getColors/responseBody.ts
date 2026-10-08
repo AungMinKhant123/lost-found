@@ -5,6 +5,7 @@ export const GetColorResponseBodySchema = Type.Array(
     id: Type.String({ format: "uuid" }),
     name: Type.String(),
     hexCode: Type.String(),
+    itemCount: Type.Number(),
   }),
 );
 

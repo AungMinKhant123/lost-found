@@ -5,6 +5,7 @@ export const GetCategoriesResponseBodySchema = Type.Array(
     id: Type.String(),
     name: Type.String(),
     icon: Type.String(),
+    itemCount: Type.Number(),
   }),
 );
 
