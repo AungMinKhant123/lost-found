@@ -6,17 +6,15 @@ import toast from "react-hot-toast";
 
 import {
   isFallbackAttribute,
+  fetchAdminCategoriesWithFallback as getAdminCategories,
+  fetchAdminColorsWithFallback as getAdminColors,
+  createAdminCategoryWithFallback as createAdminCategory,
+  updateAdminCategoryWithFallback as updateAdminCategory,
+  deleteAdminCategoryWithFallback as deleteAdminCategory,
+  createAdminColorWithFallback as createAdminColor,
+  updateAdminColorWithFallback as updateAdminColor,
+  deleteAdminColorWithFallback as deleteAdminColor,
 } from "../../services/api";
-import {
-  createAdminCategory,
-  createAdminColor,
-  deleteAdminCategory,
-  deleteAdminColor,
-  getAdminCategories,
-  getAdminColors,
-  updateAdminCategory,
-  updateAdminColor,
-} from "../../api/adminApi";
 
 import AttributeRow from "../../components/admin/AttributeRow";
 
@@ -239,10 +237,32 @@ const ManageAttributes = () => {
             Categories, locations, and colours used across the app
           </p>
         </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex items-center justify-between gap-4 mt-10">
+        <div className="flex gap-2.5 ">
+          {TABS.map((tab) => (
+            <button
+              key={tab.value}
+              type="button"
+              onClick={() => switchTab(tab.value)}
+              className={`px-8 py-2.5 rounded-md text-body-sm font-medium transition-colors ${
+                activeTab === tab.value
+                  ? "bg-primary text-text-inverse"
+                  : "bg-neutral-100 text-text-primary hover:bg-neutral-300/40"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Search Box */}
 
         <form
           onSubmit={handleSearchSubmit}
-          className="flex gap-3 w-full max-w-md"
+          className="flex gap-3 w-full max-w-md ml-auto"
         >
           <div className="relative flex-1">
             <Search
@@ -277,25 +297,6 @@ const ManageAttributes = () => {
             Search
           </button>
         </form>
-      </div>
-
-      {/* Tabs */}
-
-      <div className="flex gap-2.5 mt-10">
-        {TABS.map((tab) => (
-          <button
-            key={tab.value}
-            type="button"
-            onClick={() => switchTab(tab.value)}
-            className={`px-8 py-2.5 rounded-md text-body-sm font-medium transition-colors ${
-              activeTab === tab.value
-                ? "bg-primary text-text-inverse"
-                : "bg-neutral-100 text-text-primary hover:bg-neutral-300/40"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
       </div>
 
       {/* Panel */}

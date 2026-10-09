@@ -2,10 +2,10 @@ import { useCallback, useEffect, useState } from "react";
 import { Search, Eye, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import {
-  deleteAdminListing,
-  getAdminListing,
-  getAdminListings,
-} from "../../api/adminApi";
+  fetchAdminListingsWithFallback as getAdminListings,
+  fetchAdminListingWithFallback as getAdminListing,
+  deleteAdminListingWithFallback as deleteAdminListing,
+} from "../../services/api";
 import ListingDetailsModal from "../../components/admin/ListingDetailsModal";
 import ConfirmDeleteModal from "../../components/admin/ConfirmDeleteModal";
 import AdminSelect from "../../components/admin/AdminSelect";
@@ -56,41 +56,48 @@ const ManageListings = () => {
       ? undefined
       : categories.find((category) => category.name === categoryFilter)?.id;
 
-  const loadData = useCallback(async (signal) => {
-    setLoading(true);
-    try {
-      const result = await getAdminListings({
-        page: currentPage,
-        limit: ROWS_PER_PAGE,
-        ...(debouncedSearch.trim() && { search: debouncedSearch.trim() }),
-        ...(statusFilter !== "all" && {
-          status: statusFilter.toUpperCase(),
-        }),
-        ...(typeFilter !== "all" && { type: typeFilter.toUpperCase() }),
-        ...(categoryId && { categoryId }),
-      }, { signal });
-      if (signal?.aborted) return;
-      setItems(
-        result.data.map((item) => ({
-          ...item,
-          status: item.type.toLowerCase(),
-          resolved: item.status === "RESOLVED",
-          category: item.category.name,
-          date: item.createdAt,
-          posterName: `${item.user.firstName} ${item.user.lastName?.charAt(0) ? `${item.user.lastName.charAt(0)}.` : ""}`.trim(),
-        })),
-      );
-      setTotalPages(result.pagination.totalPages);
-    } catch (error) {
-      if (signal?.aborted) return;
-      console.error("Failed to load admin listings:", error);
-      setItems([]);
-      setTotalPages(0);
-      toast.error(error.message || "Failed to load listings.");
-    } finally {
-      if (!signal?.aborted) setLoading(false);
-    }
-  }, [categoryId, currentPage, debouncedSearch, statusFilter, typeFilter]);
+  const loadData = useCallback(
+    async (signal) => {
+      setLoading(true);
+      try {
+        const result = await getAdminListings(
+          {
+            page: currentPage,
+            limit: ROWS_PER_PAGE,
+            ...(debouncedSearch.trim() && { search: debouncedSearch.trim() }),
+            ...(statusFilter !== "all" && {
+              status: statusFilter.toUpperCase(),
+            }),
+            ...(typeFilter !== "all" && { type: typeFilter.toUpperCase() }),
+            ...(categoryId && { categoryId }),
+          },
+          { signal },
+        );
+        if (signal?.aborted) return;
+        setItems(
+          result.data.map((item) => ({
+            ...item,
+            status: item.type.toLowerCase(),
+            resolved: item.status === "RESOLVED",
+            category: item.category.name,
+            date: item.createdAt,
+            posterName:
+              `${item.user.firstName} ${item.user.lastName?.charAt(0) ? `${item.user.lastName.charAt(0)}.` : ""}`.trim(),
+          })),
+        );
+        setTotalPages(result.pagination.totalPages);
+      } catch (error) {
+        if (signal?.aborted) return;
+        console.error("Failed to load admin listings:", error);
+        setItems([]);
+        setTotalPages(0);
+        toast.error(error.message || "Failed to load listings.");
+      } finally {
+        if (!signal?.aborted) setLoading(false);
+      }
+    },
+    [categoryId, currentPage, debouncedSearch, statusFilter, typeFilter],
+  );
 
   useEffect(() => {
     const controller = new AbortController();
@@ -127,7 +134,8 @@ const ManageListings = () => {
         claims: item.claims.map((claim) => ({
           ...claim,
           status: claim.status.toLowerCase(),
-          claimantName: `${claim.claimant.firstName} ${claim.claimant.lastName}`.trim(),
+          claimantName:
+            `${claim.claimant.firstName} ${claim.claimant.lastName}`.trim(),
           claimedAt: claim.createdAt,
         })),
       });
@@ -146,7 +154,9 @@ const ManageListings = () => {
       setViewingItem(null);
       await loadData();
     } catch (error) {
-      toast.error(error.message || "Failed to delete listing. Please try again.");
+      toast.error(
+        error.message || "Failed to delete listing. Please try again.",
+      );
     } finally {
       setIsDeleting(false);
     }

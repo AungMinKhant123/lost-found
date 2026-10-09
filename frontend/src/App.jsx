@@ -33,6 +33,7 @@ import ManageListings from "./pages/admin/ManageListings";
 import ManageAttributes from "./pages/admin/ManageAttributes";
 
 import AdminRoute from "./components/AdminRoute";
+import ManageUsers from "./pages/admin/ManageUsers";
 
 const App = () => {
   return (
@@ -90,6 +91,7 @@ const App = () => {
           <Route index element={<Dashboard />} />
           <Route path="listings" element={<ManageListings />} />
           <Route path="attributes" element={<ManageAttributes />} />
+          <Route path="users" element={<ManageUsers />} />
         </Route>
         <Route path="/login" element={<LogIn />} />
       </Routes>
