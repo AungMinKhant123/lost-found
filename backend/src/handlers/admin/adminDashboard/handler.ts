@@ -122,7 +122,7 @@ export async function adminDashboardHandler(
     }),
 
     prisma.claim.findMany({
-      take: 15,
+      take: 12,
 
       orderBy: {
         createdAt: "desc",
@@ -142,7 +142,7 @@ export async function adminDashboardHandler(
     }),
 
     prisma.item.findMany({
-      take: 15,
+      take: 12,
 
       orderBy: {
         createdAt: "desc",
@@ -171,7 +171,7 @@ export async function adminDashboardHandler(
         },
       },
 
-      take: 15,
+      take: 12,
 
       orderBy: {
         resolvedAt: "desc",
@@ -219,7 +219,7 @@ export async function adminDashboardHandler(
     })),
   ]
     .sort((a, b) => b.occurredAt.getTime() - a.occurredAt.getTime())
-    .slice(0, 15);
+    .slice(0, 12);
 
   return reply.send({
     data: {

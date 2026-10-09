@@ -15,8 +15,18 @@ export async function getColorHandler(
       id: true,
       name: true,
       hexCode: true,
+      _count: {
+        select: {
+          items: true,
+        },
+      },
     },
   });
 
-  return colors;
+  return colors.map((color) => ({
+    id: color.id,
+    name: color.name,
+    hexCode: color.hexCode,
+    itemCount: color._count.items,
+  }));
 }

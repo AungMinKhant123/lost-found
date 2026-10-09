@@ -46,7 +46,7 @@ const ClaimHistorySchema = Type.Object({
 
 const ImageSchema = Type.Object({
     id: Type.String({ format: "uuid" }),
-    objectKey: Type.String(),
+    imageUrl: Type.String(),
 });
 
 const ViewItemSchema = Type.Object({

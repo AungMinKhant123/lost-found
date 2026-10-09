@@ -103,6 +103,18 @@ export async function viewItemHandler(
     }),
   };
 
+  const bucketName = process.env.MINIO_BUCKET || "lost-found";
+  const images = await Promise.all(
+    item.images.map(async (image) => ({
+      id: image.id,
+      imageUrl: await request.server.minio.presignedGetObject(
+        bucketName,
+        image.objectKey,
+        60 * 60,
+      ),
+    })),
+  );
+
   return reply.send({
     data: {
       id: item.id,
@@ -112,11 +124,11 @@ export async function viewItemHandler(
       description: item.description,
       location: item.location,
 
-      dateLostOrFound: item.dateLostOrFound.toString(),
+      dateLostOrFound: item.dateLostOrFound.toISOString(),
 
       category: item.category,
       color: item.color,
-      images: item.images,
+      images,
 
       poster,
 

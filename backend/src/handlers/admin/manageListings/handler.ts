@@ -24,12 +24,57 @@ export async function manageListingsHandler(
 
   const skip = (page - 1) * limit;
 
+  const searchTerm = query.search?.trim();
+  const searchTerms = searchTerm?.split(/\s+/) ?? [];
+
   const where = {
-    ...(query.search && {
-      title: {
-        contains: query.search,
-        mode: "insensitive" as const,
-      },
+    ...(searchTerm && {
+      OR: [
+        {
+          title: {
+            contains: searchTerm,
+            mode: "insensitive" as const,
+          },
+        },
+        {
+          user: {
+            AND: searchTerms.map((term) => ({
+              OR: [
+                {
+                  firstName: {
+                    contains: term,
+                    mode: "insensitive" as const,
+                  },
+                },
+                {
+                  lastName: {
+                    contains: term,
+                    mode: "insensitive" as const,
+                  },
+                },
+              ],
+            })),
+          },
+        },
+        {
+          user: {
+            OR: [
+              {
+                firstName: {
+                  contains: searchTerm,
+                  mode: "insensitive" as const,
+                },
+              },
+              {
+                lastName: {
+                  contains: searchTerm,
+                  mode: "insensitive" as const,
+                },
+              },
+            ],
+          },
+        },
+      ],
     }),
 
     ...(query.status && {
@@ -63,6 +108,13 @@ export async function manageListingsHandler(
         createdAt: true,
 
         category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+
+        color: {
           select: {
             id: true,
             name: true,

@@ -56,9 +56,16 @@ const ListingDetailsModal = ({ item, onClose, onDeleteClick }) => {
           {item.status.toUpperCase()}
         </span>
 
-        {/* Image placeholder — swap for the real item photo once that exists */}
         <div className="w-32 h-32 rounded-lg bg-neutral-100 flex items-center justify-center text-text-secondary text-body-sm mt-4">
-          Image
+          {item.images?.[0]?.imageUrl ? (
+            <img
+              src={item.images[0].imageUrl}
+              alt={item.title}
+              className="w-full h-full rounded-lg object-cover"
+            />
+          ) : (
+            "Image"
+          )}
         </div>
 
         <div className="grid grid-cols-2 gap-4 mt-5">

@@ -15,8 +15,18 @@ export async function getCategoriesHandler(
       id: true,
       name: true,
       icon: true,
+      _count: {
+        select: {
+          items: true,
+        },
+      },
     },
   });
 
-  return categories;
+  return categories.map((category) => ({
+    id: category.id,
+    name: category.name,
+    icon: category.icon,
+    itemCount: category._count.items,
+  }));
 }

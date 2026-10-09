@@ -22,6 +22,7 @@ export async function profileHandler(
       lastName: true,
       email: true,
       phone: true,
+      role: true,
       profileKey: true,
       socialMedia: true,
       profession: true,
@@ -73,7 +74,7 @@ export async function profileHandler(
     lastName: user.lastName,
     email: user.email,
     phone: user.phone,
-
+    role: user.role,
     profileKey: user.profileKey,
     profileUrl,
 
