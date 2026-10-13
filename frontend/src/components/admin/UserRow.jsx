@@ -1,8 +1,9 @@
 import { Eye, Trash2, ArrowUpCircle, ArrowDownCircle } from "lucide-react";
 
 const UserRow = ({ user, onView, onDelete, onPromote, onDemote }) => {
-  const isSuperAdmin = user.role === "SUPERADMIN";
-  const isAdmin = isSuperAdmin || user.role === "admin";
+  const role = user.role ? user.role.toLowerCase() : "";
+  const isSuperAdmin = role === "superadmin";
+  const isAdmin = isSuperAdmin || role === "admin";
 
   return (
     <div className="flex items-center gap-3.5 px-2 py-2 border-b border-border/40 last:border-b-0 hover:bg-neutral-50/50 rounded-lg transition-colors">

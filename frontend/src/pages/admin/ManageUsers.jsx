@@ -11,13 +11,18 @@ import {
 import UserRow from "../../components/admin/UserRow";
 import UserDetailsModal from "../../components/admin/UserDetailsModal";
 import DeleteUserModal from "../../components/admin/DeleteUserModal";
+import PromoteDemoteModal from "../../components/admin/PromoteDemoteModal";
 
 const TABS = [
   { value: "users", label: "Users" },
   { value: "admins", label: "Admins" },
 ];
 
-const isAdminRole = (role) => role === "ADMIN" || role === "SUPERADMIN";
+const isAdminRole = (role) => {
+  if (!role) return false;
+  const lowerRole = role.toLowerCase();
+  return lowerRole === "admin" || lowerRole === "superadmin";
+};
 
 const ManageUsers = () => {
   const [allUsers, setAllUsers] = useState([]);
@@ -33,6 +38,11 @@ const ManageUsers = () => {
 
   const [deletingUser, setDeletingUser] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Holds { user, action: "promote" | "demote" } while the confirmation
+  // modal is open. null means closed.
+  const [roleChange, setRoleChange] = useState(null);
+  const [isChangingRole, setIsChangingRole] = useState(false);
 
   const fetchUsers = async () => {
     setAllUsers(await getAllUsersWithStats());
@@ -81,23 +91,28 @@ const ManageUsers = () => {
     setActiveSearch("");
   };
 
-  const handlePromote = async (user) => {
+  const handleConfirmRoleChange = async () => {
+    const { user, action } = roleChange;
+    setIsChangingRole(true);
     try {
-      await promoteToAdmin(user.id);
+      if (action === "promote") {
+        await promoteToAdmin(user.id);
+        toast.success(`${user.firstName} promoted to Admin.`);
+      } else {
+        await demoteToUser(user.id);
+        toast.success(`${user.firstName} demoted to User.`);
+      }
       await fetchUsers();
-      toast.success(`${user.firstName} promoted to Admin.`);
+      setRoleChange(null);
     } catch (err) {
-      toast.error(err.message || "Failed to promote user.");
-    }
-  };
-
-  const handleDemote = async (user) => {
-    try {
-      await demoteToUser(user.id);
-      await fetchUsers();
-      toast.success(`${user.firstName} demoted to User.`);
-    } catch (err) {
-      toast.error(err.message || "Failed to demote admin.");
+      toast.error(
+        err.message ||
+          (action === "promote"
+            ? "Failed to promote user."
+            : "Failed to demote admin."),
+      );
+    } finally {
+      setIsChangingRole(false);
     }
   };
 
@@ -208,8 +223,8 @@ const ManageUsers = () => {
                 user={user}
                 onView={() => setViewingUserId(user.id)}
                 onDelete={() => setDeletingUser(user)}
-                onPromote={() => handlePromote(user)}
-                onDemote={() => handleDemote(user)}
+                onPromote={() => setRoleChange({ user, action: "promote" })}
+                onDemote={() => setRoleChange({ user, action: "demote" })}
               />
             ))
           )}
@@ -230,6 +245,25 @@ const ManageUsers = () => {
           isDeleting={isDeleting}
           onCancel={() => setDeletingUser(null)}
           onConfirm={handleConfirmDelete}
+        />
+      )}
+
+      {deletingUser && (
+        <DeleteUserModal
+          userName={`${deletingUser.firstName} ${deletingUser.lastName}`}
+          isDeleting={isDeleting}
+          onCancel={() => setDeletingUser(null)}
+          onConfirm={handleConfirmDelete}
+        />
+      )}
+
+      {roleChange && (
+        <PromoteDemoteModal
+          userName={`${roleChange.user.firstName} ${roleChange.user.lastName}`}
+          action={roleChange.action}
+          isSubmitting={isChangingRole}
+          onCancel={() => setRoleChange(null)}
+          onConfirm={handleConfirmRoleChange}
         />
       )}
     </div>
