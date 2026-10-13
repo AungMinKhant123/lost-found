@@ -401,7 +401,7 @@
       "confirmPassword": "abcd1234!",
       "agreeTerms": true,
       "aboutMe": "I am a UI/UX designer !!!",
-      "role": "user"
+      "role": "USER"
     },
     {
       "firstName": "Ashfaq",
@@ -414,7 +414,8 @@
       "agreeTerms": true,
       "id": "2",
       "socialMedia": "",
-      "aboutMe": "Hi I am Ashfaq. I am currently studying CS"
+      "aboutMe": "Hi I am Ashfaq. I am currently studying CS",
+      "role": "USER"
     },
     {
       "firstName": "Ash",
@@ -509,7 +510,8 @@
       "id": "10",
       "firstName": "Marcus",
       "lastName": "Tan",
-      "email": "marcus.tan@gmail.com"
+      "email": "marcus.tan@gmail.com",
+      "role": "USER"
     },
     {
       "id": "11",
@@ -549,7 +551,7 @@
       "lastName": "Lee",
       "email": "bruce@example.com",
       "password": "admin1234",
-      "role": "admin"
+      "role": "USER"
     }
   ],
   "claims": [
