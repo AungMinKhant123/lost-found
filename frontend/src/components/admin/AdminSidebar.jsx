@@ -1,5 +1,11 @@
 import { NavLink, Link } from "react-router";
-import { LayoutGrid, List, SlidersHorizontal, UserCog } from "lucide-react";
+import {
+  LayoutGrid,
+  List,
+  SlidersHorizontal,
+  UserCog,
+  Users,
+} from "lucide-react";
 
 const navItems = [
   { label: "Dashboard", icon: LayoutGrid, to: "/admin", end: true },
@@ -9,6 +15,7 @@ const navItems = [
     icon: SlidersHorizontal,
     to: "/admin/attributes",
   },
+  { label: "Manage Users", icon: Users, to: "/admin/users" },
 ];
 
 const AdminSidebar = ({ name = "Admin", role = "Admin" }) => {

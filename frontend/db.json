@@ -400,7 +400,8 @@
       "password": "abcd1234!",
       "confirmPassword": "abcd1234!",
       "agreeTerms": true,
-      "aboutMe": "I am a UI/UX designer !!!"
+      "aboutMe": "I am a UI/UX designer !!!",
+      "role": "user"
     },
     {
       "firstName": "Ashfaq",
@@ -540,7 +541,7 @@
       "lastName": "Chrono",
       "email": "nero.chrono@example.com",
       "password": "admin1234",
-      "role": "admin"
+      "role": "SUPERADMIN"
     },
     {
       "id": "14",

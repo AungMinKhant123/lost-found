@@ -1,4 +1,17 @@
 import { useAuthStore } from "../store/authStore";
+import {
+  getAdminListings,
+  getAdminListing,
+  deleteAdminListing,
+  getAdminCategories,
+  getAdminColors,
+  createAdminCategory,
+  updateAdminCategory,
+  deleteAdminCategory,
+  createAdminColor,
+  updateAdminColor,
+  deleteAdminColor,
+} from "../api/adminApi";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -1074,4 +1087,354 @@ export async function getAcceptedClaimContactMock(itemId, claimId) {
     email: claimant.email,
     profileUrl: null,
   };
+}
+
+// ===== Admin: manage users =====
+
+// All users, each with their role (defaulting to "user" if unset) and
+// live post/claim counts — used by the Manage Users table.
+export async function getAllUsersWithStats() {
+  const [users, items, claims] = await Promise.all([
+    getUsers(),
+    getItems(),
+    getClaims(),
+  ]);
+
+  return users.map((user) => ({
+    ...user,
+    role: user.role || "USER",
+    postsCount: items.filter((item) => item.userId === user.id).length,
+    claimsCount: claims.filter((claim) => claim.userId === user.id).length,
+  }));
+}
+
+// Full detail for the "view" modal: the user, every item they posted,
+// and every claim they made (with the claimed item's title attached, so
+// the claim history is readable without a second lookup per row).
+export async function getUserFullDetails(userId) {
+  const [user, items, claims] = await Promise.all([
+    getUserById(userId),
+    getItemsByUser(userId),
+    getClaimsByUser(userId),
+  ]);
+
+  const claimsWithItemTitles = await Promise.all(
+    claims.map(async (claim) => {
+      const item = await getItemById(claim.itemId).catch(() => null);
+      return { ...claim, itemTitle: item?.title || "Unknown item" };
+    }),
+  );
+
+  return { user, items, claims: claimsWithItemTitles };
+}
+
+export async function promoteToAdmin(userId) {
+  return updateUser(userId, { role: "ADMIN" });
+}
+
+export async function demoteToUser(userId) {
+  const user = await request(`/users/${userId}`);
+  if (user.role === "SUPERADMIN") {
+    throw friendlyError("Super Admins can't be demoted.");
+  }
+  return updateUser(userId, { role: "USER" });
+}
+
+// Reuses deleteUserAccount (removes the user, their posts, and every
+// claim tied to them), with one extra rule: Super Admin accounts are
+// protected and can never be deleted, by anyone, through this page.
+export async function deleteUserByAdmin(userId) {
+  const user = await request(`/users/${userId}`);
+  if (user.role === "SUPERADMIN") {
+    throw friendlyError("Super Admin accounts can't be deleted.");
+  }
+  return deleteUserAccount(userId);
+}
+
+// Fallback for GET /admin/dashboard. Reshapes our existing mock stat
+// helpers into the real endpoint's { summary, itemsByCategory,
+// recentActivity } envelope.
+export async function getAdminDashboardMock(period = "ALL_TIME") {
+  const periodMap = {
+    ALL_TIME: "all",
+    THIS_YEAR: "year",
+    THIS_MONTH: "month",
+    THIS_WEEK: "week",
+    TODAY: "day",
+  };
+
+  const [summary, categoryCounts, activity] = await Promise.all([
+    getAdminStats(),
+    getItemsByCategory(periodMap[period] || "all"),
+    getRecentActivity(12),
+  ]);
+
+  return {
+    summary,
+    itemsByCategory: Object.entries(categoryCounts).map(([name, count]) => ({
+      name,
+      count,
+    })),
+    recentActivity: activity.map((event, i) => ({
+      id: `mock-${i}`,
+      type:
+        event.type === "claim"
+          ? "CLAIM_SUBMITTED"
+          : event.type === "resolved"
+            ? "ITEM_RESOLVED"
+            : "ITEM_POSTED",
+      message: event.message,
+      occurredAt: event.timestamp,
+    })),
+  };
+}
+
+// ===== Fallbacks for the real admin endpoints (Manage Listings / Manage
+// Attributes). These reshape our json-server mock data into whatever
+// shape the REAL admin endpoints return, so ManageListings.jsx and
+// ManageAttributes.jsx work identically no matter which source answered.
+
+export function isBackendUnreachable(error) {
+  return !error?.response || error.response.status >= 500;
+}
+
+// ---------- Manage Listings ----------
+
+export async function getAdminListingsMock(params = {}) {
+  const [items, users, categories] = await Promise.all([
+    getItems(),
+    getUsers(),
+    getCategories(),
+  ]);
+
+  const categoryName = params.categoryId
+    ? categories.find((c) => c.id === params.categoryId)?.name
+    : undefined;
+
+  const filtered = items.filter((item) => {
+    if (params.search) {
+      const q = params.search.toLowerCase();
+      if (!item.title.toLowerCase().includes(q)) return false;
+    }
+    if (params.status) {
+      const itemStatus = item.resolved ? "RESOLVED" : "OPEN";
+      if (itemStatus !== params.status) return false;
+    }
+    if (params.type) {
+      const itemType = item.status === "lost" ? "LOST" : "FOUND";
+      if (itemType !== params.type) return false;
+    }
+    if (categoryName && item.category !== categoryName) return false;
+    return true;
+  });
+
+  const page = params.page || 1;
+  const limit = params.limit || 8;
+  const start = (page - 1) * limit;
+
+  const data = filtered.slice(start, start + limit).map((item) => {
+    const user = users.find((u) => u.id === item.userId);
+    return {
+      id: item.id,
+      title: item.title,
+      type: item.status === "lost" ? "LOST" : "FOUND",
+      status: item.resolved ? "RESOLVED" : "OPEN",
+      category: { id: item.category, name: item.category || "Other" },
+      user: user
+        ? { firstName: user.firstName, lastName: user.lastName }
+        : { firstName: "Unknown", lastName: "" },
+      createdAt: item.createdAt || item.date,
+    };
+  });
+
+  return {
+    data,
+    pagination: {
+      page,
+      limit,
+      total: filtered.length,
+      totalPages: Math.max(1, Math.ceil(filtered.length / limit)),
+    },
+  };
+}
+
+export async function getAdminListingMock(itemId) {
+  const [item, claims, users] = await Promise.all([
+    getItemById(itemId),
+    getClaimsForItem(itemId),
+    getUsers(),
+  ]);
+
+  const owner = users.find((u) => u.id === item.userId);
+
+  const claimsWithClaimant = claims.map((claim) => {
+    const claimant = users.find((u) => u.id === claim.userId);
+    return {
+      ...claim,
+      claimant: claimant
+        ? { firstName: claimant.firstName, lastName: claimant.lastName }
+        : { firstName: "Unknown", lastName: "" },
+      createdAt: claim.claimedAt,
+    };
+  });
+
+  return {
+    id: item.id,
+    title: item.title,
+    description: item.description || "",
+    type: item.status === "lost" ? "LOST" : "FOUND",
+    status: item.resolved ? "RESOLVED" : "OPEN",
+    category: { name: item.category || "Other" },
+    color: { name: item.color || "Other" },
+    dateLostOrFound: item.date,
+    images: [],
+    poster: {
+      name: owner ? `${owner.firstName} ${owner.lastName}` : "Unknown",
+      phone: owner?.phone || null,
+      email: owner?.email || null,
+    },
+    claims: claimsWithClaimant,
+  };
+}
+
+export async function fetchAdminListingsWithFallback(params, options) {
+  try {
+    return await getAdminListings(params, options);
+  } catch (error) {
+    if (import.meta.env.DEV && isBackendUnreachable(error)) {
+      return await getAdminListingsMock(params);
+    }
+    throw error;
+  }
+}
+
+export async function fetchAdminListingWithFallback(itemId) {
+  try {
+    return await getAdminListing(itemId);
+  } catch (error) {
+    if (import.meta.env.DEV && isBackendUnreachable(error)) {
+      return await getAdminListingMock(itemId);
+    }
+    throw error;
+  }
+}
+
+export async function deleteAdminListingWithFallback(itemId) {
+  try {
+    return await deleteAdminListing(itemId);
+  } catch (error) {
+    if (import.meta.env.DEV && isBackendUnreachable(error)) {
+      return await deleteItem(itemId);
+    }
+    throw error;
+  }
+}
+
+// ---------- Manage Attributes ----------
+
+export async function getAdminCategoriesMock() {
+  const [categories, items] = await Promise.all([getCategories(), getItems()]);
+  return categories.map((c) => ({
+    ...c,
+    itemCount: items.filter((item) => sameAttributeName(item.category, c.name))
+      .length,
+  }));
+}
+
+export async function getAdminColorsMock() {
+  const [colours, items] = await Promise.all([getColours(), getItems()]);
+  return colours.map((c) => ({
+    ...c,
+    hexCode: c.hex,
+    itemCount: items.filter((item) => sameAttributeName(item.color, c.name))
+      .length,
+  }));
+}
+
+export async function fetchAdminCategoriesWithFallback() {
+  try {
+    return await getAdminCategories();
+  } catch (error) {
+    if (import.meta.env.DEV && isBackendUnreachable(error)) {
+      return await getAdminCategoriesMock();
+    }
+    throw error;
+  }
+}
+
+export async function fetchAdminColorsWithFallback() {
+  try {
+    return await getAdminColors();
+  } catch (error) {
+    if (import.meta.env.DEV && isBackendUnreachable(error)) {
+      return await getAdminColorsMock();
+    }
+    throw error;
+  }
+}
+
+export async function createAdminCategoryWithFallback(data) {
+  try {
+    return await createAdminCategory(data);
+  } catch (error) {
+    if (import.meta.env.DEV && isBackendUnreachable(error)) {
+      return await createCategory(data);
+    }
+    throw error;
+  }
+}
+
+export async function updateAdminCategoryWithFallback(id, data) {
+  try {
+    return await updateAdminCategory(id, data);
+  } catch (error) {
+    if (import.meta.env.DEV && isBackendUnreachable(error)) {
+      return await updateCategory(id, data);
+    }
+    throw error;
+  }
+}
+
+export async function deleteAdminCategoryWithFallback(id) {
+  try {
+    return await deleteAdminCategory(id);
+  } catch (error) {
+    if (import.meta.env.DEV && isBackendUnreachable(error)) {
+      return await deleteCategory(id);
+    }
+    throw error;
+  }
+}
+
+export async function createAdminColorWithFallback(data) {
+  try {
+    return await createAdminColor(data);
+  } catch (error) {
+    if (import.meta.env.DEV && isBackendUnreachable(error)) {
+      return await createColour(data);
+    }
+    throw error;
+  }
+}
+
+export async function updateAdminColorWithFallback(id, data) {
+  try {
+    return await updateAdminColor(id, data);
+  } catch (error) {
+    if (import.meta.env.DEV && isBackendUnreachable(error)) {
+      return await updateColour(id, data);
+    }
+    throw error;
+  }
+}
+
+export async function deleteAdminColorWithFallback(id) {
+  try {
+    return await deleteAdminColor(id);
+  } catch (error) {
+    if (import.meta.env.DEV && isBackendUnreachable(error)) {
+      return await deleteColour(id);
+    }
+    throw error;
+  }
 }

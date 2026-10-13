@@ -195,7 +195,9 @@ const UserHeader = () => {
                   </Link>
 
                   {/* Admin Dashboard — only visible to admins */}
-                  {user?.role === "admin" && (
+                  {["admin", "superadmin"].includes(
+                    user?.role?.toLowerCase(),
+                  ) && (
                     <Link
                       to="/admin"
                       onClick={() => setIsDropdownOpen(false)}

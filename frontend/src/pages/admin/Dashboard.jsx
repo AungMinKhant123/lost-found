@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Flag, Search, AlertCircle, FilePlus } from "lucide-react";
+import { useNavigate } from "react-router";
+import { Flag, Search, AlertCircle, FilePlus, Home } from "lucide-react";
 
 import AdminSelect from "../../components/admin/AdminSelect";
 import { useAdminDashboard } from "../../hooks/useAdminDashboard";
@@ -32,6 +33,7 @@ const ACTIVITY_ICONS = {
 };
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [categoryPeriod, setCategoryPeriod] = useState("ALL_TIME");
 
   const { data, isLoading, isError } = useAdminDashboard(categoryPeriod);
@@ -67,7 +69,7 @@ const Dashboard = () => {
           </p>
         </div>
 
-        <div className="flex gap-3 flex-1 max-w-xl">
+        {/* <div className="flex gap-3 flex-1 max-w-xl">
           <input
             type="text"
             placeholder="Search listings or Users..."
@@ -77,7 +79,15 @@ const Dashboard = () => {
           <button className="bg-primary hover:bg-primary-dark text-text-inverse rounded-lg px-6 py-2.5 text-body-md font-medium transition-colors shrink-0">
             Search
           </button>
-        </div>
+        </div> */}
+        <button
+          type="button"
+          onClick={() => navigate("/")}
+          className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-text-inverse rounded-lg px-5 py-2.5 text-body-md font-medium transition-colors shrink-0"
+        >
+          <Home size={18} />
+          <span>Go to Home</span>
+        </button>
       </div>
 
       {/* Stat cards */}
